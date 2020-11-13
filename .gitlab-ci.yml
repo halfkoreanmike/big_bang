@@ -72,7 +72,7 @@ fetch umbrella templates:
 network:up:
   stage: network
   extends:
-    - .network up plan
+    - .network plan
   environment:
     name: $CI_COMMIT_BRANCH
     url: https://$PROJ_NAME.bigbang.dev
