@@ -73,11 +73,11 @@ network:up:
   stage: network
   extends:
     - .network plan
-  environment:
-    name: $CI_COMMIT_BRANCH
-    url: https://$PROJ_NAME.bigbang.dev
-    on_stop: destroy
-    auto_stop_in: 4 hours
+#  environment:
+#    name: $CI_COMMIT_BRANCH
+#    url: https://$PROJ_NAME.bigbang.dev
+#    on_stop: destroy
+#    auto_stop_in: 4 hours
 
 # network:if-fails:
 #   stage: network errors
