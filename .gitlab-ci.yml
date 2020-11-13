@@ -111,6 +111,7 @@ network:destroy:
 #  environment:
 #    name: $CI_COMMIT_BRANCH
 #    action: stop
+  when: on_failure
 
 # .k3d:
 #   tags:
