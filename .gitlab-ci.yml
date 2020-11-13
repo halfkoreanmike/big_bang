@@ -54,6 +54,9 @@ include:
     ref: BB-621-Network-Up
     file: '/jobs/rke2/gitlab-ci.yaml'
 
+variables:
+  CLUSTER_NAME: umbrella-${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA}
+
 stages:
   # - fast feedback
   - network
