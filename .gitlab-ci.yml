@@ -59,7 +59,7 @@ stages:
   - network
   - cluster up
   - cluster cleanup
-  - clean
+  - network cleanup
 
 fetch umbrella templates:
   stage: .pre
@@ -103,13 +103,13 @@ network:up:
 #  extends:
 #    - .rke2 down
 #
-##
-## Clean up
-##
-#network:destroy:
-#  stage: clean
-#  extends:
-#    - .network destroy
+#
+# Clean up
+#
+network:destroy:
+  stage: network cleanup
+  extends:
+    - .network destroy
 #  environment:
 #    name: $CI_COMMIT_BRANCH
 #    action: stop
