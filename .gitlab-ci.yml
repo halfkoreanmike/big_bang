@@ -85,24 +85,22 @@ network:up:
 #     - .network destroy
 #   when: on_failure
 
+
+ Cluster(s) up
+
+rke2:up:
+  stage: cluster up
+  extends:
+    - .rke2 up
+
 #
-# Cluster(s) up
+# Cluster(s) down
 #
-#rke2:up:
-#  stage: cluster up
-#  extends:
-#    - .rke2 up
-#  dependencies:
-#    - up
-#
-##
-## Cluster(s) down
-##
-#rke2:down:
-#  stage: cluster cleanup
-#  extends:
-#    - .rke2 down
-#
+rke2:down:
+  stage: cluster cleanup
+  extends:
+    - .rke2 down
+
 #
 # Clean up
 #
