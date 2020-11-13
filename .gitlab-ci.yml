@@ -46,11 +46,73 @@
 include:
   - project: 'platform-one/big-bang/pipeline-templates/umbrella-templates'
     ref: BB-621-Network-Up
+    file: '/.gitlab-ci.yml'
+  - project: 'platform-one/big-bang/pipeline-templates/umbrella-templates'
+    ref: BB-621-Network-Up
     file: '/jobs/networking/aws/gitlab-ci.yaml'
+  - project: 'platform-one/big-bang/pipeline-templates/umbrella-templates'
+    ref: BB-621-Network-Up
+    file: '/jobs/rke2/gitlab-ci.yaml'
 
 stages:
   # - fast feedback
-  - network up
+  - network
+  - cluster up
+  - cluster cleanup
+  - clean
+
+fetch umbrella templates:
+  stage: .pre
+  extends:
+    - .fetch
+
+#
+# Network
+#
+network:up:
+  stage: network
+  extends:
+    - .network up plan
+  environment:
+    name: $CI_COMMIT_BRANCH
+    url: https://$PROJ_NAME.bigbang.dev
+    on_stop: destroy
+    auto_stop_in: 4 hours
+
+# network:if-fails:
+#   stage: network errors
+#   extends:
+#     - .network destroy
+#   when: on_failure
+
+#
+# Cluster(s) up
+#
+#rke2:up:
+#  stage: cluster up
+#  extends:
+#    - .rke2 up
+#  dependencies:
+#    - up
+#
+##
+## Cluster(s) down
+##
+#rke2:down:
+#  stage: cluster cleanup
+#  extends:
+#    - .rke2 down
+#
+##
+## Clean up
+##
+#network:destroy:
+#  stage: clean
+#  extends:
+#    - .network destroy
+#  environment:
+#    name: $CI_COMMIT_BRANCH
+#    action: stop
 
 # .k3d:
 #   tags:
