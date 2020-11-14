@@ -46,7 +46,7 @@
 include:
   - project: 'platform-one/big-bang/pipeline-templates/umbrella-templates'
     ref: BB-621-Network-Up
-    file: '/.gitlab-ci.yml'
+    file: '/globals.gitlab-ci.yml'
   - project: 'platform-one/big-bang/pipeline-templates/umbrella-templates'
     ref: BB-621-Network-Up
     file: '/jobs/networking/aws/gitlab-ci.yaml'
@@ -94,15 +94,26 @@ network:up:
 rke2:up:
   stage: cluster up
   extends:
+    - .terraformer
     - .rke2 up
+  before_script:
+    - apk add bash jq aws-cli curl
 
-#
+    - cd ${TF_ROOT}
+    # TODO: Make this more dynamic instead of hardcoding each value individually
+    - echo "cluster_name=\"${CLUSTER_NAME}\"" > var.tfvars
+    - echo "vpc_id=$(jq -c .vpc_id.value ${CI_PROJECT_DIR}/outputs.json)" >> var.tfvars
+    - echo "subnets=$(jq -c .private_subnet_ids.value ${CI_PROJECT_DIR}/outputs.json)" >> var.tfvars
+    - cat var.tfvars
+
 # Cluster(s) down
 #
 rke2:down:
   stage: cluster cleanup
   extends:
     - .rke2 down
+  before_script:
+    - cd ${TF_ROOT}
 
 #
 # Clean up
