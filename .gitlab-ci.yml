@@ -61,6 +61,7 @@ stages:
   # - fast feedback
   - network
   - cluster up
+  - deploy
   - cluster cleanup
   - network cleanup
 
@@ -110,6 +111,23 @@ rke2:up:
     - echo "vpc_id=$(jq -c .vpc_id.value ${CI_PROJECT_DIR}/outputs.json)" >> ${TFVARFILE}
     - echo "subnets=$(jq -c .private_subnet_ids.value ${CI_PROJECT_DIR}/outputs.json)" >> ${TFVARFILE}
     - cat ${TFVARFILE}
+
+#
+# Deploy BigBang
+#
+deploy bigbang:
+  stage: deploy
+  image: debian:stable-slim
+  before_script:
+    - apt-get update && apt-get install -y apt-transport-https gnupg2 curl
+    - curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
+    - echo "deb https://apt.kubernetes.io/ kubernetes-xenial main" | tee -a /etc/apt/sources.list.d/kubernetes.list
+    - apt-get update && apt-get install -y kubectl
+  script:
+    - export KUBECONFIG="${CI_PROJECT_DIR}/admin.conf"
+    - kubectl wait --for=condition=available --timeout=60s --all deployments -n kube-system
+  dependencies:
+    - rke2:up
 
 #
 # Cluster(s) down
