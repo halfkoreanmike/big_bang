@@ -53,11 +53,12 @@ variables:
 
 stages:
   # - fast feedback
-  - network
+  - network up
   - cluster up
-  - deploy
-  - cluster cleanup
-  - network cleanup
+  - bigbang up
+  - bigbang down
+  - cluster down
+  - network down
 
 fetch umbrella templates:
   stage: .pre
@@ -67,8 +68,8 @@ fetch umbrella templates:
 #
 # Network
 #
-network:up:
-  stage: network
+aws standard create:
+  stage: network up
   extends:
     - .network plan
 
@@ -150,8 +151,8 @@ network:up:
 #
 # Clean up
 #
-network:destroy:
-  stage: network cleanup
+aws standard cleanup:
+  stage: network down
   extends:
     - .network destroy
 #  environment:
