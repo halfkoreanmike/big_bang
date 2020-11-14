@@ -94,8 +94,8 @@ network:up:
 rke2:up:
   stage: cluster up
   extends:
-    - .terraformer
     - .rke2 up
+    - .terraformer
   before_script:
     - apk add bash jq aws-cli curl
 
@@ -106,12 +106,14 @@ rke2:up:
     - echo "subnets=$(jq -c .private_subnet_ids.value ${CI_PROJECT_DIR}/outputs.json)" >> var.tfvars
     - cat var.tfvars
 
+#
 # Cluster(s) down
 #
 rke2:down:
   stage: cluster cleanup
   extends:
     - .rke2 down
+    - .terraformer
   before_script:
     - cd ${TF_ROOT}
 
