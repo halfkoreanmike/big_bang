@@ -46,16 +46,10 @@
 include:
   - project: 'platform-one/big-bang/pipeline-templates/umbrella-templates'
     ref: BB-621-Network-Up
-    file: '/globals.gitlab-ci.yml'
-  - project: 'platform-one/big-bang/pipeline-templates/umbrella-templates'
-    ref: BB-621-Network-Up
-    file: '/jobs/networking/aws/gitlab-ci.yaml'
-  - project: 'platform-one/big-bang/pipeline-templates/umbrella-templates'
-    ref: BB-621-Network-Up
-    file: '/jobs/rke2/gitlab-ci.yaml'
+    file: '/global.gitlab-ci.yml'
 
 variables:
-  CLUSTER_NAME: umbrella-${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA}
+  TF_env: ${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA}
 
 stages:
   # - fast feedback
@@ -77,9 +71,6 @@ network:up:
   stage: network
   extends:
     - .network plan
-    - .terraformer
-  before_script:
-    - apk add python3 py3-boto3
 
 #  environment:
 #    name: $CI_COMMIT_BRANCH
@@ -96,65 +87,65 @@ network:up:
 #
 # Cluster(s) up
 #
-# TODO: Make this more dynamic instead of hardcoding each value individually
-.rke2_parse_network: &rke2_parse_network
-  - echo "cluster_name=\"${CLUSTER_NAME}\"" > ${TFVARFILE}
-  - echo "vpc_id=$(jq -c .vpc_id.value ${CI_PROJECT_DIR}/outputs.json)" >> ${TFVARFILE}
-  - echo "subnets=$(jq -c .private_subnet_ids.value ${CI_PROJECT_DIR}/outputs.json)" >> ${TFVARFILE}
-  - cat ${TFVARFILE}
-
-rke2:up:
-  stage: cluster up
-  extends:
-    - .rke2 up
-    - .terraformer
-  variables:
-    TFVARFILE: ${CI_PROJECT_DIR}/${TF_ROOT}/var.tfvars
-  before_script:
-    - apk add bash jq aws-cli curl
-    - *rke2_parse_network
-
+## TODO: Make this more dynamic instead of hardcoding each value individually
+#.rke2_parse_network: &rke2_parse_network
+#  - echo "cluster_name=\"${CLUSTER_NAME}\"" > ${TFVARFILE}
+#  - echo "vpc_id=$(jq -c .vpc_id.value ${CI_PROJECT_DIR}/outputs.json)" >> ${TFVARFILE}
+#  - echo "subnets=$(jq -c .private_subnet_ids.value ${CI_PROJECT_DIR}/outputs.json)" >> ${TFVARFILE}
+#  - cat ${TFVARFILE}
 #
-# Deploy BigBang
+#rke2:up:
+#  stage: cluster up
+#  extends:
+#    - .rke2 up
+#    - .terraformer
+#  variables:
+#    TFVARFILE: ${CI_PROJECT_DIR}/${TF_ROOT}/var.tfvars
+#  before_script:
+#    - apk add bash jq aws-cli curl
+#    - *rke2_parse_network
 #
-deploy bigbang:
-  stage: deploy
-  image: registry.dsop.io/platform-one/private/big-bang/pipeline-templates/k3d-builder:b0b45793
-  dependencies:
-    - rke2:up
-  script:
-    - export KUBECONFIG="${CI_PROJECT_DIR}/admin.conf"
-    - *deploy_flux
-    - kubectl apply -f .gitlab/k8s-resources/default-ebs-sc.yaml
-    - kubectl get all -A
-
-    - echo "Install Big Bang From Current Branch"
-    # Install Big Bang From Current Branch
-    - helm upgrade -i bigbang chart -n bigbang --create-namespace --set registryCredentials.username='robot$bigbang' --set registryCredentials.password=${REGISTRY1_PASSWORD}
-    - kubectl apply -f examples/complete/envs/dev/source-secrets.yaml
-    - *wait_for_healthy
-
-  after_script:
-    - *check_non_ironbank_images
-    # Delete BigBang
-    - helm del -n bigbang bigbang
-    - sleep 180
-    - kubectl get all -A
-
+##
+## Deploy BigBang
+##
+#deploy bigbang:
+#  stage: deploy
+#  image: registry.dsop.io/platform-one/private/big-bang/pipeline-templates/k3d-builder:b0b45793
+#  dependencies:
+#    - rke2:up
+#  script:
+#    - export KUBECONFIG="${CI_PROJECT_DIR}/admin.conf"
+#    - *deploy_flux
+#    - kubectl apply -f .gitlab/k8s-resources/default-ebs-sc.yaml
+#    - kubectl get all -A
 #
-# Cluster(s) down
+#    - echo "Install Big Bang From Current Branch"
+#    # Install Big Bang From Current Branch
+#    - helm upgrade -i bigbang chart -n bigbang --create-namespace --set registryCredentials.username='robot$bigbang' --set registryCredentials.password=${REGISTRY1_PASSWORD}
+#    - kubectl apply -f examples/complete/envs/dev/source-secrets.yaml
+#    - *wait_for_healthy
 #
-rke2:down:
-  stage: cluster cleanup
-  extends:
-    - .rke2 down
-    - .terraformer
-  variables:
-    TFVARFILE: ${CI_PROJECT_DIR}/${TF_ROOT}/var.tfvars
-  when: always
-  before_script:
-    - apk add jq
-    - *rke2_parse_network
+#  after_script:
+#    - *check_non_ironbank_images
+#    # Delete BigBang
+#    - helm del -n bigbang bigbang
+#    - sleep 180
+#    - kubectl get all -A
+#
+##
+## Cluster(s) down
+##
+#rke2:down:
+#  stage: cluster cleanup
+#  extends:
+#    - .rke2 down
+#    - .terraformer
+#  variables:
+#    TFVARFILE: ${CI_PROJECT_DIR}/${TF_ROOT}/var.tfvars
+#  when: always
+#  before_script:
+#    - apk add jq
+#    - *rke2_parse_network
 
 #
 # Clean up
@@ -163,7 +154,6 @@ network:destroy:
   stage: network cleanup
   extends:
     - .network destroy
-    - .terraformer
 #  environment:
 #    name: $CI_COMMIT_BRANCH
 #    action: stop
