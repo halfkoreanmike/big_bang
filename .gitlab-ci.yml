@@ -96,6 +96,13 @@ network:up:
 #
 # Cluster(s) up
 #
+# TODO: Make this more dynamic instead of hardcoding each value individually
+.rke2_parse_network: &rke2_parse_network
+  - echo "cluster_name=\"${CLUSTER_NAME}\"" > ${TFVARFILE}
+  - echo "vpc_id=$(jq -c .vpc_id.value ${CI_PROJECT_DIR}/outputs.json)" >> ${TFVARFILE}
+  - echo "subnets=$(jq -c .private_subnet_ids.value ${CI_PROJECT_DIR}/outputs.json)" >> ${TFVARFILE}
+  - cat ${TFVARFILE}
+
 rke2:up:
   stage: cluster up
   extends:
@@ -105,12 +112,7 @@ rke2:up:
     TFVARFILE: ${CI_PROJECT_DIR}/${TF_ROOT}/var.tfvars
   before_script:
     - apk add bash jq aws-cli curl
-
-    # TODO: Make this more dynamic instead of hardcoding each value individually
-    - echo "cluster_name=\"${CLUSTER_NAME}\"" > ${TFVARFILE}
-    - echo "vpc_id=$(jq -c .vpc_id.value ${CI_PROJECT_DIR}/outputs.json)" >> ${TFVARFILE}
-    - echo "subnets=$(jq -c .private_subnet_ids.value ${CI_PROJECT_DIR}/outputs.json)" >> ${TFVARFILE}
-    - cat ${TFVARFILE}
+    - *rke2_parse_network
 
 #
 # Deploy BigBang
@@ -137,7 +139,12 @@ rke2:down:
   extends:
     - .rke2 down
     - .terraformer
+  variables:
+    TFVARFILE: ${CI_PROJECT_DIR}/${TF_ROOT}/var.tfvars
   when: always
+  before_script:
+    - apk add jq
+    - *rke2_parse_network
 
 #
 # Clean up
