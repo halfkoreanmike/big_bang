@@ -48,9 +48,6 @@ include:
     ref: BB-621-Network-Up
     file: '/global.gitlab-ci.yml'
 
-variables:
-  TF_env: ${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA}
-
 stages:
   # - fast feedback
   - network up
