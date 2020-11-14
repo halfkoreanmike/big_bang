@@ -78,7 +78,7 @@ network:up:
     - .network plan
     - .terraformer
   before_script:
-    - apk add python3
+    - apk add python3 py3-boto3
 #  environment:
 #    name: $CI_COMMIT_BRANCH
 #    url: https://$PROJ_NAME.bigbang.dev
@@ -119,6 +119,7 @@ rke2:down:
     - .terraformer
   before_script:
     - cd ${TF_ROOT}
+  when: always
 
 #
 # Clean up
@@ -131,7 +132,7 @@ network:destroy:
 #  environment:
 #    name: $CI_COMMIT_BRANCH
 #    action: stop
-  when: on_failure
+  when: always
 
 # .k3d:
 #   tags:
