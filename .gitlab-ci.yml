@@ -79,6 +79,7 @@ network:up:
     - .terraformer
   before_script:
     - apk add python3 py3-boto3
+
 #  environment:
 #    name: $CI_COMMIT_BRANCH
 #    url: https://$PROJ_NAME.bigbang.dev
@@ -99,15 +100,16 @@ rke2:up:
   extends:
     - .rke2 up
     - .terraformer
+  variables:
+    TFVARFILE: ${CI_PROJECT_DIR}/${TF_ROOT}/var.tfvars
   before_script:
     - apk add bash jq aws-cli curl
 
-    - cd ${TF_ROOT}
     # TODO: Make this more dynamic instead of hardcoding each value individually
-    - echo "cluster_name=\"${CLUSTER_NAME}\"" > var.tfvars
-    - echo "vpc_id=$(jq -c .vpc_id.value ${CI_PROJECT_DIR}/outputs.json)" >> var.tfvars
-    - echo "subnets=$(jq -c .private_subnet_ids.value ${CI_PROJECT_DIR}/outputs.json)" >> var.tfvars
-    - cat var.tfvars
+    - echo "cluster_name=\"${CLUSTER_NAME}\"" > ${TFVARFILE}
+    - echo "vpc_id=$(jq -c .vpc_id.value ${CI_PROJECT_DIR}/outputs.json)" >> ${TFVARFILE}
+    - echo "subnets=$(jq -c .private_subnet_ids.value ${CI_PROJECT_DIR}/outputs.json)" >> ${TFVARFILE}
+    - cat ${TFVARFILE}
 
 #
 # Cluster(s) down
@@ -117,8 +119,6 @@ rke2:down:
   extends:
     - .rke2 down
     - .terraformer
-  before_script:
-    - cd ${TF_ROOT}
   when: always
 
 #
