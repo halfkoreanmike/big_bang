@@ -134,12 +134,12 @@ deploy bigbang:
     - kubectl apply -f examples/complete/envs/dev/source-secrets.yaml
     - *wait_for_healthy
 
-   after_script:
-     - *check_non_ironbank_images
-     # Delete BigBang
-     - helm del -n bigbang bigbang
-     - sleep 180
-     - kubectl get all -A
+  after_script:
+    - *check_non_ironbank_images
+    # Delete BigBang
+    - helm del -n bigbang bigbang
+    - sleep 180
+    - kubectl get all -A
 
 #
 # Cluster(s) down
