@@ -76,6 +76,9 @@ network:up:
   stage: network
   extends:
     - .network plan
+    - .terraformer
+  before_script:
+    - apk add python3
 #  environment:
 #    name: $CI_COMMIT_BRANCH
 #    url: https://$PROJ_NAME.bigbang.dev
@@ -124,6 +127,7 @@ network:destroy:
   stage: network cleanup
   extends:
     - .network destroy
+    - .terraformer
 #  environment:
 #    name: $CI_COMMIT_BRANCH
 #    action: stop
