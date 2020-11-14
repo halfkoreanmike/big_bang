@@ -127,7 +127,9 @@ deploy bigbang:
     - apt-get update && apt-get install -y kubectl
   script:
     - export KUBECONFIG="${CI_PROJECT_DIR}/admin.conf"
+    - kubectl get all -A
     - kubectl wait --for=condition=available --timeout=60s --all deployments -n kube-system
+    - kubectl get all -A
   dependencies:
     - rke2:up
 
