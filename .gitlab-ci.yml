@@ -72,6 +72,10 @@ clean install:
   stage: smoke tests
 #  extends:
 #    - .k3d
+  rules:
+    # Skip on merge requests (it is ran as part of the non MR pipeline)
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      when: never
   variables:
     CLUSTER_NAME: "clean-${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA}"
   image: alpine:latest
@@ -99,7 +103,7 @@ clean install:
 #-----------------------------------------------------------------------------------------------------------------------
 
 #-----------------------------------------------------------------------------------------------------------------------
-# Infrastructure Jobs
+# Infrastructure: Management Jobs
 #
 # .pre job for pulling pipeline contents from umbrella-templates project
 fetch umbrella templates:
@@ -141,9 +145,10 @@ fetch umbrella templates:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
       allow_failure: true
       when: always
+#-----------------------------------------------------------------------------------------------------------------------
 
-#
-# Networking
+#-----------------------------------------------------------------------------------------------------------------------
+# Infrastructure: Networking
 #
 aws/network up:
   extends:
@@ -152,6 +157,8 @@ aws/network up:
   environment:
     name: review/aws-${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA}
     auto_stop_in: 1 hour
+  script:
+    - echo "tmp"
 
 aws/network down:
   extends:
@@ -161,58 +168,65 @@ aws/network down:
   environment:
     name: review/aws-${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA}
     action: stop
+  script:
+    - echo "tmp"
+#-----------------------------------------------------------------------------------------------------------------------
 
-##
-##
-## Cluster(s) up
-##
-#rke2 up:
-#  stage: cluster up
-#  extends:
-#    - .rke2 up
-#  variables:
-#    TFVARFILE: ${CI_PROJECT_DIR}/${TF_ROOT}/var.tfvars
-##
-##
-## BigBang Up
-##
-#rke2|bigbang up:
-#  extends:
-#    - .bigbang
-#  stage: bigbang up
-#  dependencies:
-#    - rke2 up
-#  before_script:
-#    - mkdir -p ~/.kube
-#    - cp ${CI_PROJECT_DIR}/rke2.yaml ~/.kube/config
-#    - kubectl apply -f .gitlab/k8s-resources/default-ebs-sc.yaml
+#-----------------------------------------------------------------------------------------------------------------------
+# Infrastructure: RKE2
+#
+# Create RKE2 cluster on AWS
+aws/rke2/cluster up:
+  stage: cluster up
+  extends:
+    - .infra create
+    - .rke2 up
+  needs:
+    - job: aws/network up
+  script:
+    - echo "tmp"
+
+# Install BigBang on RKE2 cluster on AWS
+aws/rke2/bigbang up:
+  stage: bigbang up
+  extends:
+    - .infra create
+    - .bigbang
+  needs:
+    - job: aws/rke2/cluster up
+  before_script:
+    - mkdir -p ~/.kube
+    - cp ${CI_PROJECT_DIR}/rke2.yaml ~/.kube/config
+    - kubectl apply -f .gitlab/k8s-resources/default-ebs-sc.yaml
 #  script:
 #    - *deploy_bigbang
 #  after_script:
 #    - kubectl get all -A
-#
-##
-## E2E Tests
-##
-#rke2|bigbang test:
-#  stage: test
-#  script:
-#    - echo "tests go here"
-#  dependencies:
-#    - rke2 up
-#
-##
-## BigBang Down
-##
-#rke2|bigbang down:
-#  extends:
-#    - .bigbang
-#  stage: bigbang down
-#  dependencies:
-#    - rke2 up
-#  before_script:
-#    - mkdir -p ~/.kube
-#    - cp ${CI_PROJECT_DIR}/rke2.yaml ~/.kube/config
+  script:
+    - echo "tmp"
+
+# Run tests on BigBang on RKE2 cluster on AWS
+aws/rke2/bigbang test:
+  stage: test
+  extends:
+    - .infra create
+    - .bigbang
+  needs:
+    - job: aws/rke2/bigbang up
+  script:
+    - echo "tests go here"
+
+# Uninstall BigBang on RKE2 cluster on AWS
+aws/rke2/bigbang down:
+  stage: bigbang down
+  extends:
+    - .infra cleanup
+    - .bigbang
+  needs:
+    - job: aws/rke2/bigbang test
+  before_script:
+    - mkdir -p ~/.kube
+    - cp ${CI_PROJECT_DIR}/rke2.yaml ~/.kube/config
 #  script:
 #    - helm un -n bigbang bigbang
 #
@@ -220,14 +234,17 @@ aws/network down:
 #    - sleep 180
 #  after_script:
 #    - kubectl get all -A
-#  when: always
-#
-##
-## Cluster(s) down
-##
-#rke2 down:
-#  stage: cluster down
-#  extends:
-#    - .rke2 down
-#  when: always
-#
+  script:
+    - echo "tmp"
+
+# Destroy RKE2 cluster on AWS
+aws/rke2/cluster down:
+  stage: cluster down
+  extends:
+    - .infra cleanup
+    - .rke2 down
+  needs:
+    - job: aws/rke2/bigbang down
+  script:
+    - echo "tmp"
+#-----------------------------------------------------------------------------------------------------------------------
