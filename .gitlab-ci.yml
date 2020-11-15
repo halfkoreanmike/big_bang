@@ -99,6 +99,7 @@ aws standard create:
   extends:
     - .manual trigger on merge requests
     - .network up
+  needs: []
 
 #  environment:
 #    name: $CI_COMMIT_BRANCH
