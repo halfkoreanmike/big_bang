@@ -9,29 +9,6 @@
   - kubectl get nodes
   - k3d node list
 
-.deploy_flux: &deploy_flux
-  # Install Flux
-  - which flux
-  - flux --version
-  - flux install 
-  - kubectl get namespaces,pods,helmrelease,gitrepositories -A
-
-.wait_for_healthy: &wait_for_healthy
-  # Wait for healthy
-  ## TODO: make this dynamicly include the helmreleases being created instead of hardcoding 
-  - sleep 5
-  - kubectl get namespaces,pods,helmrelease,kustomizations,gitrepositories -A
-  - kubectl wait --for=condition=Ready --timeout 300s helmrelease -n bigbang gatekeeper
-  - kubectl wait --for=condition=Ready --timeout 300s helmrelease -n bigbang istio-operator
-  - kubectl wait --for=condition=Ready --timeout 300s helmrelease -n bigbang istio
-  - kubectl wait --for=condition=Ready --timeout 300s helmrelease -n bigbang monitoring
-  - kubectl wait --for=condition=Ready --timeout 300s helmrelease -n bigbang eck-operator
-  - kubectl wait --for=condition=Ready --timeout 300s helmrelease -n bigbang ek
-  - kubectl wait --for=condition=Ready --timeout 300s helmrelease -n bigbang fluent-bit
-  - kubectl wait --for=condition=Ready --timeout 300s helmrelease -n bigbang twistlock
-  - kubectl wait --for=condition=Ready --timeout 300s helmrelease -n bigbang cluster-auditor
-  - kubectl wait --for=condition=Ready --timeout 30s kustomizations.kustomize.toolkit.fluxcd.io -n bigbang secrets
-
 .do_some_quick_tests: &do_some_quick_tests
   # Place kubernetes package test here
   - echo "Package tests go here"
@@ -53,9 +30,43 @@ stages:
   - network up
   - cluster up
   - bigbang up
+  - test
   - bigbang down
   - cluster down
   - network down
+
+.bigbang:
+  image: registry.dsop.io/platform-one/private/big-bang/pipeline-templates/k3d-builder:b0b45793
+
+.deploy bigbang: &deploy_bigbang
+  script:
+    # Deploy flux and wait for it to be ready
+    - flux --version
+    - flux install
+    - kubectl get namespaces,pods,gitrepositories,helmrelease -A
+
+    # Deploy BigBang
+    - helm upgrade -i bigbang chart -n bigbang --create-namespace --set registryCredentials.username='robot$bigbang' --set registryCredentials.password=${REGISTRY1_PASSWORD}
+    - kubectl apply -f examples/complete/envs/dev/source-secrets.yaml
+
+    # Wait for components to be ready
+    # NOTE: Wait for each package individually so they show up nicely in ci logs
+    - kubectl wait --for=condition=Ready --timeout 300s helmrelease -n bigbang gatekeeper
+    - kubectl wait --for=condition=Ready --timeout 300s helmrelease -n bigbang istio-operator
+    - kubectl wait --for=condition=Ready --timeout 300s helmrelease -n bigbang istio
+    - kubectl wait --for=condition=Ready --timeout 300s helmrelease -n bigbang monitoring
+    - kubectl wait --for=condition=Ready --timeout 300s helmrelease -n bigbang eck-operator
+    - kubectl wait --for=condition=Ready --timeout 300s helmrelease -n bigbang ek
+    - kubectl wait --for=condition=Ready --timeout 300s helmrelease -n bigbang fluent-bit
+    - kubectl wait --for=condition=Ready --timeout 300s helmrelease -n bigbang twistlock
+    - kubectl wait --for=condition=Ready --timeout 300s helmrelease -n bigbang cluster-auditor
+    - kubectl wait --for=condition=Ready --timeout 30s kustomizations.kustomize.toolkit.fluxcd.io -n bigbang secrets
+
+    - *check_non_ironbank_images
+
+    # Basic smoke test BigBang
+#    - echo "Package tests go here"
+#    - bash ./tests/virtualservices.sh
 
 fetch umbrella templates:
   stage: .pre
@@ -86,44 +97,59 @@ rke2 up:
   variables:
     TFVARFILE: ${CI_PROJECT_DIR}/${TF_ROOT}/var.tfvars
 
-##
-## Deploy BigBang
-##
-#deploy bigbang:
-#  stage: deploy
-#  image: registry.dsop.io/platform-one/private/big-bang/pipeline-templates/k3d-builder:b0b45793
-#  dependencies:
-#    - rke2:up
-#  script:
-#    - export KUBECONFIG="${CI_PROJECT_DIR}/admin.conf"
-#    - *deploy_flux
-#    - kubectl apply -f .gitlab/k8s-resources/default-ebs-sc.yaml
-#    - kubectl get all -A
 #
-#    - echo "Install Big Bang From Current Branch"
-#    # Install Big Bang From Current Branch
-#    - helm upgrade -i bigbang chart -n bigbang --create-namespace --set registryCredentials.username='robot$bigbang' --set registryCredentials.password=${REGISTRY1_PASSWORD}
-#    - kubectl apply -f examples/complete/envs/dev/source-secrets.yaml
-#    - *wait_for_healthy
+# BigBang Up
 #
-#  after_script:
-#    - *check_non_ironbank_images
-#    # Delete BigBang
-#    - helm del -n bigbang bigbang
-#    - sleep 180
-#    - kubectl get all -A
+rke2|bigbang up:
+  extends:
+    - .bigbang
+    - .deploy bigbang
+  stage: bigbang up
+  dependencies:
+    - rke2 up
+  before_script:
+    - export KUBECONFIG="${CI_PROJECT_DIR}/admin.conf"
+    - kubectl apply -f .gitlab/k8s-resources/default-ebs-sc.yaml
+  after_script:
+    - kubectl get all -A
+
 #
+# E2E Tests
+#
+rke2|bigbang test:
+  stage: test
+  script:
+    - echo "tests go here"
+
+#
+# BigBang Down
+#
+rke2|bigbang down:
+  extends:
+    - .bigbang
+  stage: bigbang down
+  dependencies:
+    - rke2 up
+  script:
+    - helm un -n bigbang bigbang
+
+    # TODO: Smarter wait
+    - sleep 180
+  after_script:
+    - kubectl get all -A
+  when: always
+
 #
 # Cluster(s) down
 #
-rke2:down:
+rke2 down:
   stage: cluster down
   extends:
     - .rke2 down
   when: always
 
 #
-# Clean up
+# Network dow
 #
 aws standard cleanup:
   stage: network down
