@@ -182,6 +182,8 @@ aws/rke2/cluster up:
     - .infra create
     - .rke2 up
   needs:
+    - job: fetch umbrella templates
+      artifacts: true
     - job: aws/network up
   script:
     - echo "tmp"
@@ -193,6 +195,8 @@ aws/rke2/bigbang up:
     - .infra create
     - .bigbang
   needs:
+    - job: fetch umbrella templates
+      artifacts: true
     - job: aws/rke2/cluster up
   before_script:
     - mkdir -p ~/.kube
@@ -212,6 +216,8 @@ aws/rke2/bigbang test:
     - .infra create
     - .bigbang
   needs:
+    - job: fetch umbrella templates
+      artifacts: true
     - job: aws/rke2/bigbang up
   script:
     - echo "tests go here"
@@ -223,6 +229,8 @@ aws/rke2/bigbang down:
     - .infra cleanup
     - .bigbang
   needs:
+    - job: fetch umbrella templates
+      artifacts: true
     - job: aws/rke2/bigbang test
   before_script:
     - mkdir -p ~/.kube
@@ -244,6 +252,8 @@ aws/rke2/cluster down:
     - .infra cleanup
     - .rke2 down
   needs:
+    - job: fetch umbrella templates
+      artifacts: true
     - job: aws/rke2/bigbang down
   script:
     - echo "tmp"
