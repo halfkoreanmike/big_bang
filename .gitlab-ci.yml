@@ -91,6 +91,11 @@ upgrade:
       when: manual
       allow_failure: true
 
+.post manual trigger on merge requests:
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      allow_failure: false
+
 #
 # Network
 #
@@ -174,15 +179,15 @@ aws standard create:
 #    - .rke2 down
 #  when: always
 #
-##
-## Network down
-##
-#aws standard cleanup:
-#  stage: network down
-#  extends:
-#    - .network down
-##  environment:
-##    name: $CI_COMMIT_BRANCH
-##    action: stop
-#  when: always
 #
+# Network down
+#
+aws standard cleanup:
+  stage: network down
+  extends:
+    - .post manual trigger on merge requests
+    - .network down
+#  environment:
+#    name: $CI_COMMIT_BRANCH
+#    action: stop
+  when: always
