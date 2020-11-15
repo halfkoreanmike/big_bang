@@ -63,14 +63,27 @@ clean install:
   stage: smoke tests
   extends:
     - .k3d
+  variables:
+    CLUSTER_NAME: "clean-${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA}"
   script:
     - *deploy_bigbang
 
-#upgrade:
-#  extends:
-#    - .k3d
-#  script:
-#    - *deploy_bigbang
+upgrade:
+  stage: smoke tests
+  extends:
+    - .k3d
+  only:
+    - merge_requests
+  variables:
+    CLUSTER_NAME: "clean-${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA}"
+  script:
+    - echo "Install Big Bang from ${CI_DEFAULT_BRANCH}"
+    - git fetch && git checkout ${CI_DEFAULT_BRANCH}
+    - *deploy_bigbang
+
+    - echo "Upgrade Big Bang from ${CI_COMMIT_BRANCH}"
+    - git checkout ${CI_COMMIT_BRANCH}
+    - *deploy_bigbang
 
 ##
 ## Network
@@ -166,58 +179,3 @@ clean install:
 ##    action: stop
 #  when: always
 #
-## .k3d:
-##   tags:
-##     - bigbang
-##     - privileged
-##     - public
-##   image: registry.dsop.io/platform-one/private/big-bang/pipeline-templates/k3d-builder:b0b45793
-##   services:
-##     - docker:dind
-##   variables:
-##     DOCKER_HOST: tcp://localhost:2375/
-##     DOCKER_DRIVER: overlay2
-##     DOCKER_TLS_CERTDIR: ""
-##   before_script:
-##     - *deploy_k3d
-##     - *deploy_flux
-##   after_script:
-##     - *check_non_ironbank_images
-##     # Delete Cluster
-##     - k3d cluster delete ${K3D_CLUSTER_NAME}
-#
-## fresh install:
-##   stage: fast feedback
-##   extends: .k3d
-##   variables:
-##     K3D_CLUSTER_NAME: fresh-install
-##   script:
-##     - echo "Install Big Bang From Current Branch"
-##     # Install Big Bang From Current Branch
-##     - helm upgrade -i bigbang chart -n bigbang --create-namespace --set registryCredentials.username='robot$bigbang' --set registryCredentials.password=${REGISTRY1_PASSWORD}
-##     - kubectl apply -f examples/complete/envs/dev/source-secrets.yaml
-##     - *wait_for_healthy
-##     - *do_some_quick_tests
-#
-## upgrade from master:
-##   stage: fast feedback
-##   extends: .k3d
-##   variables:
-##     K3D_CLUSTER_NAME: upgrade-from-master
-##   script:
-##     - echo "Install Big Bang From Master"
-##     - git fetch
-##     - git checkout ${CI_DEFAULT_BRANCH}
-##     - helm upgrade -i bigbang chart -n bigbang --create-namespace --set registryCredentials.username='robot$bigbang' --set registryCredentials.password=${REGISTRY1_PASSWORD}
-##     - kubectl apply -f examples/complete/envs/dev/source-secrets.yaml
-##     - *wait_for_healthy
-##     - *do_some_quick_tests
-#
-##     - echo "Upgrade Big Bang to Current Branch"
-##     - git checkout ${CI_COMMIT_BRANCH}
-##     - helm upgrade -i bigbang chart -n bigbang --create-namespace --set registryCredentials.username='robot$bigbang' --set registryCredentials.password=${REGISTRY1_PASSWORD}
-##     - kubectl apply -f examples/complete/envs/dev/source-secrets.yaml
-##     - *wait_for_healthy
-##     - *do_some_quick_tests
-##   only:
-##     - merge_requests
