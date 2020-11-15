@@ -72,8 +72,8 @@ upgrade:
   stage: smoke tests
   extends:
     - .k3d
-  only:
-    - merge_requests
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
   variables:
     CLUSTER_NAME: "clean-${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA}"
   script:
@@ -85,19 +85,26 @@ upgrade:
     - git checkout ${CI_COMMIT_BRANCH}
     - *deploy_bigbang
 
-##
-## Network
-##
-#aws standard create:
-#  stage: network up
-#  extends:
-#    - .network up
+.manual trigger on merge requests:
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      when: manual
+      allow_failure: true
+
 #
-##  environment:
-##    name: $CI_COMMIT_BRANCH
-##    url: https://$PROJ_NAME.bigbang.dev
-##    on_stop: destroy
-##    auto_stop_in: 4 hours
+# Network
+#
+aws standard create:
+  stage: network up
+  extends:
+    - .manual trigger on merge requests
+    - .network up
+
+#  environment:
+#    name: $CI_COMMIT_BRANCH
+#    url: https://$PROJ_NAME.bigbang.dev
+#    on_stop: destroy
+#    auto_stop_in: 4 hours
 ##
 ##
 ## Cluster(s) up
