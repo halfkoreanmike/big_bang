@@ -158,8 +158,6 @@ aws/network up:
   environment:
     name: review/aws-${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA}
     auto_stop_in: 1 hour
-  script:
-    - echo "tmp"
 
 aws/network down:
   extends:
@@ -169,8 +167,6 @@ aws/network down:
   environment:
     name: review/aws-${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA}
     action: stop
-  script:
-    - echo "tmp"
 #-----------------------------------------------------------------------------------------------------------------------
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -186,8 +182,6 @@ aws/rke2/cluster up:
     - job: fetch umbrella templates
       artifacts: true
     - job: aws/network up
-  script:
-    - echo "tmp" > ${CI_PROJECT_DIR}/"rke2.yaml"
 
 # Install BigBang on RKE2 cluster on AWS
 aws/rke2/bigbang up:
@@ -204,12 +198,10 @@ aws/rke2/bigbang up:
     - mkdir -p ~/.kube
     - cp ${CI_PROJECT_DIR}/rke2.yaml ~/.kube/config
     - kubectl apply -f .gitlab/k8s-resources/default-ebs-sc.yaml
-#  script:
-#    - *deploy_bigbang
-#  after_script:
-#    - kubectl get all -A
   script:
-    - echo "tmp"
+    - *deploy_bigbang
+  after_script:
+    - kubectl get all -A
 
 # Run tests on BigBang on RKE2 cluster on AWS
 aws/rke2/bigbang test:
@@ -223,8 +215,6 @@ aws/rke2/bigbang test:
     - job: aws/rke2/cluster up
       artifacts: true
     - job: aws/rke2/bigbang up
-  script:
-    - echo "tests go here"
 
 # Uninstall BigBang on RKE2 cluster on AWS
 aws/rke2/bigbang down:
@@ -241,15 +231,13 @@ aws/rke2/bigbang down:
   before_script:
     - mkdir -p ~/.kube
     - cp ${CI_PROJECT_DIR}/rke2.yaml ~/.kube/config
-#  script:
-#    - helm un -n bigbang bigbang
-#
-#    # TODO: Smarter wait
-#    - sleep 180
-#  after_script:
-#    - kubectl get all -A
   script:
-    - echo "tmp"
+    - helm un -n bigbang bigbang
+
+    # TODO: Smarter wait
+    - sleep 180
+  after_script:
+    - kubectl get all -A
 
 # Destroy RKE2 cluster on AWS
 aws/rke2/cluster down:
@@ -261,6 +249,4 @@ aws/rke2/cluster down:
     - job: fetch umbrella templates
       artifacts: true
     - job: aws/rke2/bigbang down
-  script:
-    - echo "tmp"
 #-----------------------------------------------------------------------------------------------------------------------
