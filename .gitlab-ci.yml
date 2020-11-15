@@ -1,14 +1,3 @@
-.deploy_k3d: &deploy_k3d
-  # Starting dnsmasq for cluster dns resolution
-  - docker run -d -p 53:53/udp -p 53:53 janeczku/go-dnsmasq:release-1.0.7
-  - echo "nameserver 127.0.0.1" >> /etc/resolv.conf
-
-  # Standup cluster
-  - k3d cluster create ${K3D_CLUSTER_NAME}  --k3s-server-arg "--disable=traefik" --k3s-server-arg "--disable=metrics-server" -p 80:80@loadbalancer -p 443:443@loadbalancer --wait --agents 1 --servers 1
-  - while ! (kubectl get node | grep "agent" > /dev/null); do sleep 3; done
-  - kubectl get nodes
-  - k3d node list
-
 .do_some_quick_tests: &do_some_quick_tests
   # Place kubernetes package test here
   - echo "Package tests go here"
@@ -26,7 +15,7 @@ include:
     file: '/global.gitlab-ci.yml'
 
 stages:
-  # - fast feedback
+  - smoke tests
   - network up
   - cluster up
   - bigbang up
@@ -73,151 +62,163 @@ fetch umbrella templates:
   extends:
     - .fetch
 
-#
-# Network
-#
-aws standard create:
-  stage: network up
+clean install:
   extends:
-    - .network up
-
-#  environment:
-#    name: $CI_COMMIT_BRANCH
-#    url: https://$PROJ_NAME.bigbang.dev
-#    on_stop: destroy
-#    auto_stop_in: 4 hours
-
-#
-# Cluster(s) up
-#
-rke2 up:
-  stage: cluster up
-  extends:
-    - .rke2 up
-  variables:
-    TFVARFILE: ${CI_PROJECT_DIR}/${TF_ROOT}/var.tfvars
-
-#
-# BigBang Up
-#
-rke2|bigbang up:
-  extends:
-    - .bigbang
-    - .deploy bigbang
-  stage: bigbang up
-  dependencies:
-    - rke2 up
-  before_script:
-    - mkdir -p ~/.kube
-    - cp ${CI_PROJECT_DIR}/rke2.yaml ~/.kube/config
-    - kubectl apply -f .gitlab/k8s-resources/default-ebs-sc.yaml
-  after_script:
-    - kubectl get all -A
-
-#
-# E2E Tests
-#
-rke2|bigbang test:
-  stage: test
+    - .k3d
   script:
-    - echo "tests go here"
-  dependencies:
-    - rke2 up
+    - *deploy_bigbang
 
+#upgrade:
+#  extends:
+#    - .k3d
+#  script:
+#    - *deploy_bigbang
+
+##
+## Network
+##
+#aws standard create:
+#  stage: network up
+#  extends:
+#    - .network up
 #
-# BigBang Down
+##  environment:
+##    name: $CI_COMMIT_BRANCH
+##    url: https://$PROJ_NAME.bigbang.dev
+##    on_stop: destroy
+##    auto_stop_in: 4 hours
 #
-rke2|bigbang down:
-  extends:
-    - .bigbang
-  stage: bigbang down
-  dependencies:
-    - rke2 up
-  before_script:
-    - mkdir -p ~/.kube
-    - cp ${CI_PROJECT_DIR}/rke2.yaml ~/.kube/config
-  script:
-    - helm un -n bigbang bigbang
-
-    # TODO: Smarter wait
-    - sleep 180
-  after_script:
-    - kubectl get all -A
-  when: always
-
+##
+## Cluster(s) up
+##
+#rke2 up:
+#  stage: cluster up
+#  extends:
+#    - .rke2 up
+#  variables:
+#    TFVARFILE: ${CI_PROJECT_DIR}/${TF_ROOT}/var.tfvars
 #
-# Cluster(s) down
+##
+## BigBang Up
+##
+#rke2|bigbang up:
+#  extends:
+#    - .bigbang
+#    - .deploy bigbang
+#  stage: bigbang up
+#  dependencies:
+#    - rke2 up
+#  before_script:
+#    - mkdir -p ~/.kube
+#    - cp ${CI_PROJECT_DIR}/rke2.yaml ~/.kube/config
+#    - kubectl apply -f .gitlab/k8s-resources/default-ebs-sc.yaml
+#  after_script:
+#    - kubectl get all -A
 #
-rke2 down:
-  stage: cluster down
-  extends:
-    - .rke2 down
-  when: always
-
+##
+## E2E Tests
+##
+#rke2|bigbang test:
+#  stage: test
+#  script:
+#    - echo "tests go here"
+#  dependencies:
+#    - rke2 up
 #
-# Network dow
+##
+## BigBang Down
+##
+#rke2|bigbang down:
+#  extends:
+#    - .bigbang
+#  stage: bigbang down
+#  dependencies:
+#    - rke2 up
+#  before_script:
+#    - mkdir -p ~/.kube
+#    - cp ${CI_PROJECT_DIR}/rke2.yaml ~/.kube/config
+#  script:
+#    - helm un -n bigbang bigbang
 #
-aws standard cleanup:
-  stage: network down
-  extends:
-    - .network down
-#  environment:
-#    name: $CI_COMMIT_BRANCH
-#    action: stop
-  when: always
-
-# .k3d:
-#   tags:
-#     - bigbang
-#     - privileged
-#     - public
-#   image: registry.dsop.io/platform-one/private/big-bang/pipeline-templates/k3d-builder:b0b45793
-#   services:
-#     - docker:dind
-#   variables:
-#     DOCKER_HOST: tcp://localhost:2375/
-#     DOCKER_DRIVER: overlay2
-#     DOCKER_TLS_CERTDIR: ""
-#   before_script:
-#     - *deploy_k3d 
-#     - *deploy_flux
-#   after_script:
-#     - *check_non_ironbank_images
-#     # Delete Cluster
-#     - k3d cluster delete ${K3D_CLUSTER_NAME}
-
-# fresh install:
-#   stage: fast feedback
-#   extends: .k3d
-#   variables:
-#     K3D_CLUSTER_NAME: fresh-install
-#   script:
-#     - echo "Install Big Bang From Current Branch"
-#     # Install Big Bang From Current Branch
-#     - helm upgrade -i bigbang chart -n bigbang --create-namespace --set registryCredentials.username='robot$bigbang' --set registryCredentials.password=${REGISTRY1_PASSWORD}
-#     - kubectl apply -f examples/complete/envs/dev/source-secrets.yaml
-#     - *wait_for_healthy
-#     - *do_some_quick_tests
-
-# upgrade from master:
-#   stage: fast feedback
-#   extends: .k3d
-#   variables:
-#     K3D_CLUSTER_NAME: upgrade-from-master
-#   script:
-#     - echo "Install Big Bang From Master"
-#     - git fetch
-#     - git checkout ${CI_DEFAULT_BRANCH}
-#     - helm upgrade -i bigbang chart -n bigbang --create-namespace --set registryCredentials.username='robot$bigbang' --set registryCredentials.password=${REGISTRY1_PASSWORD}
-#     - kubectl apply -f examples/complete/envs/dev/source-secrets.yaml
-#     - *wait_for_healthy
-#     - *do_some_quick_tests
-
-#     - echo "Upgrade Big Bang to Current Branch"
-#     - git checkout ${CI_COMMIT_BRANCH}
-#     - helm upgrade -i bigbang chart -n bigbang --create-namespace --set registryCredentials.username='robot$bigbang' --set registryCredentials.password=${REGISTRY1_PASSWORD}
-#     - kubectl apply -f examples/complete/envs/dev/source-secrets.yaml
-#     - *wait_for_healthy
-#     - *do_some_quick_tests
-#   only:
-#     - merge_requests
+#    # TODO: Smarter wait
+#    - sleep 180
+#  after_script:
+#    - kubectl get all -A
+#  when: always
+#
+##
+## Cluster(s) down
+##
+#rke2 down:
+#  stage: cluster down
+#  extends:
+#    - .rke2 down
+#  when: always
+#
+##
+## Network down
+##
+#aws standard cleanup:
+#  stage: network down
+#  extends:
+#    - .network down
+##  environment:
+##    name: $CI_COMMIT_BRANCH
+##    action: stop
+#  when: always
+#
+## .k3d:
+##   tags:
+##     - bigbang
+##     - privileged
+##     - public
+##   image: registry.dsop.io/platform-one/private/big-bang/pipeline-templates/k3d-builder:b0b45793
+##   services:
+##     - docker:dind
+##   variables:
+##     DOCKER_HOST: tcp://localhost:2375/
+##     DOCKER_DRIVER: overlay2
+##     DOCKER_TLS_CERTDIR: ""
+##   before_script:
+##     - *deploy_k3d
+##     - *deploy_flux
+##   after_script:
+##     - *check_non_ironbank_images
+##     # Delete Cluster
+##     - k3d cluster delete ${K3D_CLUSTER_NAME}
+#
+## fresh install:
+##   stage: fast feedback
+##   extends: .k3d
+##   variables:
+##     K3D_CLUSTER_NAME: fresh-install
+##   script:
+##     - echo "Install Big Bang From Current Branch"
+##     # Install Big Bang From Current Branch
+##     - helm upgrade -i bigbang chart -n bigbang --create-namespace --set registryCredentials.username='robot$bigbang' --set registryCredentials.password=${REGISTRY1_PASSWORD}
+##     - kubectl apply -f examples/complete/envs/dev/source-secrets.yaml
+##     - *wait_for_healthy
+##     - *do_some_quick_tests
+#
+## upgrade from master:
+##   stage: fast feedback
+##   extends: .k3d
+##   variables:
+##     K3D_CLUSTER_NAME: upgrade-from-master
+##   script:
+##     - echo "Install Big Bang From Master"
+##     - git fetch
+##     - git checkout ${CI_DEFAULT_BRANCH}
+##     - helm upgrade -i bigbang chart -n bigbang --create-namespace --set registryCredentials.username='robot$bigbang' --set registryCredentials.password=${REGISTRY1_PASSWORD}
+##     - kubectl apply -f examples/complete/envs/dev/source-secrets.yaml
+##     - *wait_for_healthy
+##     - *do_some_quick_tests
+#
+##     - echo "Upgrade Big Bang to Current Branch"
+##     - git checkout ${CI_COMMIT_BRANCH}
+##     - helm upgrade -i bigbang chart -n bigbang --create-namespace --set registryCredentials.username='robot$bigbang' --set registryCredentials.password=${REGISTRY1_PASSWORD}
+##     - kubectl apply -f examples/complete/envs/dev/source-secrets.yaml
+##     - *wait_for_healthy
+##     - *do_some_quick_tests
+##   only:
+##     - merge_requests
