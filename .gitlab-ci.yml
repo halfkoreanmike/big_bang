@@ -187,7 +187,7 @@ aws/rke2/cluster up:
       artifacts: true
     - job: aws/network up
   script:
-    - echo "tmp" > "rke2.yaml"
+    - echo "tmp" > ${CI_PROJECT_DIR}/"rke2.yaml"
 
 # Install BigBang on RKE2 cluster on AWS
 aws/rke2/bigbang up:
