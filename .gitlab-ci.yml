@@ -215,6 +215,8 @@ aws/rke2/bigbang test:
     - job: aws/rke2/cluster up
       artifacts: true
     - job: aws/rke2/bigbang up
+  script:
+    - echo "tests go here"
 
 # Uninstall BigBang on RKE2 cluster on AWS
 aws/rke2/bigbang down:
