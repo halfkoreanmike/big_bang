@@ -108,7 +108,8 @@ rke2|bigbang up:
   dependencies:
     - rke2 up
   before_script:
-    - export KUBECONFIG="${CI_PROJECT_DIR}/admin.conf"
+    - mkdir -p ~/.kube
+    - cp ${CI_PROJECT_DIR}/rke2.yaml ~/.kube/config
     - kubectl apply -f .gitlab/k8s-resources/default-ebs-sc.yaml
   after_script:
     - kubectl get all -A
@@ -130,6 +131,9 @@ rke2|bigbang down:
   stage: bigbang down
   dependencies:
     - rke2 up
+  before_script:
+    - mkdir -p ~/.kube
+    - cp ${CI_PROJECT_DIR}/rke2.yaml ~/.kube/config
   script:
     - helm un -n bigbang bigbang
 
