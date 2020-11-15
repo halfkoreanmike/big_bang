@@ -1,3 +1,14 @@
+# Define global rules for when pipelines run
+workflow:
+  rules:
+    # Skip pipeline when commit message starts with "wip"
+    - if: '$CI_COMMIT_MESSAGE =~ /^wip/'
+      when: never
+    # Skip pipeline for branches that start with "docs"
+    - if: '$CI_COMMIT_BRANCH =~ /^docs/'
+      when: never
+    - when: always
+
 .do_some_quick_tests: &do_some_quick_tests
   # Place kubernetes package test here
   - echo "Package tests go here"
@@ -19,6 +30,9 @@ stages:
   - cluster down
   - network down
 
+#-----------------------------------------------------------------------------------------------------------------------
+# Smoke Tests
+#
 .bigbang:
   image: registry.dsop.io/platform-one/private/big-bang/pipeline-templates/k3d-builder:b0b45793
 
@@ -54,19 +68,16 @@ stages:
 #    - echo "Package tests go here"
 #    - bash ./tests/virtualservices.sh
 
-fetch umbrella templates:
-  stage: .pre
-  extends:
-    - .fetch
-
 clean install:
   stage: smoke tests
-  extends:
-    - .k3d
+#  extends:
+#    - .k3d
   variables:
     CLUSTER_NAME: "clean-${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA}"
+  image: alpine:latest
   script:
-    - *deploy_bigbang
+#    - *deploy_bigbang
+    - echo "temp"
 
 upgrade:
   stage: smoke tests
@@ -85,27 +96,70 @@ upgrade:
     - git checkout ${CI_COMMIT_BRANCH}
     - *deploy_bigbang
 
-.manual trigger on merge requests:
+#-----------------------------------------------------------------------------------------------------------------------
+
+#-----------------------------------------------------------------------------------------------------------------------
+# Infrastructure Jobs
+#
+# Abstract for job manually triggering infrastructure builds
+.infra fork:
+  stage: network up
+  needs: []
   rules:
+    # Skip when branch name starts with "hotfix" or "patch"
+    - if: '$CI_MERGE_REQUEST_SOURCE_BRANCH_NAME =~ /^(hotfix|patch)/'
+      when: never
+    # Only run on merge requests when manually activated
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
       when: manual
+      allow_failure: false
+
+# Abstract for jobs responsible for creating infrastructure
+.infra create:
+  rules:
+    # Skip when branch name starts with "hotfix" or "patch"
+    - if: '$CI_MERGE_REQUEST_SOURCE_BRANCH_NAME =~ /^(hotfix|patch)/'
+      when: never
+    # Only run on merge requests
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+
+# Abstract for jobs responsible for cleaning up infrastructure
+.infra cleanup:
+  rules:
+    # Skip when branch name starts with "hotfix" or "patch"
+    - if: '$CI_MERGE_REQUEST_SOURCE_BRANCH_NAME =~ /^(hotfix|patch)/'
+      when: never
+    # Always run on merge requests
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
       allow_failure: true
+      when: always
 
-#
-# Network
-#
-aws standard create:
-  stage: network up
+fetch umbrella templates:
   extends:
-    - .manual trigger on merge requests
-    - .network up
-  needs: []
+    - .fetch
+    - .infra create
+  stage: .pre
 
-#  environment:
-#    name: $CI_COMMIT_BRANCH
-#    url: https://$PROJ_NAME.bigbang.dev
-#    on_stop: destroy
-#    auto_stop_in: 4 hours
+#
+# Networking
+#
+aws/network up:
+  extends:
+    - .infra fork
+    - .network up
+  environment:
+    name: review/aws-${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA}
+    auto_stop_in: 1 hour
+
+aws/network down:
+  extends:
+    - .infra cleanup
+    - .network down
+  stage: network down
+  environment:
+    name: review/aws-${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA}
+    action: stop
+
 ##
 ##
 ## Cluster(s) up
@@ -175,16 +229,3 @@ aws standard create:
 #    - .rke2 down
 #  when: always
 #
-#
-# Network down
-#
-aws standard cleanup:
-  stage: network down
-  rules:
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
-      when: always
-  extends:
-    - .network down
-#  environment:
-#    name: $CI_COMMIT_BRANCH
-#    action: stop
