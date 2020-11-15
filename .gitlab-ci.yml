@@ -183,7 +183,6 @@ aws standard cleanup:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
       when: always
   extends:
-    - .post manual trigger on merge requests
     - .network down
 #  environment:
 #    name: $CI_COMMIT_BRANCH
