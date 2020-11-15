@@ -4,11 +4,6 @@
   - bash ./tests/virtualservices.sh
   - kubectl get helmrelease -A
 
-.check_non_ironbank_images: &check_non_ironbank_images
-  - echo "Showing images not from ironbank:"
-  # Ignore rancher images since those are from k3d
-  - kubectl get pods -A -o jsonpath="{..image}" | tr -s '[[:space:]]' '\n' | sort | uniq -c | grep -v "registry1" | grep -v "rancher"
-
 include:
   - project: 'platform-one/big-bang/pipeline-templates/umbrella-templates'
     ref: BB-621-Network-Up
@@ -27,31 +22,33 @@ stages:
 .bigbang:
   image: registry.dsop.io/platform-one/private/big-bang/pipeline-templates/k3d-builder:b0b45793
 
-.deploy bigbang: &deploy_bigbang
-  script:
-    # Deploy flux and wait for it to be ready
-    - flux --version
-    - flux install
-    - kubectl get namespaces,pods,gitrepositories,helmrelease -A
+.deploy_bigbang: &deploy_bigbang
+  # Deploy flux and wait for it to be ready
+  - flux --version
+  - flux install
+  - kubectl get namespaces,pods,gitrepositories,helmrelease -A
 
-    # Deploy BigBang
-    - helm upgrade -i bigbang chart -n bigbang --create-namespace --set registryCredentials.username='robot$bigbang' --set registryCredentials.password=${REGISTRY1_PASSWORD}
-    - kubectl apply -f examples/complete/envs/dev/source-secrets.yaml
+  # Deploy BigBang
+  - helm upgrade -i bigbang chart -n bigbang --create-namespace --set registryCredentials.username='robot$bigbang' --set registryCredentials.password=${REGISTRY1_PASSWORD}
+  - kubectl apply -f examples/complete/envs/dev/source-secrets.yaml
 
-    # Wait for components to be ready
-    # NOTE: Wait for each package individually so they show up nicely in ci logs
-    - kubectl wait --for=condition=Ready --timeout 300s helmrelease -n bigbang gatekeeper
-    - kubectl wait --for=condition=Ready --timeout 300s helmrelease -n bigbang istio-operator
-    - kubectl wait --for=condition=Ready --timeout 300s helmrelease -n bigbang istio
-    - kubectl wait --for=condition=Ready --timeout 300s helmrelease -n bigbang monitoring
-    - kubectl wait --for=condition=Ready --timeout 300s helmrelease -n bigbang eck-operator
-    - kubectl wait --for=condition=Ready --timeout 300s helmrelease -n bigbang ek
-    - kubectl wait --for=condition=Ready --timeout 300s helmrelease -n bigbang fluent-bit
-    - kubectl wait --for=condition=Ready --timeout 300s helmrelease -n bigbang twistlock
-    - kubectl wait --for=condition=Ready --timeout 300s helmrelease -n bigbang cluster-auditor
-    - kubectl wait --for=condition=Ready --timeout 30s kustomizations.kustomize.toolkit.fluxcd.io -n bigbang secrets
+  # Wait for components to be ready
+  # NOTE: Wait for each package individually so they show up nicely in ci logs
+  - kubectl wait --for=condition=Ready --timeout 300s helmrelease -n bigbang gatekeeper
+  - kubectl wait --for=condition=Ready --timeout 300s helmrelease -n bigbang istio-operator
+  - kubectl wait --for=condition=Ready --timeout 300s helmrelease -n bigbang istio
+  - kubectl wait --for=condition=Ready --timeout 300s helmrelease -n bigbang monitoring
+  - kubectl wait --for=condition=Ready --timeout 300s helmrelease -n bigbang eck-operator
+  - kubectl wait --for=condition=Ready --timeout 300s helmrelease -n bigbang ek
+  - kubectl wait --for=condition=Ready --timeout 300s helmrelease -n bigbang fluent-bit
+  - kubectl wait --for=condition=Ready --timeout 300s helmrelease -n bigbang twistlock
+  - kubectl wait --for=condition=Ready --timeout 300s helmrelease -n bigbang cluster-auditor
+  - kubectl wait --for=condition=Ready --timeout 30s kustomizations.kustomize.toolkit.fluxcd.io -n bigbang secrets
 
-    - *check_non_ironbank_images
+  # Quick check for non iron bank images
+  - echo "Showing images not from ironbank:"
+  # Ignore rancher images since those are from k3d
+  - kubectl get pods -A -o jsonpath="{..image}" | tr -s '[[:space:]]' '\n' | sort | uniq -c | grep -v "registry1" | grep -v "rancher"
 
     # Basic smoke test BigBang
 #    - echo "Package tests go here"
@@ -88,7 +85,7 @@ clean install:
 ##    url: https://$PROJ_NAME.bigbang.dev
 ##    on_stop: destroy
 ##    auto_stop_in: 4 hours
-#
+##
 ##
 ## Cluster(s) up
 ##
@@ -98,14 +95,13 @@ clean install:
 #    - .rke2 up
 #  variables:
 #    TFVARFILE: ${CI_PROJECT_DIR}/${TF_ROOT}/var.tfvars
-#
+##
 ##
 ## BigBang Up
 ##
 #rke2|bigbang up:
 #  extends:
 #    - .bigbang
-#    - .deploy bigbang
 #  stage: bigbang up
 #  dependencies:
 #    - rke2 up
@@ -113,6 +109,8 @@ clean install:
 #    - mkdir -p ~/.kube
 #    - cp ${CI_PROJECT_DIR}/rke2.yaml ~/.kube/config
 #    - kubectl apply -f .gitlab/k8s-resources/default-ebs-sc.yaml
+#  script:
+#    - *deploy_bigbang
 #  after_script:
 #    - kubectl get all -A
 #
