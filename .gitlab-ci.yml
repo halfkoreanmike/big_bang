@@ -68,7 +68,7 @@ fetch umbrella templates:
 aws standard create:
   stage: network up
   extends:
-    - .network plan
+    - .network up
 
 #  environment:
 #    name: $CI_COMMIT_BRANCH
@@ -76,33 +76,16 @@ aws standard create:
 #    on_stop: destroy
 #    auto_stop_in: 4 hours
 
-# network:if-fails:
-#   stage: network errors
-#   extends:
-#     - .network destroy
-#   when: on_failure
-
 #
 # Cluster(s) up
 #
-## TODO: Make this more dynamic instead of hardcoding each value individually
-#.rke2_parse_network: &rke2_parse_network
-#  - echo "cluster_name=\"${CLUSTER_NAME}\"" > ${TFVARFILE}
-#  - echo "vpc_id=$(jq -c .vpc_id.value ${CI_PROJECT_DIR}/outputs.json)" >> ${TFVARFILE}
-#  - echo "subnets=$(jq -c .private_subnet_ids.value ${CI_PROJECT_DIR}/outputs.json)" >> ${TFVARFILE}
-#  - cat ${TFVARFILE}
-#
-#rke2:up:
-#  stage: cluster up
-#  extends:
-#    - .rke2 up
-#    - .terraformer
-#  variables:
-#    TFVARFILE: ${CI_PROJECT_DIR}/${TF_ROOT}/var.tfvars
-#  before_script:
-#    - apk add bash jq aws-cli curl
-#    - *rke2_parse_network
-#
+rke2 up:
+  stage: cluster up
+  extends:
+    - .rke2 up
+  variables:
+    TFVARFILE: ${CI_PROJECT_DIR}/${TF_ROOT}/var.tfvars
+
 ##
 ## Deploy BigBang
 ##
@@ -130,20 +113,14 @@ aws standard create:
 #    - sleep 180
 #    - kubectl get all -A
 #
-##
-## Cluster(s) down
-##
-#rke2:down:
-#  stage: cluster cleanup
-#  extends:
-#    - .rke2 down
-#    - .terraformer
-#  variables:
-#    TFVARFILE: ${CI_PROJECT_DIR}/${TF_ROOT}/var.tfvars
-#  when: always
-#  before_script:
-#    - apk add jq
-#    - *rke2_parse_network
+#
+# Cluster(s) down
+#
+rke2:down:
+  stage: cluster down
+  extends:
+    - .rke2 down
+  when: always
 
 #
 # Clean up
@@ -151,7 +128,7 @@ aws standard create:
 aws standard cleanup:
   stage: network down
   extends:
-    - .network destroy
+    - .network down
 #  environment:
 #    name: $CI_COMMIT_BRANCH
 #    action: stop
