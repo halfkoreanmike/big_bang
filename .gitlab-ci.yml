@@ -9,12 +9,6 @@ workflow:
       when: never
     - when: always
 
-.do_some_quick_tests: &do_some_quick_tests
-  # Place kubernetes package test here
-  - echo "Package tests go here"
-  - bash ./tests/virtualservices.sh
-  - kubectl get helmrelease -A
-
 include:
   - project: 'platform-one/big-bang/pipeline-templates/umbrella-templates'
     file: '/global.gitlab-ci.yml'
@@ -63,9 +57,10 @@ stages:
   # Ignore rancher images since those are from k3d
   - kubectl get pods -A -o jsonpath="{..image}" | tr -s '[[:space:]]' '\n' | sort | uniq -c | grep -v "registry1" | grep -v "rancher"
 
-    # Basic smoke test BigBang
-#    - echo "Package tests go here"
-#    - bash ./tests/virtualservices.sh
+  # Basic smoke test BigBang
+#  - echo "Package tests go here"
+#  - bash ./tests/virtualservices.sh
+#  - kubectl get helmrelease -A
 
 clean install:
   stage: smoke tests
