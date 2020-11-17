@@ -17,7 +17,6 @@ workflow:
 
 include:
   - project: 'platform-one/big-bang/pipeline-templates/umbrella-templates'
-    ref: BB-621-Network-Up
     file: '/global.gitlab-ci.yml'
 
 stages:
@@ -83,22 +82,22 @@ clean install:
 #    - *deploy_bigbang
     - echo "temp"
 
-#upgrade:
-#  stage: smoke tests
-#  extends:
-#    - .k3d
-#  rules:
-#    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
-#  variables:
-#    CLUSTER_NAME: "clean-${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA}"
-#  script:
-#    - echo "Install Big Bang from ${CI_DEFAULT_BRANCH}"
-#    - git fetch && git checkout ${CI_DEFAULT_BRANCH}
-#    - *deploy_bigbang
-#
-#    - echo "Upgrade Big Bang from ${CI_COMMIT_BRANCH}"
-#    - git checkout ${CI_COMMIT_BRANCH}
-#    - *deploy_bigbang
+upgrade:
+  stage: smoke tests
+  extends:
+    - .k3d
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+  variables:
+    CLUSTER_NAME: "clean-${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA}"
+  script:
+    - echo "Install Big Bang from ${CI_DEFAULT_BRANCH}"
+    - git fetch && git checkout ${CI_DEFAULT_BRANCH}
+    - *deploy_bigbang
+
+    - echo "Upgrade Big Bang from ${CI_COMMIT_BRANCH}"
+    - git checkout ${CI_COMMIT_BRANCH}
+    - *deploy_bigbang
 
 #-----------------------------------------------------------------------------------------------------------------------
 
@@ -197,7 +196,9 @@ aws/rke2/bigbang up:
   before_script:
     - mkdir -p ~/.kube
     - cp ${CI_PROJECT_DIR}/rke2.yaml ~/.kube/config
-    - kubectl apply -f .gitlab/k8s-resources/default-ebs-sc.yaml
+
+    # Deploy a default storage class for aws
+    - kubectl apply -f ${CI_PROJECT_DIR}/umbrella-templates/jobs/rke2/dependencies/k8s-resources/aws/default-ebs-sc.yaml
   script:
     - *deploy_bigbang
   after_script:
