@@ -50,6 +50,8 @@ stages:
   - kubectl wait --for=condition=Ready --timeout 300s helmrelease -n bigbang fluent-bit
   - kubectl wait --for=condition=Ready --timeout 300s helmrelease -n bigbang twistlock
   - kubectl wait --for=condition=Ready --timeout 300s helmrelease -n bigbang cluster-auditor
+  # Enable this after we merge in
+  # - kubectl wait --for=condition=Ready --timeout 300s helmrelease -n bigbang argocd
   - kubectl wait --for=condition=Ready --timeout 30s kustomizations.kustomize.toolkit.fluxcd.io -n bigbang secrets
 
   # Quick check for non iron bank images
