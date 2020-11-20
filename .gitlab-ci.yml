@@ -39,15 +39,15 @@ stages:
   - helm upgrade -i bigbang chart -n bigbang --create-namespace --set registryCredentials.username='robot$bigbang' --set registryCredentials.password=${REGISTRY1_PASSWORD} --set addons.argocd.enabled=true --set addons.authservice.enabled=true
 
   # Apply secrets kustomization pointing to current branch
-  - echo "Deploying secrets from the $(git rev-parse --abbrev-ref HEAD) branch"
-  - cat examples/complete/envs/dev/source-secrets.yaml | sed 's|master|'$(git rev-parse --abbrev-ref HEAD)'|g' | kubectl apply -f -
+  - echo "Deploying secrets from the ${CI_COMMIT_REF_NAME} branch"
+  - cat examples/complete/envs/dev/source-secrets.yaml | sed 's|master|'$CI_COMMIT_REF_NAME'|g' | kubectl apply -f -
 
   # Wait for components to be ready
   # NOTE: Wait for each package individually so they show up nicely in ci logs
-  - kubectl wait --for=condition=Ready --timeout 300s helmrelease -n bigbang gatekeeper
-  - kubectl wait --for=condition=Ready --timeout 300s helmrelease -n bigbang istio-operator
-  - kubectl wait --for=condition=Ready --timeout 300s helmrelease -n bigbang istio
-  - kubectl wait --for=condition=Ready --timeout 300s helmrelease -n bigbang monitoring
+  - kubectl wait --for=condition=Ready --timeout 120s helmrelease -n bigbang gatekeeper
+  - kubectl wait --for=condition=Ready --timeout 120s helmrelease -n bigbang istio-operator
+  - kubectl wait --for=condition=Ready --timeout 240s helmrelease -n bigbang istio
+  - kubectl wait --for=condition=Ready --timeout 500s helmrelease -n bigbang monitoring
   - kubectl wait --for=condition=Ready --timeout 300s helmrelease -n bigbang eck-operator
   - kubectl wait --for=condition=Ready --timeout 300s helmrelease -n bigbang ek
   - kubectl wait --for=condition=Ready --timeout 300s helmrelease -n bigbang fluent-bit
