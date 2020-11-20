@@ -77,8 +77,7 @@ clean install:
     CLUSTER_NAME: "clean-${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA}"
   image: alpine:latest
   script:
-#    - *deploy_bigbang
-    - echo "temp"
+    - *deploy_bigbang
 
 upgrade:
   stage: smoke tests
