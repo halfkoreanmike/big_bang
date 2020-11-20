@@ -39,6 +39,7 @@ stages:
   - helm upgrade -i bigbang chart -n bigbang --create-namespace --set registryCredentials.username='robot$bigbang' --set registryCredentials.password=${REGISTRY1_PASSWORD} --set addons.argocd.enabled=true --set addons.authservice.enabled=true
 
   # Apply secrets kustomization pointing to current branch
+  - echo "Deploying secrets from the $(git rev-parse --abbrev-ref HEAD) branch"
   - cat examples/complete/envs/dev/source-secrets.yaml | sed 's|master|'$(git rev-parse --abbrev-ref HEAD)'|g' | kubectl apply -f -
 
   # Wait for components to be ready
