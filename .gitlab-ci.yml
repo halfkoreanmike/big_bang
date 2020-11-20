@@ -48,7 +48,7 @@ stages:
   - kubectl wait --for=condition=Ready --timeout 120s helmrelease -n bigbang istio-operator
   - kubectl wait --for=condition=Ready --timeout 240s helmrelease -n bigbang istio
   - kubectl wait --for=condition=Ready --timeout 500s helmrelease -n bigbang monitoring
-  - kubectl wait --for=condition=Ready --timeout 300s helmrelease -n bigbang eck-operator
+  - kubectl wait --for=condition=Ready --timeout 120s helmrelease -n bigbang eck-operator
   - kubectl wait --for=condition=Ready --timeout 300s helmrelease -n bigbang ek
   - kubectl wait --for=condition=Ready --timeout 300s helmrelease -n bigbang fluent-bit
   - kubectl wait --for=condition=Ready --timeout 300s helmrelease -n bigbang twistlock
