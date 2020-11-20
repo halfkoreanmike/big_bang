@@ -39,7 +39,7 @@ stages:
   - helm upgrade -i bigbang chart -n bigbang --create-namespace --set registryCredentials.username='robot$bigbang' --set registryCredentials.password=${REGISTRY1_PASSWORD} --set addons.argocd.enabled=true --set addons.authservice.enabled=true
 
   # Apply secrets kustomization pointing to current branch
-  - cat examples/complete/envs/dev/source-secrets.yaml | sed 's|master|'$(git branch --show-current)'|g' | kubectl apply -f -
+  - cat examples/complete/envs/dev/source-secrets.yaml | sed 's|master|'$(git rev-parse --abbrev-ref HEAD)'|g' | kubectl apply -f -
 
   # Wait for components to be ready
   # NOTE: Wait for each package individually so they show up nicely in ci logs
@@ -96,8 +96,8 @@ upgrade:
     - git fetch && git checkout ${CI_DEFAULT_BRANCH}
     - *deploy_bigbang
 
-    - echo "Upgrade Big Bang from ${CI_COMMIT_BRANCH}"
-    - git checkout ${CI_COMMIT_BRANCH}
+    - echo "Upgrade Big Bang from ${CI_MERGE_REQUEST_SOURCE_BRANCH_NAME}"
+    - git checkout ${CI_MERGE_REQUEST_SOURCE_BRANCH_NAME}
     - *deploy_bigbang
 
 #-----------------------------------------------------------------------------------------------------------------------
