@@ -36,8 +36,10 @@ stages:
   - kubectl get namespaces,pods,gitrepositories,helmrelease -A
 
   # Deploy BigBang
-  - helm upgrade -i bigbang chart -n bigbang --create-namespace --set registryCredentials.username='robot$bigbang' --set registryCredentials.password=${REGISTRY1_PASSWORD}
-  - kubectl apply -f examples/complete/envs/dev/source-secrets.yaml
+  - helm upgrade -i bigbang chart -n bigbang --create-namespace --set registryCredentials.username='robot$bigbang' --set registryCredentials.password=${REGISTRY1_PASSWORD} --set addons.argocd.enabled=true --set addons.authservice.enabled=true
+
+  # Apply secrets kustomization pointing to current branch
+  - cat examples/complete/envs/dev/source-secrets.yaml | sed 's|master|'$(git branch --show-current)'|g' | kubectl apply -f -
 
   # Wait for components to be ready
   # NOTE: Wait for each package individually so they show up nicely in ci logs
@@ -50,10 +52,12 @@ stages:
   - kubectl wait --for=condition=Ready --timeout 300s helmrelease -n bigbang fluent-bit
   - kubectl wait --for=condition=Ready --timeout 300s helmrelease -n bigbang twistlock
   - kubectl wait --for=condition=Ready --timeout 300s helmrelease -n bigbang cluster-auditor
-  # Enable this after we merge in
-  # - kubectl wait --for=condition=Ready --timeout 300s helmrelease -n bigbang argocd
-  # - kubectl wait --for=condition=Ready --timeout 300s helmrelease -n bigbang authservice
   - kubectl wait --for=condition=Ready --timeout 30s kustomizations.kustomize.toolkit.fluxcd.io -n bigbang secrets
+
+  # Wait for addons (only if they exist since they might not yet for upgrades)
+  # TODO: This is kinda messy
+  - kubectl get helmrelease -n bigbang argocd && kubectl wait --for=condition=Ready --timeout 300s helmrelease -n bigbang argocd
+  - kubectl get helmrelease -n bigbang authservice && kubectl wait --for=condition=Ready --timeout 300s helmrelease -n bigbang authservice
 
   # Quick check for non iron bank images
   - echo "Showing images not from ironbank:"
