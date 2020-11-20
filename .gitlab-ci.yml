@@ -67,12 +67,13 @@ stages:
 
 clean install:
   stage: smoke tests
-#  extends:
-#    - .k3d
+  extends:
+    - .k3d
   rules:
     # Skip on merge requests (it is ran as part of the non MR pipeline)
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
       when: never
+    - when: always
   variables:
     CLUSTER_NAME: "clean-${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA}"
   image: alpine:latest
