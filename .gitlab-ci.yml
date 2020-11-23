@@ -27,7 +27,7 @@ stages:
 # Smoke Tests
 #
 .bigbang:
-  image: registry.dsop.io/platform-one/big-bang/pipeline-templates/pipeline-templates/k3d-builder:0.0.1
+  image: registry.dsop.io/platform-one/big-bang/pipeline-templates/pipeline-templates/k3d-builder:0.0.2
 
 .deploy_bigbang: &deploy_bigbang
   # Deploy flux and wait for it to be ready
