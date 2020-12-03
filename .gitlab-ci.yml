@@ -11,6 +11,7 @@ workflow:
 
 include:
   - project: 'platform-one/big-bang/pipeline-templates/umbrella-templates'
+    ref: "bb-751"
     file: '/global.gitlab-ci.yml'
 
 stages:
@@ -194,14 +195,7 @@ aws/rke2/bigbang test:
     - mkdir -p ~/.kube
     - cp ${CI_PROJECT_DIR}/rke2.yaml ~/.kube/config
   script:
-    - sleep 240
-    - kubectl get all -A
-    - kubectl get vs -A
-    - kubectl describe gateway main -n istio-system
-    - kubectl get gateway main -n istio-system
-    - kubectl get gateway main -n istio-system -o yaml
-    - kubectl get service -n istio-system
-    - kubectl get service istio-ingressgateway -n istio-system -o yaml
+    - kubectl version
 
 # Uninstall BigBang on RKE2 cluster on AWS
 aws/rke2/bigbang down:
