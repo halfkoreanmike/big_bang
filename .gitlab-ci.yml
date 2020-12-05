@@ -195,7 +195,9 @@ aws/rke2/bigbang test:
     - mkdir -p ~/.kube
     - cp ${CI_PROJECT_DIR}/rke2.yaml ~/.kube/config
   script:
-    - echo "tests go here"
+    ## Move this yum install to the dockerfile for the builder
+    ## putting it here now for a quick way to install dig
+    - yum install bind-utils -y
     - chmod +x scripts/hosts.sh && ./scripts/hosts.sh
     - *test_bigbang
 
