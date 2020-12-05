@@ -195,13 +195,11 @@ aws/rke2/bigbang test:
     - mkdir -p ~/.kube
     - cp ${CI_PROJECT_DIR}/rke2.yaml ~/.kube/config
   script:
-    - kubectl get all -A
     - kubectl get vs -A
-    - kubectl describe gateway main -n istio-system
-    - kubectl get gateway main -n istio-system
-    - kubectl get gateway main -n istio-system -o yaml
-    - kubectl get service -n istio-system
+    - kubectl get svc -n istio-system
     - kubectl get service istio-ingressgateway -n istio-system -o yaml
+    - kubectl get po -n istio-system
+
     ## Move this yum install to the dockerfile for the builder
     ## putting it here now for a quick way to install dig
     - yum install bind-utils -y
