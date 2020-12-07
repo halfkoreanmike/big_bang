@@ -1,0 +1,4 @@
+istio:
+  values:
+    annotations:
+      privatelb: true

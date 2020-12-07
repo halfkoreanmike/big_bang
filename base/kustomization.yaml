@@ -1,0 +1,32 @@
+configurations:
+- transformer.yaml
+
+namespace: bigbang
+
+commonLabels:
+  owner: bigbang
+
+resources:
+  - namespace.yaml
+  - gitrepository.yaml
+  - helmrelease.yaml
+
+configMapGenerator:
+  - name: configmap-common
+    behavior: create
+    literals:
+    - values.yaml=
+  - name: configmap
+    behavior: create
+    literals:
+    - values.yaml=
+
+secretGenerator:
+  - name: secrets-common
+    behavior: create
+    literals:
+    - values.yaml=
+  - name: secrets
+    behavior: create
+    literals:
+    - values.yaml=

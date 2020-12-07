@@ -1,0 +1,10 @@
+bases:
+  # - git@
+  - ../../../base
+
+configMapGenerator:
+  - name: common
+    namespace: bigbang
+    behavior: merge
+    files:
+      - values.yaml
