@@ -40,13 +40,14 @@ stages:
   - for test in ./tests/bash/*.sh; do chmod +x $test && $test; done 
 
 chart version check:
+  image: registry.dsop.io/platform-one/big-bang/pipeline-templates/pipeline-templates/k3d-builder:0.0.1
   stage: chart version check
   artifacts:
     reports:
       dotenv: variables.env
   script:
   # obtain MR and master versions
-  - yum install -y git
+  - apt install -y git
   - CHART_MR_VERSION=$(sed -n -e 's/^version. //p' chart/Chart.yaml)
   - git fetch && git checkout ${CI_DEFAULT_BRANCH}
   - CHART_MA_VERSION=$(sed -n -e 's/^version. //p' chart/Chart.yaml)
