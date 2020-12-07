@@ -14,4 +14,8 @@ spec:
   url: {{ .Values.logging.git.repo }}
   ref:
     {{- include "validRef" .Values.logging.git | nindent 4 }}
+{{- if .Values.logging.git.secret }}
+  secretRef:
+    name: {{ .Values.logging.git.secret | quote }}
+{{- end }}
 {{- end }}

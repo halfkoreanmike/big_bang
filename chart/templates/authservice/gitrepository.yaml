@@ -14,4 +14,8 @@ spec:
   url: {{ .Values.addons.authservice.git.repo }}
   ref:
     {{- include "validRef" .Values.addons.authservice.git | nindent 4 }}
+{{- if .Values.addons.authservice.git.secret }}
+  secretRef:
+    name: {{ .Values.addons.authservice.git.secret | quote }}
+{{- end }}
 {{- end }}
