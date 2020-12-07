@@ -14,6 +14,7 @@ include:
     file: '/global.gitlab-ci.yml'
 
 stages:
+  - chart version check
   - smoke tests
   - network up
   - cluster up
