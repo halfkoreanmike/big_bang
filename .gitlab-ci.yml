@@ -46,7 +46,7 @@ chart version check:
       dotenv: variables.env
   script:
   # obtain MR and master versions
-  - which git
+  - yum install -y git
   - CHART_MR_VERSION=$(sed -n -e 's/^version. //p' chart/Chart.yaml)
   - git fetch && git checkout ${CI_DEFAULT_BRANCH}
   - CHART_MA_VERSION=$(sed -n -e 's/^version. //p' chart/Chart.yaml)
