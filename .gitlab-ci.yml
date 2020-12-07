@@ -101,14 +101,11 @@ upgrade:
   script:    
     - echo "Install Big Bang from ${CI_DEFAULT_BRANCH}"
     - git fetch && git checkout ${CI_DEFAULT_BRANCH}
-    - pwd
-    - git status
+    - echo "$(pwd)"
     - *deploy_bigbang
     - *test_bigbang    
     - echo "Upgrade Big Bang from ${CI_MERGE_REQUEST_SOURCE_BRANCH_NAME}"
     - git checkout ${CI_MERGE_REQUEST_SOURCE_BRANCH_NAME}
-    - git status
-    - pwd
     - *deploy_bigbang
     - *test_bigbang
   after_script:
