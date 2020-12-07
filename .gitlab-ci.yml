@@ -14,7 +14,6 @@ include:
     file: '/global.gitlab-ci.yml'
 
 stages:
-  - chart version check
   - smoke tests
   - network up
   - cluster up
@@ -44,27 +43,27 @@ chart version check:
   stage: chart version check
   artifacts:
     reports:
-      dotenv: variables.env
+      dotenv: chart_version_check.env
   script:
   # obtain MR and master versions
   - CHART_MR_VERSION=$(sed -n -e 's/^version. //p' chart/Chart.yaml)
   - git fetch && git checkout ${CI_DEFAULT_BRANCH}
   - CHART_MA_VERSION=$(sed -n -e 's/^version. //p' chart/Chart.yaml)
   - git fetch && git checkout ${CI_COMMIT_REF_NAME}
-  - echo "CHART_MR_VERSION=$CHART_MR_VERSION" >> variables.env
-  - echo "CHART_MA_VERSION=$CHART_MA_VERSION" >> variables.env
+  - echo "CHART_MR_VERSION=$CHART_MR_VERSION" >> chart_version_check.env
+  - echo "CHART_MA_VERSION=$CHART_MA_VERSION" >> chart_version_check.env
   # obtain semver differences (subtract master version from mr verison)
   - chmod +x ./hack/semver_diff.sh
   - CHART_VERSION_DIFF=$(./hack/semver_diff.sh $CHART_MR_VERSION $CHART_MA_VERSION)
   - IFS=. DIFF_ARR=(${CHART_VERSION_DIFF##*-})
-  - echo "CHART_VERSION_DIFF=$CHART_VERSION_DIFF" >> variables.env
+  - echo "CHART_VERSION_DIFF=$CHART_VERSION_DIFF" >> chart_version_check.env
   # detect breaking change (first two version sections in semver diff)
   - CHART_BREAKING_CHANGE=false
   - if (( ${DIFF_ARR[0]} > 0 )); then CHART_BREAKING_CHANGE=true; fi
   - if (( ${DIFF_ARR[1]} > 0 )); then CHART_BREAKING_CHANGE=true; fi
   # store variables
-  - echo "CHART_BREAKING_CHANGE=$CHART_BREAKING_CHANGE" >> variables.env
-  - cat variables.env
+  - echo "CHART_BREAKING_CHANGE=$CHART_BREAKING_CHANGE" >> chart_version_check.env
+  - cat chart_version_check.env
 
 clean install:
   stage: smoke tests
@@ -98,7 +97,8 @@ upgrade:
       when: never
   variables:
     CLUSTER_NAME: "clean-${CI_COMMIT_SHORT_SHA}"
-  script:    
+  script:
+    - echo "${CHART_BREAKING_CHANGE}"
     - echo "Install Big Bang from ${CI_DEFAULT_BRANCH}"
     - git fetch && git checkout ${CI_DEFAULT_BRANCH}
     - *deploy_bigbang
