@@ -14,6 +14,7 @@ include:
     file: '/global.gitlab-ci.yml'
 
 stages:
+  - smoke tests variables
   - smoke tests
   - network up
   - cluster up
@@ -39,7 +40,7 @@ stages:
   - for test in ./tests/bash/*.sh; do chmod +x $test && $test; done 
 
 smoke tests variables:
-  stage: smoke tests
+  stage: smoke tests variables
   artifacts:
     reports:
       dotenv: variables.env
