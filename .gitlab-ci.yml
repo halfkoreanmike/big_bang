@@ -38,8 +38,36 @@ stages:
 .test_bigbang: &test_bigbang
   - for test in ./tests/bash/*.sh; do chmod +x $test && $test; done 
 
+smoke tests variables:
+  stage: smoke tests
+  artifacts:
+    reports:
+      dotenv: variables.env
+  script:
+  # obtain MR and master versions
+  - CHART_MR_VERSION=$(sed -n -e 's/^version. //p' chart/Chart.yaml)
+  - git fetch && git checkout ${CI_DEFAULT_BRANCH}
+  - CHART_MA_VERSION=$(sed -n -e 's/^version. //p' chart/Chart.yaml)
+  - git fetch && git checkout ${CI_COMMIT_REF_NAME}
+  - echo "CHART_MR_VERSION=$CHART_MR_VERSION" >> variables.env
+  - echo "CHART_MA_VERSION=$CHART_MA_VERSION" >> variables.env
+  # obtain semver differences (subtract master version from mr verison)
+  - CHART_VERSION_DIFF=$(./hack/semver_diff.sh $CHART_MR_VERSION $CHART_MA_VERSION)
+  - IFS=. DIFF_ARR=(${CHART_VERSION_DIFF##*-})
+  - echo "CHART_VERSION_DIFF=$CHART_VERSION_DIFF" >> variables.env
+  # detect breaking change (first two version sections in semver diff)
+  - CHART_BREAKING_CHANGE=false
+  - if (( ${DIFF_ARR[0]} > 0 )); then CHART_BREAKING_CHANGE=true; fi
+  - if (( ${DIFF_ARR[1]} > 0 )); then CHART_BREAKING_CHANGE=true; fi
+  # store variables
+  - echo "CHART_BREAKING_CHANGE=$CHART_BREAKING_CHANGE" >> variables.env
+  - cat variables.env
+
 clean install:
   stage: smoke tests
+  needs:
+    - job: smoke tests variables
+      artifacts: true
   extends:
     - .k3d
   rules:
@@ -56,24 +84,32 @@ clean install:
     - kubectl get all -A
     - kubectl get helmrelease -A
 
+
 upgrade:
   stage: smoke tests
+  needs:
+    - job: smoke tests variables
+      artifacts: true
   extends:
     - .k3d
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    - if: '$CHART_BREAKING_CHANGE == "true"'
+      when: never
   variables:
     CLUSTER_NAME: "clean-${CI_COMMIT_SHORT_SHA}"
-  script:
+  script:    
     - echo "Install Big Bang from ${CI_DEFAULT_BRANCH}"
     - git fetch && git checkout ${CI_DEFAULT_BRANCH}
     - *deploy_bigbang
-    - *test_bigbang
-
+    - *test_bigbang    
     - echo "Upgrade Big Bang from ${CI_MERGE_REQUEST_SOURCE_BRANCH_NAME}"
     - git checkout ${CI_MERGE_REQUEST_SOURCE_BRANCH_NAME}
     - *deploy_bigbang
     - *test_bigbang
+  after_script:
+    - kubectl get all -A
+    - kubectl get helmrelease -A    
 
 #-----------------------------------------------------------------------------------------------------------------------
 
