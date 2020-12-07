@@ -14,4 +14,8 @@ spec:
   url: {{ .Values.clusterAuditor.git.repo }}
   ref:
     {{- include "validRef" .Values.clusterAuditor.git | nindent 4 }}
+{{- if .Values.clusterAuditor.git.secret }}
+  secretRef:
+    name: {{ .Values.clusterAuditor.git.secret | quote }}
+{{- end }}
 {{- end }}

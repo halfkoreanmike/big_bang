@@ -14,4 +14,8 @@ spec:
   url: {{ .Values.addons.argocd.git.repo }}
   ref:
     {{- include "validRef" .Values.addons.argocd.git | nindent 4 }}
+{{- if .Values.addons.argocd.git.secret }}
+  secretRef:
+    name: {{ .Values.addons.argocd.git.secret | quote }}
+{{- end }}
 {{- end }}
