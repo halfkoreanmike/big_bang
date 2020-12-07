@@ -14,7 +14,7 @@ include:
     file: '/global.gitlab-ci.yml'
 
 stages:
-  - smoke tests variables
+  - chart version check
   - smoke tests
   - network up
   - cluster up
@@ -39,8 +39,8 @@ stages:
 .test_bigbang: &test_bigbang
   - for test in ./tests/bash/*.sh; do chmod +x $test && $test; done 
 
-smoke tests variables:
-  stage: smoke tests variables
+chart version check:
+  stage: chart version check
   artifacts:
     reports:
       dotenv: variables.env
@@ -67,15 +67,13 @@ smoke tests variables:
 
 clean install:
   stage: smoke tests
-  needs:
-    - job: smoke tests variables
-      artifacts: true
   extends:
     - .k3d
   rules:
     # Skip on merge requests (it is ran as part of the non MR pipeline)
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
       when: never
+    - when: always
   variables:
     CLUSTER_NAME: "clean-${CI_COMMIT_SHORT_SHA}"
   script:
@@ -89,7 +87,7 @@ clean install:
 upgrade:
   stage: smoke tests
   needs:
-    - job: smoke tests variables
+    - job: chart version check
       artifacts: true
   extends:
     - .k3d
