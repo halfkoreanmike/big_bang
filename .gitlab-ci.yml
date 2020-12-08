@@ -97,7 +97,7 @@ upgrade:
     CLUSTER_NAME: "clean-${CI_COMMIT_SHORT_SHA}"
   script:
     - echo "${CHART_BREAKING_CHANGE}"
-    - if [[$CHART_BREAKING_CHANGE == "true"]]; then echo "Chart Breaking Change Detected, Exiting" && exit; fi
+    - if [ ${CHART_BREAKING_CHANGE} == "true" ]; then echo "Chart Breaking Change Detected, Exiting" && exit; fi
     - echo "Install Big Bang from ${CI_DEFAULT_BRANCH}"
     - git fetch && git checkout ${CI_DEFAULT_BRANCH}
     - *deploy_bigbang
