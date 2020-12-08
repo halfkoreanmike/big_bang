@@ -55,9 +55,6 @@ clean install:
 
 upgrade:
   stage: smoke tests
-  needs:
-    - job: chart version check
-      artifacts: true
   extends:
     - .k3d
   rules:
