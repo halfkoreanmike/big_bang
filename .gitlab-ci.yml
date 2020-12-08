@@ -96,7 +96,7 @@ upgrade:
   variables:
     CLUSTER_NAME: "clean-${CI_COMMIT_SHORT_SHA}"
   before_script:
-    - if ((${CHART_BREAKING_CHANGE} == true)); then echo "Chart Breaking Change Detected, Exiting" && exit; fi
+    - if ((${CHART_BREAKING_CHANGE} = true)); then echo "Chart Breaking Change Detected, Exiting" && exit; fi
   script:
     - echo "Install Big Bang from ${CI_DEFAULT_BRANCH}"
     - git fetch && git checkout ${CI_DEFAULT_BRANCH}
@@ -107,7 +107,7 @@ upgrade:
     - *deploy_bigbang
     - *test_bigbang
   after_script:
-    - if ((${CHART_BREAKING_CHANGE} == true)); then echo "Chart Breaking Change Detected, Exiting" && exit; fi
+    - if ((${CHART_BREAKING_CHANGE} = true)); then echo "Chart Breaking Change Detected, Exiting" && exit; fi
     - kubectl get all -A
     - kubectl get helmrelease -A    
 
