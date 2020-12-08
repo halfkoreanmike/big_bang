@@ -13,5 +13,5 @@ helm upgrade -i bigbang chart -n bigbang --create-namespace \
   -f tests/ci/k3d/values.yaml
 
 ## Apply secrets kustomization pointing to current branch
-#echo "Deploying secrets from the ${CI_COMMIT_REF_NAME} branch"
-#cat examples/complete/envs/dev/source-secrets.yaml | sed 's|master|'$CI_COMMIT_REF_NAME'|g' | kubectl apply -f -
+echo "Deploying secrets from the ${CI_COMMIT_REF_NAME} branch"
+cat tests/ci/shared-secrets.yaml | sed 's|master|'$CI_COMMIT_REF_NAME'|g' | kubectl apply -f -
