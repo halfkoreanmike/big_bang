@@ -7,7 +7,7 @@ flux:
     cleanupOnFail: false
 
 logging:
-  # Directly modify chart values for dev workloads
+  enabled: false
   values:
     elasticsearch:
       master:
@@ -28,20 +28,29 @@ logging:
             memory: 2Gi
 
 istio:
-  # Directly modify chart values for dev workloads
   values:
     kiali:
       dashboard:
         auth:
           strategy: "anonymous"
 
+clusterAuditor:
+  enabled: false
+
+monitoring:
+  enabled: true
+  values:
+    prometheusOperator:
+      admissionWebhooks:
+        enabled: false
+
 gatekeeper:
-  # Directly modify chart values for dev workloads
+  enabled: false
   values:
     replicas: 1
 
 twistlock:
-  # Directly modify chart values for dev workloads
+  enabled: false
   values:
     console:
       persistence:
