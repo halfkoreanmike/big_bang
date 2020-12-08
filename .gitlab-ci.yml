@@ -38,7 +38,7 @@ stages:
 .test_bigbang: &test_bigbang
   - for test in ./tests/bash/*.sh; do chmod +x $test && $test; done 
 
-variables:
+.pre_variables:
   image: registry.dsop.io/platform-one/big-bang/pipeline-templates/pipeline-templates/pre-envs:ubi8.3
   stage: .pre
   artifacts:
@@ -87,7 +87,7 @@ clean install:
 upgrade:
   stage: smoke tests
   needs:
-    - job: variables
+    - job: .pre_variables
       artifacts: true
   extends:
     - .k3d
