@@ -7,7 +7,7 @@ flux:
     cleanupOnFail: false
 
 logging:
-  enabled: false
+  enabled: true
   values:
     elasticsearch:
       master:
@@ -28,6 +28,7 @@ logging:
             memory: 2Gi
 
 istio:
+  enabled: true
   values:
     kiali:
       dashboard:
@@ -35,7 +36,7 @@ istio:
           strategy: "anonymous"
 
 clusterAuditor:
-  enabled: false
+  enabled: true
 
 monitoring:
   enabled: true
@@ -45,12 +46,12 @@ monitoring:
         enabled: false
 
 gatekeeper:
-  enabled: false
+  enabled: true
   values:
     replicas: 1
 
 twistlock:
-  enabled: false
+  enabled: true
   values:
     console:
       persistence:
