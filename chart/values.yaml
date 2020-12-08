@@ -22,15 +22,6 @@ flux:
     timeout: 5m
     cleanupOnFail: true
 
-#package:
-#  enabled: true
-#  git:
-#    repo: ""
-#    branch: ""
-#    commit: ""
-#    tag: ""
-#  values: {}
-
 # ----------------------------------------------------------------------------------------------------------------------
 # Istio
 #
