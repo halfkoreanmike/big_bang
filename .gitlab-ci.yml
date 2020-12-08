@@ -65,7 +65,7 @@ chart version check:
   # store variables
   - echo "CHART_BREAKING_CHANGE=$CHART_BREAKING_CHANGE" >> chart_version_check.env
   - cat chart_version_check.env
-
+  
 clean install:
   stage: smoke tests
   extends:
@@ -101,15 +101,11 @@ upgrade:
     - echo "Install Big Bang from ${CI_DEFAULT_BRANCH}"
     - git fetch && git checkout ${CI_DEFAULT_BRANCH}
     - *deploy_bigbang
-    - *test_bigbang    
+    - *test_bigbang
     - echo "Upgrade Big Bang from ${CI_MERGE_REQUEST_SOURCE_BRANCH_NAME}"
     - git checkout ${CI_MERGE_REQUEST_SOURCE_BRANCH_NAME}
     - *deploy_bigbang
     - *test_bigbang
-  after_script:
-    - if ((${CHART_BREAKING_CHANGE} = true)); then echo "Chart Breaking Change Detected, Exiting" && exit; fi
-    - kubectl get all -A
-    - kubectl get helmrelease -A    
 
 #-----------------------------------------------------------------------------------------------------------------------
 
@@ -230,14 +226,11 @@ aws/rke2/bigbang test:
     - mkdir -p ~/.kube
     - cp ${CI_PROJECT_DIR}/rke2.yaml ~/.kube/config
   script:
-    - sleep 240
-    - kubectl get all -A
-    - kubectl get vs -A
-    - kubectl describe gateway main -n istio-system
-    - kubectl get gateway main -n istio-system
-    - kubectl get gateway main -n istio-system -o yaml
-    - kubectl get service -n istio-system
-    - kubectl get service istio-ingressgateway -n istio-system -o yaml
+    ## Move this yum install to the dockerfile for the builder
+    ## putting it here now for a quick way to install dig
+    - yum install bind-utils -y
+    - chmod +x scripts/hosts.sh && ./scripts/hosts.sh
+    - *test_bigbang
 
 # Uninstall BigBang on RKE2 cluster on AWS
 aws/rke2/bigbang down:
