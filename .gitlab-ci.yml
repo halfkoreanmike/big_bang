@@ -84,7 +84,6 @@ clean install:
     - kubectl get all -A
     - kubectl get helmrelease -A
 
-
 upgrade:
   stage: smoke tests
   needs:
@@ -94,12 +93,10 @@ upgrade:
     - .k3d
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
-    - if: '$CHART_BREAKING_CHANGE == "true"'
-      when: never
   variables:
     CLUSTER_NAME: "clean-${CI_COMMIT_SHORT_SHA}"
   before_script:
-    - if ((${CHART_BREAKING_CHANGE} == true)); then echo "Chart Breaking Change Detected, Exiting" && exit 1; fi
+    - if ((${CHART_BREAKING_CHANGE} == true)); then echo "Chart Breaking Change Detected, Exiting" && exit; fi
   script:
     - echo "Install Big Bang from ${CI_DEFAULT_BRANCH}"
     - git fetch && git checkout ${CI_DEFAULT_BRANCH}
@@ -110,6 +107,7 @@ upgrade:
     - *deploy_bigbang
     - *test_bigbang
   after_script:
+    - if ((${CHART_BREAKING_CHANGE} == true)); then echo "Chart Breaking Change Detected, Exiting" && exit; fi
     - kubectl get all -A
     - kubectl get helmrelease -A    
 
