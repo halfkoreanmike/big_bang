@@ -59,9 +59,9 @@ chart version check:
   - IFS=. DIFF_ARR=(${CHART_VERSION_DIFF##*-})
   - echo "CHART_VERSION_DIFF=$CHART_VERSION_DIFF" >> chart_version_check.env
   # detect breaking change (first two version sections in semver diff)
-  - CHART_BREAKING_CHANGE=false
-  - if (( ${DIFF_ARR[0]} > 0 )); then CHART_BREAKING_CHANGE=true; fi
-  - if (( ${DIFF_ARR[1]} > 0 )); then CHART_BREAKING_CHANGE=true; fi
+  - CHART_BREAKING_CHANGE="false"
+  - if (( ${DIFF_ARR[0]} > 0 )); then CHART_BREAKING_CHANGE="true"; fi
+  - if (( ${DIFF_ARR[1]} > 0 )); then CHART_BREAKING_CHANGE="true"; fi
   # store variables
   - echo "CHART_BREAKING_CHANGE=$CHART_BREAKING_CHANGE" >> chart_version_check.env
   - cat chart_version_check.env
@@ -97,7 +97,7 @@ upgrade:
     CLUSTER_NAME: "clean-${CI_COMMIT_SHORT_SHA}"
   script:
     - echo "${CHART_BREAKING_CHANGE}"
-    - if ((${CHART_BREAKING_CHANGE} == true)); then echo "Chart Breaking Change Detected, Exiting" && exit; fi
+    - if [${CHART_BREAKING_CHANGE} == "true"]; then echo "Chart Breaking Change Detected, Exiting" && exit; fi
     - echo "Install Big Bang from ${CI_DEFAULT_BRANCH}"
     - git fetch && git checkout ${CI_DEFAULT_BRANCH}
     - *deploy_bigbang
