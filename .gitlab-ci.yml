@@ -65,7 +65,7 @@ pre_variables:
   # store variables
   - echo "CHART_BREAKING_CHANGE=$CHART_BREAKING_CHANGE" >> variables.env
   - cat variables.env
-  
+
 clean install:
   stage: smoke tests
   extends:
@@ -88,7 +88,7 @@ upgrade:
   stage: smoke tests
   needs:
     - job: pre_variables
-      artifacts: true
+      artifacts: true  
   extends:
     - .k3d
   rules:
@@ -101,7 +101,9 @@ upgrade:
     - git fetch && git checkout ${CI_DEFAULT_BRANCH}
     - *deploy_bigbang
     - *test_bigbang
+
     - echo "Upgrade Big Bang from ${CI_MERGE_REQUEST_SOURCE_BRANCH_NAME}"
+    - git reset --hard && git clean -fd
     - git checkout ${CI_MERGE_REQUEST_SOURCE_BRANCH_NAME}
     - *deploy_bigbang
     - *test_bigbang
