@@ -52,6 +52,9 @@ clean install:
     - when: always
   variables:
     CLUSTER_NAME: "clean-${CI_COMMIT_SHORT_SHA}"
+    DOCKER_HOST: "tcp://dind:2375"
+    DOCKER_TLS_CERTDIR: ""
+  services: []
   before_script:
 #    - docker run -d -p 53:53/udp -p 53:53 registry.dsop.io/platform-one/big-bang/pipeline-templates/pipeline-templates/go-dnsmasq:0eddd476
 #    - echo "nameserver 8.8.8.8" >> /etc/resolv.conf
