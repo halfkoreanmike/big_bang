@@ -40,6 +40,7 @@ stages:
 
 clean install:
   stage: smoke tests
+  image: alpine:latest
   extends:
     - .k3d
   tags:
@@ -68,6 +69,7 @@ clean install:
     - kubectl cluster-info
   script:
     - kubectl get po -A
+  after_script: []
 
 #  before_script:
 ##    - docker run -d -p 53:53/udp -p 53:53 registry.dsop.io/platform-one/big-bang/pipeline-templates/pipeline-templates/go-dnsmasq:0eddd476
