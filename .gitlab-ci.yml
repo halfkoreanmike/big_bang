@@ -50,6 +50,20 @@ clean install:
   variables:
     CLUSTER_NAME: "clean-${CI_COMMIT_SHORT_SHA}"
   script:
+    - *deploy_bigbang
+    - *test_bigbang
+  after_script:
+    - kubectl get all -A
+    - kubectl get helmrelease -A
+upgrade:
+  stage: smoke tests
+  extends:
+    - .k3d
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+  variables:
+    CLUSTER_NAME: "clean-${CI_COMMIT_SHORT_SHA}"
+  script:
     - env
     - |
       if [[  $CI_COMMIT_MESSAGE != Breaking* ]] ; then
@@ -67,21 +81,6 @@ clean install:
       echo "*deploy_bigbang"
       echo "*test_bigbang"
     - exit 1
-    - *deploy_bigbang
-    - *test_bigbang
-  after_script:
-    - kubectl get all -A
-    - kubectl get helmrelease -A
-
-upgrade:
-  stage: smoke tests
-  extends:
-    - .k3d
-  rules:
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
-  variables:
-    CLUSTER_NAME: "clean-${CI_COMMIT_SHORT_SHA}"
-  script:
     - echo "Install Big Bang from ${CI_DEFAULT_BRANCH}"
     - git fetch && git checkout ${CI_DEFAULT_BRANCH}
     - *deploy_bigbang
