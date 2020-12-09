@@ -60,7 +60,7 @@ upgrade:
   extends:
     - .k3d
   rules:
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_COMMIT_MESSAGE != Breaking*' 
   variables:
     CLUSTER_NAME: "clean-${CI_COMMIT_SHORT_SHA}"
   script:
@@ -76,7 +76,7 @@ upgrade:
       echo "git reset --hard && git clean -fd"
       echo "Now we're ready to upgrade"
       else
-      echo "Doing a clean uinstall of the current branch since its a breaking change"
+      echo "Doing a clean install of the current branch since its a breaking change"
       fi
       echo "*deploy_bigbang"
       echo "*test_bigbang"
