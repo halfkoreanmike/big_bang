@@ -42,9 +42,6 @@ clean install:
   stage: smoke tests
   extends:
     - .k3d
-  tags:
-    - bigbang
-    - umbrella
   rules:
     # Skip on merge requests (it is ran as part of the non MR pipeline)
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
@@ -52,30 +49,21 @@ clean install:
     - when: always
   variables:
     CLUSTER_NAME: "clean-${CI_COMMIT_SHORT_SHA}"
-  before_script:
-    #    - docker run -d -p 53:53/udp -p 53:53 registry.dsop.io/platform-one/big-bang/pipeline-templates/pipeline-templates/go-dnsmasq:0eddd476
-    #    - echo "nameserver 8.8.8.8" >> /etc/resolv.conf
-    # Standup cluster
-    - k3d cluster create -v /etc/resolv.conf:/etc/resolv.conf ${CLUSTER_NAME}  --k3s-server-arg "--disable=traefik" --k3s-server-arg "--disable=metrics-server" -p 80:80@loadbalancer -p 443:443@loadbalancer --wait
-    - while ! (kubectl get node | grep "server" > /dev/null); do sleep 3; done
-    - kubectl get nodes
-    - k3d node list
-
   script:
     - *deploy_bigbang
     - *test_bigbang
+  after_script:
+    - kubectl get all -A
+    - kubectl get helmrelease -A
 
 upgrade:
   stage: smoke tests
   extends:
     - .k3d
-  tags:
-    - bigbang
-    - umbrella
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
   variables:
-    CLUSTER_NAME: "upgrade-${CI_COMMIT_SHORT_SHA}"
+    CLUSTER_NAME: "clean-${CI_COMMIT_SHORT_SHA}"
   script:
     - echo "Install Big Bang from ${CI_DEFAULT_BRANCH}"
     - git fetch && git checkout ${CI_DEFAULT_BRANCH}
