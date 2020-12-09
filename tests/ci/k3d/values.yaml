@@ -63,7 +63,3 @@ addons:
     enabled: true
   authservice:
     enabled: true
-    values:
-      # Use a dummy default authservice config just so it deploys successfully
-      # TODO: Use a pre-defined proper clientID and clientsecret from keycloak
-      defaultConfig: true
