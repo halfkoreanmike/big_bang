@@ -42,9 +42,6 @@ clean install:
   stage: smoke tests
   extends:
     - .k3d
-  tags:
-    - bigbang
-    - machine
   rules:
     # Skip on merge requests (it is ran as part of the non MR pipeline)
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
@@ -52,11 +49,6 @@ clean install:
     - when: always
   variables:
     CLUSTER_NAME: "clean-${CI_COMMIT_SHORT_SHA}"
-  before_script:
-    - k3d cluster create ${CLUSTER_NAME}  --k3s-server-arg "--disable=traefik" --k3s-server-arg "--disable=metrics-server" -p 80:80@loadbalancer -p 443:443@loadbalancer --wait --agents $N_AGENTS --servers $N_SERVERS
-    - while ! (kubectl get node | grep "server" > /dev/null); do sleep 3; done
-    - kubectl get nodes
-    - k3d node list
   script:
     - *deploy_bigbang
     - *test_bigbang
