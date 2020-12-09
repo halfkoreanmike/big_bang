@@ -51,8 +51,9 @@ clean install:
     CLUSTER_NAME: "clean-${CI_COMMIT_SHORT_SHA}"
   script:
     - env
-    - if [[  $CI_COMMIT_MESSAGE != Breaking* ]] ; then 
-      echo "Not Breaking so deploy master upgrade" ;
+    - |
+      if [[  $CI_COMMIT_MESSAGE != Breaking* ]] ; then
+      echo "Not Breaking so deploy master upgrade" 
       echo "Install Big Bang from ${CI_DEFAULT_BRANCH}"
       echo "git fetch && git checkout ${CI_DEFAULT_BRANCH}"
       echo "*deploy_bigbang"
