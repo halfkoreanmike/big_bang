@@ -64,23 +64,6 @@ upgrade:
   variables:
     CLUSTER_NAME: "clean-${CI_COMMIT_SHORT_SHA}"
   script:
-    - env
-    - |
-      if [[  $CI_COMMIT_MESSAGE != Breaking* ]] ; then
-      echo "Not Breaking so deploy master upgrade" 
-      echo "Install Big Bang from ${CI_DEFAULT_BRANCH}"
-      echo "git fetch && git checkout ${CI_DEFAULT_BRANCH}"
-      echo "*deploy_bigbang"
-      echo "*test_bigbang"
-      echo "Then we checkout ${CI_MERGE_REQUEST_SOURCE_BRANCH_NAME}"
-      echo "git reset --hard && git clean -fd"
-      echo "Now we're ready to upgrade"
-      else
-      echo "Doing a clean install of the current branch since its a breaking change"
-      fi
-      echo "*deploy_bigbang"
-      echo "*test_bigbang"
-    - exit 1
     - echo "Install Big Bang from ${CI_DEFAULT_BRANCH}"
     - git fetch && git checkout ${CI_DEFAULT_BRANCH}
     - *deploy_bigbang
