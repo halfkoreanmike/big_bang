@@ -69,6 +69,7 @@ clean install:
     - kubectl cluster-info
   script:
     - kubectl get po -A
+    - sleep 300
   after_script: []
 
 #  before_script:
