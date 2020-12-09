@@ -53,6 +53,7 @@ spec:
     kube-state-metrics:
       imagePullSecrets:
       - name: private-registry
+
   # TODO: DRY this up
   {{- if or .Values.gatekeeper.enabled .Values.istio.enabled }}
   dependsOn:
