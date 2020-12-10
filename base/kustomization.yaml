@@ -12,21 +12,21 @@ resources:
   - helmrelease.yaml
 
 configMapGenerator:
-  - name: configmap-common
+  - name: common
     behavior: create
     literals:
     - values.yaml=
-  - name: configmap
+  - name: environment
     behavior: create
     literals:
     - values.yaml=
 
 secretGenerator:
-  - name: secrets-common
+  - name: common
     behavior: create
     literals:
     - values.yaml=
-  - name: secrets
+  - name: environment
     behavior: create
     literals:
     - values.yaml=

@@ -28,10 +28,10 @@ spec:
     cleanupOnFail: false
   valuesFrom:
     - kind: Secret
-      name: secrets-common
+      name: common
+    - kind: ConfigMap
+      name: common
     - kind: Secret
-      name: secrets
+      name: environment
     - kind: ConfigMap
-      name: configmap-common
-    - kind: ConfigMap
-      name: configmap
+      name: environment
