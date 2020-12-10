@@ -1,7 +1,7 @@
 apiVersion: source.toolkit.fluxcd.io/v1beta1
 kind: GitRepository
 metadata:
-  name: bigbang-repo
+  name: bigbang
 spec:
   ignore: |
     # exclude file extensions
