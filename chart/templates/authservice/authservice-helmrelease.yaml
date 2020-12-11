@@ -8,7 +8,7 @@ spec:
   targetNamespace: istio-system
   chart:
     spec:
-      chart: chart
+      chart: {{ .Values.addons.authservice.git.path }}
       interval: 5m
       sourceRef:
         kind: GitRepository
@@ -40,7 +40,6 @@ spec:
     imagePullSecrets:
       - name: private-registry
 
-    defaultConfig: false
     filterLabel: keycloak
 
   dependsOn:
