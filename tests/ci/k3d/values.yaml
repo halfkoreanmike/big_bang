@@ -60,6 +60,6 @@ twistlock:
 # Explicitly enable all addons for CI
 addons:
   argocd:
-    enabled: false
+    enabled: true
   authservice:
-    enabled: false
+    enabled: true
