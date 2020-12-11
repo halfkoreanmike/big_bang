@@ -45,7 +45,7 @@ Table of Contents
 1. Deploy unofficially through [Big Bang's Repo](https://repo1.dsop.io/platform-one/big-bang/apps/sandbox/fluxv2/container_registry)
 
    ```bash
-   flux install --registry registry.dsop.io/platform-one/big-bang/apps/sandbox/fluxv2
+   flux install --registry registry1.dsop.io/platform-one/big-bang/apps/sandbox/fluxv2
    ```
 
 1. Deploy for development through [DockerHub](https://hub.docker.com/search?q=fluxcd)
