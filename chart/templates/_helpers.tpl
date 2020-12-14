@@ -30,7 +30,7 @@ Build the appropriate git credentials secret for private git repositories
 {{- if .existingSecret -}}
 secretRef:
   name: {{ .existingSecret }}
-{{- else if coalesce .credentials.username .credentials.password .credentials.privateKey .credentials.publicKey .credentials.KnownHosts "" -}}
+{{- else if coalesce .credentials.username .credentials.password .credentials.privateKey .credentials.publicKey .credentials.knownHosts "" -}}
 {{- /* Input validation happens in git-credentials.yaml template */ -}}
 secretRef:
   name: git-credentials

@@ -12,6 +12,10 @@ registryCredentials:
   email: ""
 
 # Global git values
+# Order of precedence is:
+#   1. existingSecret
+#   2. http credentials (username/password)
+#   3. ssh credentials (privateKey/publicKey/knownHosts)
 git:
   # Existing secret to use for git credentials, must be in the appropriate format: https://toolkit.fluxcd.io/components/source/gitrepositories/#https-authentication
   existingSecret: ""
@@ -62,7 +66,7 @@ istiooperator:
 # Cluster Auditor
 #
 clusterAuditor:
-  enabled: false
+  enabled: true
   git: 
     repo: https://repo1.dsop.io/platform-one/big-bang/apps/core/cluster-auditor.git
     path: "./chart"
