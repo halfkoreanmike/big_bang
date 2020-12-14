@@ -9,9 +9,6 @@ spec:
   url: {{ .Values.istio.git.repo }}
   ref:
     {{- include "validRef" .Values.istio.git | nindent 4 }}
-{{- if .Values.istio.git.secret }}
-  secretRef:
-    name: {{ .Values.istio.git.secret | quote }}
   {{ include "gitIgnore" . }}
-{{- end }}
+  {{- include "gitCreds" .Values.git | nindent 2 }}
 {{- end }}

@@ -9,9 +9,6 @@ spec:
   url: {{ .Values.gatekeeper.git.repo }}
   ref:
     {{- include "validRef" .Values.gatekeeper.git | nindent 4 }}
-{{- if .Values.gatekeeper.git.secret }}
-  secretRef:
-    name: {{ .Values.gatekeeper.git.secret | quote }}
-{{- end }}
   {{ include "gitIgnore" . }}
+  {{- include "gitCreds" .Values.git | nindent 2 }}
 {{- end }}
