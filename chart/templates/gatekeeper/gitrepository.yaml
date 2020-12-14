@@ -5,11 +5,6 @@ metadata:
   name: gatekeeper
   namespace: {{ .Release.Namespace }}
 spec:
-  ignore: |
-    # exclude file extensions
-    /**/*.md
-    /**/*.txt
-    /**/*.sh
   interval: {{ .Values.flux.interval }}
   url: {{ .Values.gatekeeper.git.repo }}
   ref:
@@ -18,4 +13,5 @@ spec:
   secretRef:
     name: {{ .Values.gatekeeper.git.secret | quote }}
 {{- end }}
+  {{ include "gitIgnore" . }}
 {{- end }}

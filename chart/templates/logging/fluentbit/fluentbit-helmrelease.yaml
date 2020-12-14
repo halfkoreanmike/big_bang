@@ -1,18 +1,18 @@
-{{- if .Values.addons.argocd.enabled }}
+{{- if .Values.logging.enabled }}
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
-  name: argocd
+  name: fluent-bit
   namespace: {{ .Release.Namespace }}
 spec:
-  targetNamespace: argocd
+  targetNamespace: logging
   chart:
     spec:
-      chart: {{ .Values.addons.argocd.git.path }}
+      chart: {{ .Values.fluentbit.git.path }}
       interval: 5m
       sourceRef:
         kind: GitRepository
-        name: argocd
+        name: fluentbit
         namespace: {{ .Release.Namespace }}
 
   {{- with .Values.flux }}
@@ -35,20 +35,29 @@ spec:
   valuesFrom:
     - name: values
       kind: Secret
-      valuesKey: "argocd.yaml"
+      valuesKey: "fluentbit.yaml"
+
   values:
-    createNamespace: false
+    elasticsearch:
+      host: "logging-ek-es-http"
+      password:
+        secret: "logging-ek-es-elastic-user"
+
     imagePullSecrets:
       - name: private-registry
-  {{- if or .Values.monitoring.enabled .Values.istio.enabled }}
+
+  {{/* ECK and Logging _always_ depend on .Values.logging being enabled, so can assume they exist here */}}
   dependsOn:
-  {{- if .Values.istio.enabled }}
-  - name: istio
-    namespace: {{ .Release.Namespace}}
-  {{- end}}
-  {{- if .Values.monitoring.enabled }}
-  - name: monitoring
-    namespace: {{ .Release.Namespace }}
+    - name: ek
+      namespace: {{ .Release.Namespace }}
+
+    {{- if  .Values.gatekeeper.enabled }}
+    - name: gatekeeper
+      namespace: {{ .Release.Namespace }}
+    {{- end }}
+
+    {{- if .Values.istio.enabled }}
+    - name: istio
+      namespace: {{ .Release.Namespace }}
   {{- end }}
   {{- end }}
-{{- end }}

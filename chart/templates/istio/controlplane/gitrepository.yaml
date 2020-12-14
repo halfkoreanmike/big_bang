@@ -1,0 +1,17 @@
+{{- if and (not .Values.offline) .Values.istio.enabled }}
+apiVersion: source.toolkit.fluxcd.io/v1beta1
+kind: GitRepository
+metadata:
+  name: istio-controlplane
+  namespace: {{ .Release.Namespace }}
+spec:
+  interval: {{ .Values.flux.interval }}
+  url: {{ .Values.istio.git.repo }}
+  ref:
+    {{- include "validRef" .Values.istio.git | nindent 4 }}
+{{- if .Values.istio.git.secret }}
+  secretRef:
+    name: {{ .Values.istio.git.secret | quote }}
+  {{ include "gitIgnore" . }}
+{{- end }}
+{{- end }}
