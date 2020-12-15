@@ -73,7 +73,7 @@ logging:
   git:
     repo: https://repo1.dsop.io/platform-one/big-bang/apps/core/elasticsearch-kibana.git
     path: "./chart"
-    tag: "0.1.0-bb.1"
+    tag: "0.1.2-bb.0"
   values: {}
 
 eckoperator:
@@ -111,7 +111,7 @@ twistlock:
   git:
     repo: https://repo1.dsop.io/platform-one/big-bang/apps/security-tools/twistlock.git
     path: "./chart"
-    tag: "0.0.1-bb.0"
+    tag: "0.0.2-bb.0"
   values: {}
 # ----------------------------------------------------------------------------------------------------------------------
 
