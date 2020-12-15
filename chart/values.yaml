@@ -121,7 +121,8 @@ addons:
     git:
       repo: https://repo1.dsop.io/platform-one/big-bang/apps/core/argocd.git
       path: "./chart"
-      tag: "2.9.5-bb.0"
+      # tag: "2.9.5-bb.0"
+      branch: cicd
     values: {}
 
   authservice:
@@ -129,5 +130,5 @@ addons:
     git:
       repo: https://repo1.dsop.io/platform-one/big-bang/apps/sandbox/authservice.git
       path: "./chart"
-      tag: "0.1.1-bb.0"
+      tag: "0.1.4-bb.0"
     values: {}
