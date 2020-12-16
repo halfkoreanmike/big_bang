@@ -82,7 +82,7 @@ istiooperator:
 #
 clusterAuditor:
   enabled: true
-  git: 
+  git:
     repo: https://repo1.dsop.io/platform-one/big-bang/apps/core/cluster-auditor.git
     path: "./chart"
     tag: "0.1.7-bb.0"
@@ -169,7 +169,7 @@ addons:
       path: "./chart"
       tag: "0.1.4-bb.0"
     values: {}
-  
+
   gitlab:
     enabled: false
     git:
@@ -182,3 +182,13 @@ addons:
       global:
         minio:
           enabled: false
+
+  gitlabRunners:
+    enabled: false
+    git:
+      repo: "https://repo1.dsop.io/platform-one/big-bang/apps/developer-tools/gitlab-runner.git"
+      path: "./chart"
+      tag: "0.19.2-bb.1"
+    values:
+      gitlabUrl: https://repo1.dsop.io
+      runnerRegistrationToken: "-zKKmamcwexkDuqgB_rg"
