@@ -183,7 +183,7 @@ addons:
         minio:
           enabled: false
 
-  gitlabRunners:
+  gitlabRunner:
     enabled: false
     git:
       repo: "https://repo1.dsop.io/platform-one/big-bang/apps/developer-tools/gitlab-runner.git"
