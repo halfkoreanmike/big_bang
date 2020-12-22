@@ -12,14 +12,14 @@ Build the appropriate spec.ref.{} given git branch, commit values
 {{- if not .branch -}}
 {{- fail "A valid branch is required when a commit is specified!" -}}
 {{- end -}}
-branch: {{ .branch | quote }}
+branch: {{ .branch  }}
 commit: {{ .commit }}
 {{- else if .semver -}}
 semver: {{ .semver | quote }}
 {{- else if .tag -}}
 tag: {{ .tag }}
 {{- else -}}
-branch: {{ .branch | quote }}
+branch: {{ .branch  }}
 {{- end -}}
 {{- end -}}
 
