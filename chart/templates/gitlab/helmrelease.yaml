@@ -37,16 +37,16 @@ spec:
     kind: Secret
     valuesKey: "gitlab.yaml"
 
-  values:
-    global:
-      hosts:
-        domain: code.{{ .Values.hostname }}
-        gitlab: 
-          name: code.{{ .Values.hostname }}
-        registry:
-          name: registry.{{ .Values.hostname }}
-    registry:
-      host: registry.{{ .Values.hostname }}
+  # values:
+  #   global:
+  #     hosts:
+  #       domain: code.{{ .Values.hostname }}
+  #       gitlab: 
+  #         name: code.{{ .Values.hostname }}
+  #       registry:
+  #         name: registry.{{ .Values.hostname }}
+  #   registry:
+  #     host: registry.{{ .Values.hostname }}
 
 
   # TODO: DRY this up
