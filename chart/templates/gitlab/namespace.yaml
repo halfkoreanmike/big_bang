@@ -1,0 +1,8 @@
+{{- if .Values.addons.gitlab.enabled }}
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    app: gitlab
+  name: gitlab
+{{- end }}
