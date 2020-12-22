@@ -140,7 +140,7 @@ twistlock:
 
 addons:
   argocd:
-    enabled: true
+    enabled: false
     git:
       repo: https://repo1.dsop.io/platform-one/big-bang/apps/core/argocd.git
       path: "./chart"
