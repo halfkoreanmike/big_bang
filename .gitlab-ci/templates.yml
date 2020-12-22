@@ -1,12 +1,12 @@
 include:
   # "Default" AWS Networking
-  - local: '/.gitlab-ci/jobs/aws/.gitlab-ci.yml'
+  - local: '.gitlab-ci/jobs/aws/.gitlab-ci.yml'
 
   # K3D Gitlab CI job
-  - local: '/.gitlab-ci/jobs/k3d/.gitlab-ci.yml'
+  - local: '.gitlab-ci/jobs/k3d/.gitlab-ci.yml'
 
   # RKE2 Gitlab CI jobs
-  - local: '/.gitlab-ci/jobs/rke2/.gitlab-ci.yml'
+  - local: '.gitlab-ci/jobs/rke2/.gitlab-ci.yml'
 
 .terraformer:
   image:
