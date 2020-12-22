@@ -50,7 +50,7 @@ istio:
   git:
     repo: https://repo1.dsop.io/platform-one/big-bang/apps/core/istio-controlplane.git
     path: "./chart"
-    tag: "1.7.3-bb.0"
+    tag: "1.7.3-bb.1"
   sso:
     enabled: false
     namespace: istio-addons-sso
@@ -125,7 +125,7 @@ monitoring:
   git:
     repo: https://repo1.dsop.io/platform-one/big-bang/apps/core/monitoring.git
     path: "./chart"
-    tag: "11.0.0-bb.3"
+    tag: "11.0.0-bb.4"
   sso:
     enabled: false
     namespace: monitoring-sso
