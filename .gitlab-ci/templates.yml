@@ -1,6 +1,6 @@
 include:
   # "Default" AWS Networking
-  - local: '/.gitlab-ci/jobs/aws/.gitlab-ci.yml'
+  - local: '/.gitlab-ci/jobs/networking/aws/.gitlab-ci.yml'
 
   # K3D Gitlab CI job
   - local: '/.gitlab-ci/jobs/k3d/.gitlab-ci.yml'
