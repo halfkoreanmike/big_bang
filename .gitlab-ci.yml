@@ -86,28 +86,31 @@ pre vars:
   - for test in ./tests/bash/*.sh; do chmod +x $test && $test; done 
 
 .run_only_airgap:
-  # before_script:
-  #   - |
-  #     if [ ! -f testairgap ]; then
-  #       exit 1
-  #     fi
-  rules:
-    - exists:
-        - testairgap
-      when: always
-    - when: never
+  before_script:
+    - |
+      if [ ! -f testairgap ]; then
+        exit 1
+      fi
+    - export TF_VAR_env=$(echo "${CI_COMMIT_REF_SLUG}"| cut -c 1-7)-$(echo "${CI_COMMIT_SHA}" | cut -c 1-7)
+    - cd ${TF_ROOT}
+    - terraform version
+    - terraform init -input=false
+    - terraform workspace select $TF_VAR_env || terraform workspace new $TF_VAR_env
+    - terraform validate
+
 
 .run_if_not_airgap:
-  rules:
-    - exists:
-        - testairgap
-      when: never
-    - when: always
-  # before_script:
-  #   - |
-  #     if [ -f testairgap ]; then
-  #       exit 1
-  #     fi
+  before_script:
+    - |
+      if [ -f testairgap ]; then
+        exit 1
+      fi
+    - export TF_VAR_env=$(echo "${CI_COMMIT_REF_SLUG}"| cut -c 1-7)-$(echo "${CI_COMMIT_SHA}" | cut -c 1-7)
+    - cd ${TF_ROOT}
+    - terraform version
+    - terraform init -input=false
+    - terraform workspace select $TF_VAR_env || terraform workspace new $TF_VAR_env
+    - terraform validate
 
 clean install:
   stage: smoke tests
