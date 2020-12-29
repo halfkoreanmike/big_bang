@@ -85,19 +85,29 @@ pre vars:
 .test_bigbang: &test_bigbang
   - for test in ./tests/bash/*.sh; do chmod +x $test && $test; done 
 
-.check_if_airgap:
-  before_script:
-    - |
-      if [ ! -f testairgap ]; then
-        exit 1
-      fi
+.run_only_airgap:
+  # before_script:
+  #   - |
+  #     if [ ! -f testairgap ]; then
+  #       exit 1
+  #     fi
+  rules:
+    - exists:
+        - testairgap
+      when: always
+    - when: never
 
-.check_not_airgap:
-  before_script:
-    - |
-      if [ -f testairgap ]; then
-        exit 1
-      fi
+.run_if_not_airgap:
+  rules:
+    - exists:
+        - testairgap
+      when: never
+    - when: always
+  # before_script:
+  #   - |
+  #     if [ -f testairgap ]; then
+  #       exit 1
+  #     fi
 
 clean install:
   stage: smoke tests
@@ -258,14 +268,14 @@ aws/network up:
     auto_stop_in: 1 hour
 
 aws/airgap test:
-  stage: network up
+  extends:
+    - .infra fork
   script:
     - touch $CI_PROJECT_DIR/testairgap
   artifacts:
     paths:
       - testairgap
     expire_in: 7 days
-  when: manual
 
 aws/network down:
   extends:
@@ -285,7 +295,7 @@ aws/airgap/utility up:
   extends:
     - .infra create
     - .utility up
-    - .check_if_airgap
+    - .run_only_airgap
   stage: airgap up
   # environment:
   #   name: review/aws-${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA}
@@ -317,9 +327,9 @@ aws/airgap/utility down:
 aws/rke2/cluster up:
   stage: cluster up
   extends:
-    - .check_not_airgap
     - .infra create
     - .rke2 up
+    - .run_if_not_airgap
   allow_failure: true
   needs:
     - job: fetch umbrella templates
@@ -332,9 +342,9 @@ aws/rke2/cluster up:
 aws/rke2/airgap-cluster up:
   stage: cluster up
   extends:
-    - .check_if_airgap
     - .infra create
     - .rke2 up
+    - .run_only_airgap
   allow_failure: true
   needs:
     - job: fetch umbrella templates
@@ -343,6 +353,9 @@ aws/rke2/airgap-cluster up:
     - job: aws/airgap/utility up
     - job: aws/airgap test
       artifacts: true
+  rules:
+    - exists:
+        - testairgap
 
 # Install BigBang on RKE2 cluster on AWS
 aws/rke2/bigbang up:
