@@ -303,11 +303,13 @@ aws/airgap/utility up:
   # environment:
   #   name: review/aws-${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA}
   #   auto_stop_in: 1 hour
+  dependencies: 
+    - aws/airgap test
   needs:
     - job: fetch umbrella templates
       artifacts: true
-    - job: aws/airgap test
-      artifacts: true
+    # - job: aws/airgap test
+    #   artifacts: true
     - job: aws/network up
   allow_failure: true
 
@@ -334,28 +336,32 @@ aws/rke2/cluster up:
     - .rke2 up
     - .run_if_not_airgap
   allow_failure: true
+  dependencies: 
+    - aws/airgap test
   needs:
     - job: fetch umbrella templates
       artifacts: true
     - job: aws/network up
-    - job: aws/airgap test
-      artifacts: true
+    # - job: aws/airgap test
+    #   artifacts: true
 
 # Create Airgap RKE2 cluster on AWS
 aws/rke2/airgap-cluster up:
   stage: cluster up
   extends:
     - .infra create
-    - .rke2 up
+    - .rke2 airgap up
     - .run_only_airgap
   allow_failure: true
+  dependencies: 
+    - aws/airgap test
   needs:
     - job: fetch umbrella templates
       artifacts: true
     - job: aws/network up
     - job: aws/airgap/utility up
-    - job: aws/airgap test
-      artifacts: true
+    # - job: aws/airgap test
+    #   artifacts: true
 
 # Install BigBang on RKE2 cluster on AWS
 aws/rke2/bigbang up:
@@ -425,6 +431,16 @@ aws/rke2/cluster down:
   extends:
     - .infra cleanup
     - .rke2 down
+  needs:
+    - job: fetch umbrella templates
+      artifacts: true
+    - job: aws/rke2/bigbang down
+
+aws/rke2/cluster airgap down:
+  stage: cluster down
+  extends:
+    - .infra cleanup
+    - .rke2 airgap down
   needs:
     - job: fetch umbrella templates
       artifacts: true
