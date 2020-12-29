@@ -304,13 +304,15 @@ aws/airgap/utility up:
   #   name: review/aws-${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA}
   #   auto_stop_in: 1 hour
   dependencies: 
+    - fetch umbrella templates
+    - aws/network up
     - aws/airgap test
-  needs:
-    - job: fetch umbrella templates
-      artifacts: true
-    # - job: aws/airgap test
-    #   artifacts: true
-    - job: aws/network up
+  # needs:
+  #   - job: fetch umbrella templates
+  #     artifacts: true
+  #   # - job: aws/airgap test
+  #   #   artifacts: true
+  #   - job: aws/network up
   allow_failure: true
 
 # Destroy Utility Instance on AWS
@@ -337,13 +339,15 @@ aws/rke2/cluster up:
     - .run_if_not_airgap
   allow_failure: true
   dependencies: 
+    - fetch umbrella templates
     - aws/airgap test
-  needs:
-    - job: fetch umbrella templates
-      artifacts: true
-    - job: aws/network up
-    # - job: aws/airgap test
-    #   artifacts: true
+    - aws/network up
+  # needs:
+  #   - job: fetch umbrella templates
+  #     artifacts: true
+  #   - job: aws/network up
+  #   # - job: aws/airgap test
+  #   #   artifacts: true
 
 # Create Airgap RKE2 cluster on AWS
 aws/rke2/airgap-cluster up:
@@ -354,14 +358,17 @@ aws/rke2/airgap-cluster up:
     - .run_only_airgap
   allow_failure: true
   dependencies: 
+    - fetch umbrella templates
+    - aws/network up
+    - aws/airgap/utility up
     - aws/airgap test
-  needs:
-    - job: fetch umbrella templates
-      artifacts: true
-    - job: aws/network up
-    - job: aws/airgap/utility up
-    # - job: aws/airgap test
-    #   artifacts: true
+  # needs:
+  #   - job: fetch umbrella templates
+  #     artifacts: true
+  #   - job: aws/network up
+  #   - job: aws/airgap/utility up
+  #   # - job: aws/airgap test
+  #   #   artifacts: true
 
 # Install BigBang on RKE2 cluster on AWS
 aws/rke2/bigbang up:
