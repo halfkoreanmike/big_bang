@@ -42,7 +42,7 @@ spec:
     sso:
       enabled: {{ .Values.istio.sso.enabled }}
       namespace: {{ .Values.istio.sso.namespace }}
-
+    
     imagePullSecrets:
       - private-registry
 

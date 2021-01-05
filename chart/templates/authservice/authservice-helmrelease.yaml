@@ -39,9 +39,30 @@ spec:
   values:
     imagePullSecrets:
       - name: private-registry
-
+    global:
+      oidc:
+        host: {{ .Values.sso.oidc.host }}
+        realm: {{ .Values.sso.oidc.realm }}
+      jwks: {{ .Values.sso.jwks }}
+      client_id: {{ .Values.sso.client_id }}
+      client_secret: {{ .Values.sso.client_secret }}
+      certificate_authority: {{ .Values.sso.certificate_authority }}
+    chains:
+      kiali:
+        match:
+          header: ":authority"
+          prefix: "kiali"
+        client_id: {{ .Values.istio.sso.kiali.client_id }}
+        client_secret: "{{ .Values.istio.sso.kiali.client_secret }}"
+        callback_uri: https://kiali.{{ .Values.hostname }}/login
+      jaeger:
+        match:
+          header: ":authority"
+          prefix: "tracing"
+        client_id: "{{ .Values.istio.sso.jaeger.client_id }}"
+        client_secret: "{{ .Values.istio.sso.jaeger.client_secret }}"
+        callback_uri: https://tracing.{{ .Values.hostname }}/login
     filterLabel: keycloak
-
   dependsOn:
   - name: istio
     namespace: {{ .Release.Namespace }}
