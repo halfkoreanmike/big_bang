@@ -15,7 +15,7 @@ spec:
         name: gitlab
         namespace: {{ .Release.Namespace }}
 
-  {{- with .Values.flux }}
+{{- with .Values.flux }}
   interval: {{ .interval }}
   test:
     enable: false
@@ -33,29 +33,37 @@ spec:
   {{- end }}
 
   valuesFrom:
-  - name: values
-    kind: Secret
-    valuesKey: "gitlab.yaml"
+    - name: values
+      kind: Secret
+      valuesKey: "gitlab.yaml"
 
   values:
+    hostname: {{ .Values.hostname }}
+    istio:
+      enabled: {{ .Values.istio.enabled }}
+    monitoring:
+      enabled: {{ .Values.monitoring.enabled }}
+    imagePullSecrets:
+      - private-registry
+
     global:
       hosts:
         domain: code.{{ .Values.hostname }}
-        gitlab: 
+        gitlab:
           name: code.{{ .Values.hostname }}
         registry:
           name: registry.{{ .Values.hostname }}
-    registry:
-      host: registry.{{ .Values.hostname }}
 
-
-  # TODO: DRY this up
-  {{- if or .Values.monitoring.enabled .Values.istio.enabled }}
+  {{- if or .Values.gatekeeper.enabled .Values.istio.enabled .Values.monitoring.enabled }}
   dependsOn:
+  {{- if .Values.gatekeeper.enabled }}
+  - name: gatekeeper
+    namespace: {{ .Release.Namespace }}
+  {{- end }}
   {{- if .Values.istio.enabled }}
   - name: istio
-    namespace: {{ .Release.Namespace}}
-  {{- end}}
+    namespace: {{ .Release.Namespace }}
+  {{- end }}
   {{- if .Values.monitoring.enabled }}
   - name: monitoring
     namespace: {{ .Release.Namespace }}
