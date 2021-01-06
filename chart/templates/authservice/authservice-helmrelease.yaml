@@ -51,33 +51,32 @@ spec:
       certificate_authority: {{ .Values.sso.certificate_authority }}
     chains:
     {{- if .Values.istio.sso.enabled }}
-      kiali:
-        match:
-          header: ":authority"
-          prefix: "kiali"
-        client_id: {{ .Values.istio.sso.kiali.client_id }}
-        callback_uri: https://kiali.{{ .Values.hostname }}/login
-      jaeger:
-        match:
-          header: ":authority"
-          prefix: "tracing"
-        client_id: "{{ .Values.istio.sso.jaeger.client_id }}"
-        callback_uri: https://tracing.{{ .Values.hostname }}/login
+    - name: kiali
+      match:
+        header: ":authority"
+        prefix: "kiali"
+      client_id: {{ .Values.istio.sso.kiali.client_id }}
+      callback_uri: https://kiali.{{ .Values.hostname }}/login
+    - name: jaeger
+      match:
+        header: ":authority"
+        prefix: "tracing"
+      client_id: "{{ .Values.istio.sso.jaeger.client_id }}"
+      callback_uri: https://tracing.{{ .Values.hostname }}/login
       {{- end }}
     {{- if .Values.monitoring.sso.enabled }}
-      prometheus:
-        match:
-          header: ":authority"
-          prefix: "prometheus"
-        client_id: {{ .Values.monitoring.sso.prometheus.client_id }}
-        callback_uri: https://prometheus.{{ .Values.hostname }}/login/generic_oauth
-      alertmanager:
-        match:
-          header: ":authority"
-          prefix: "alertmanager"
-        client_id: {{ .Values.monitoring.sso.prometheus.client_id }}
-        callback_uri: https://alertmanager.{{ .Values.hostname }}/login/generic_oauth
-
+    - name: prometheus
+      match:
+        header: ":authority"
+        prefix: "prometheus"
+      client_id: {{ .Values.monitoring.sso.prometheus.client_id }}
+      callback_uri: https://prometheus.{{ .Values.hostname }}/login/generic_oauth
+    - name: alertmanager
+      match:
+        header: ":authority"
+        prefix: "alertmanager"
+      client_id: {{ .Values.monitoring.sso.alertmanager.client_id }}
+      callback_uri: https://alertmanager.{{ .Values.hostname }}/login/generic_oauth
       {{- end }}
     filterLabel: keycloak
   dependsOn:
