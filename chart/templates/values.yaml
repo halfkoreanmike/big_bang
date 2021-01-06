@@ -18,7 +18,7 @@ stringData:
       jaeger:
         client_secret: "{{ .Values.istio.sso.jaeger.client_secret }}"
       prometheus:
-        client_secret: "{{ .Values.monitoring.prometheus.client_secret }}"
+        client_secret: "{{ .Values.monitoring.sso.prometheus.client_secret }}"
 {{ toYaml .Values.addons.authservice.values | indent 4 }}
   istio.yaml: |
 {{ toYaml .Values.istio.values | indent 4  }}
