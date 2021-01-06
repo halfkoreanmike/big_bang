@@ -16,7 +16,9 @@
   services:
     - registry.dsop.io/platform-one/big-bang/pipeline-templates/pipeline-templates/docker:dind
   tags:
-    - dogfood
+    - bigbang
+    - privileged
+    - public
   variables:
     DOCKER_HOST: tcp://localhost:2375/
     DOCKER_DRIVER: overlay2
