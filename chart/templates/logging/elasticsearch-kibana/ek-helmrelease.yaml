@@ -2,7 +2,7 @@
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
-  name: ek
+  name: atlantis
   namespace: {{ .Release.Namespace }}
 spec:
   targetNamespace: logging
@@ -35,7 +35,7 @@ spec:
   valuesFrom:
     - name: values
       kind: Secret
-      valuesKey: "logging.yaml"
+      valuesKey: "values.yaml"
 
   values:
     hostname: {{ .Values.hostname }}

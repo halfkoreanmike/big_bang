@@ -145,6 +145,12 @@ monitoring:
   sso:
     enabled: false
     namespace: monitoring-sso
+    prometheus:
+      client_id: platform1_a8604cc9-f5e9-4656-802d-d05624370245_bb8-prometheus
+      client_secret: not_a_secret
+    grafana:
+      client_id: {}
+      client_secret: {}
   values: {}
 # ----------------------------------------------------------------------------------------------------------------------
 
@@ -177,4 +183,11 @@ addons:
       # tag: "0.1.4-bb.0"
       # TODO(@runyontr) remove before merging
       branch: "keys-for-chains"
+    values: {}
+
+  haproxy:
+    git: 
+      repo: https://repo1.dso.mil/platform-one/big-bang/apps/sandbox/haproxy.git
+      path: "./chart"
+      tag: 1.1.2-bb.0
     values: {}

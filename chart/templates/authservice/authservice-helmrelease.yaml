@@ -43,25 +43,33 @@ spec:
       oidc:
         host: {{ .Values.sso.oidc.host }}
         realm: {{ .Values.sso.oidc.realm }}
-      jwks: {{ .Values.sso.jwks }}
+      {{- if .Values.sso.jwks }}
+      jwks: "{{ .Values.sso.jwks }}"
+      {{- end }}
       client_id: {{ .Values.sso.client_id }}
       client_secret: {{ .Values.sso.client_secret }}
       certificate_authority: {{ .Values.sso.certificate_authority }}
     chains:
+    {{- if .Values.istio.sso.enabled }}
       kiali:
         match:
           header: ":authority"
           prefix: "kiali"
         client_id: {{ .Values.istio.sso.kiali.client_id }}
-        client_secret: "{{ .Values.istio.sso.kiali.client_secret }}"
         callback_uri: https://kiali.{{ .Values.hostname }}/login
       jaeger:
         match:
           header: ":authority"
           prefix: "tracing"
         client_id: "{{ .Values.istio.sso.jaeger.client_id }}"
-        client_secret: "{{ .Values.istio.sso.jaeger.client_secret }}"
         callback_uri: https://tracing.{{ .Values.hostname }}/login
+      prometheus:
+        match:
+          header: ":authority"
+          prefix: "prometheus"
+        client_id: {{ .Values.monitoring.sso.prometheus.client_id }}
+        callback_uri: https://prometheus.{{ .Values.hostname }}/
+      {{- end }}
     filterLabel: keycloak
   dependsOn:
   - name: istio
