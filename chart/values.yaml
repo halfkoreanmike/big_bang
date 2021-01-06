@@ -146,7 +146,10 @@ monitoring:
     enabled: false
     namespace: monitoring-sso
     prometheus:
-      client_id: {}
+      client_id: platform1_a8604cc9-f5e9-4656-802d-d05624370245_bb8-prometheus
+      client_secret: {}
+    alertmanager:
+      client_id: platform1_a8604cc9-f5e9-4656-802d-d05624370245_bb8-jaeger
       client_secret: {}
     grafana:
       client_id: {}
