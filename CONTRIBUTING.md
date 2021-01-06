@@ -9,6 +9,8 @@ Table of Contents:
   - [Local Git Setup](#local-git-setup)
     - [Pre-commit hooks](#pre-commit-hooks)
       - [Local Setup](#local-setup)
+        - [Prereqs](#prereqs)
+        - [Steps](#steps)
   - [Iron Bank Images](#iron-bank-images)
   - [Local Kubernetes cluster](#local-kubernetes-cluster)
   - [Deploying Big Bang (Quick Start)](#deploying-big-bang-quick-start)
@@ -41,7 +43,19 @@ We would like developers to leverage [conventional commits](https://www.conventi
 
 #### Local Setup
 
+##### Prereqs
 
+- Install [npm](https://www.npmjs.com/get-npm)
+
+##### Steps
+
+After cloning this git repo run the following command:
+
+```bash
+npm install --only=dev  
+```
+
+This will download `husky` and `commitlint` to your local repo and modify your `.git/hooks` to allow husky to run pre-commit hooks. Once installed it will enforce the usage of convential-commits.
 
 ## Iron Bank Images
 
