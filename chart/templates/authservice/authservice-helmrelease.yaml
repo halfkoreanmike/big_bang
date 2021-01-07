@@ -46,11 +46,14 @@ spec:
       {{- if .Values.sso.jwks }}
       jwks: "{{ .Values.sso.jwks }}"
       {{- end }}
+{{- if .Values.sso.client_id}}
       client_id: {{ .Values.sso.client_id }}
+{{- end }}
+{{- if .Values.sso.client_secret }}
       client_secret: {{ .Values.sso.client_secret }}
+{{- end }}
       certificate_authority: {{ .Values.sso.certificate_authority }}
     chains:
-    {{- if .Values.istio.sso.enabled }}
       kiali:
         match:
           header: ":authority"
@@ -63,8 +66,6 @@ spec:
           prefix: "tracing"
         client_id: "{{ .Values.istio.sso.jaeger.client_id }}"
         callback_uri: https://tracing.{{ .Values.hostname }}/login
-    {{- end }}
-    {{- if .Values.monitoring.sso.enabled }}
       prometheus:
         match:
           header: ":authority"
@@ -77,7 +78,6 @@ spec:
           prefix: "alertmanager"
         client_id: {{ .Values.monitoring.sso.alertmanager.client_id }}
         callback_uri: https://alertmanager.{{ .Values.hostname }}/login/generic_oauth
-      {{- end }}
     filterLabel: keycloak
   dependsOn:
   - name: istio

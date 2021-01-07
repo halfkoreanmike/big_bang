@@ -58,8 +58,7 @@ addons:
     enabled: true
   authservice:
     enabled: true
-    values:
-      chains:
-        minimal:
-          callback_uri: "https://minimal.bigbang.dev"
+    chains:
+      minimal:
+        callback_uri: "https://minimal.bigbang.dev"
 
