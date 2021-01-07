@@ -63,7 +63,7 @@ spec:
           prefix: "tracing"
         client_id: "{{ .Values.istio.sso.jaeger.client_id }}"
         callback_uri: https://tracing.{{ .Values.hostname }}/login
-      {{- end }}
+    {{- end }}
     {{- if .Values.monitoring.sso.enabled }}
       prometheus:
         match:
