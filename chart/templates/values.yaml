@@ -18,8 +18,10 @@ stringData:
       jaeger:
         client_secret: "{{ .Values.istio.sso.jaeger.client_secret }}"
       prometheus:
-        client_secret: "{{ .Values.monitoring.prometheus.client_secret }}"
-{{ toYaml .Values.addons.authservice.values | indent 4 }}
+        client_secret: "{{ .Values.monitoring.sso.prometheus.client_secret }}"
+    {{ if .Values.addons.authservice.values }}
+    {{ toYaml .Values.addons.authservice.values | indent 4 }}
+    {{- end }}
   istio.yaml: |
 {{ toYaml .Values.istio.values | indent 4  }}
   gatekeeper.yaml: |
@@ -33,7 +35,9 @@ stringData:
   monitoring.yaml: |
     grafana_client_id: {{ .Values.monitoring.sso.grafana.client_id }}
     grafana_client_secret: {{ .Values.monitoring.sso.grafana.client_secret }}
+{{ if .Values.monitoring.values }}
 {{ toYaml .Values.monitoring.values | indent 4 }}
+{{- end }}
   twistlock.yaml: |
 {{ toYaml .Values.twistlock.values | indent 4 }} 
   clusterauditor.yaml: |
