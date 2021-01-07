@@ -9,6 +9,9 @@
   - k3d node list
 
 .k3d_after_script: &k3d_after_script
+  - kubectl get pods,namespaces,helmreleases,gitrepositories -A
+  - kubectl describe pods -n istio-system -l app.kubernetes.io/name=authservice
+  - kubectl logs -n istio-system -l app.kubernetes.io/name=authservice 
   - k3d cluster delete ${CLUSTER_NAME}
 
 .k3d:
