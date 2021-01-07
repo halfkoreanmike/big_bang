@@ -63,12 +63,20 @@ spec:
           prefix: "tracing"
         client_id: "{{ .Values.istio.sso.jaeger.client_id }}"
         callback_uri: https://tracing.{{ .Values.hostname }}/login
+      {{- end }}
+    {{- if .Values.monitoring.sso.enabled }}
       prometheus:
         match:
           header: ":authority"
           prefix: "prometheus"
         client_id: {{ .Values.monitoring.sso.prometheus.client_id }}
-        callback_uri: https://prometheus.{{ .Values.hostname }}/
+        callback_uri: https://prometheus.{{ .Values.hostname }}/login/generic_oauth
+      alertmanager:
+        match:
+          header: ":authority"
+          prefix: "alertmanager"
+        client_id: {{ .Values.monitoring.sso.alertmanager.client_id }}
+        callback_uri: https://alertmanager.{{ .Values.hostname }}/login/generic_oauth
       {{- end }}
     filterLabel: keycloak
   dependsOn:
