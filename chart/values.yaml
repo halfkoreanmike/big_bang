@@ -185,7 +185,7 @@ addons:
       path: "./chart"
       # tag: "0.1.4-bb.0"
       # TODO(@runyontr) remove before merging
-      tag: "0.1.4-bb.0"
+      branch: keys-for-chains
     values: {}
 
   haproxy:
