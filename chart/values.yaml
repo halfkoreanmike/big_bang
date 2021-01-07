@@ -179,6 +179,12 @@ addons:
     values: {}
 
   authservice:
+    # if enabling authservice, a filter needs to be provided by either enabling
+    # sso for monitoring or istio, or manually adding a filter chain in the values here:
+    # values:
+    #   chain:
+    #     minimal:
+    #       callback_uri: "https://somecallback"
     enabled: false
     git:
       repo: https://repo1.dsop.io/platform-one/big-bang/apps/sandbox/authservice.git

@@ -59,7 +59,7 @@ addons:
   authservice:
     enabled: true
     values:
-      chain:
+      chains:
         minimal:
           callback_uri: "https://minimal.bigbang.dev"
 
