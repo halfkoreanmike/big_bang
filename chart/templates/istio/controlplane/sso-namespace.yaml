@@ -56,7 +56,6 @@ spec:
     hosts:
     - kiali
     - tracing
-    - prometheus
     podLabels:
       protect: keycloak
     config: |
