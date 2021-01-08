@@ -60,6 +60,7 @@ istio:
   git:
     repo: https://repo1.dsop.io/platform-one/big-bang/apps/core/istio-controlplane.git
     path: "./chart"
+<<<<<<< HEAD
     tag: "1.7.3-bb.2"
   sso:
     enabled: false
@@ -70,6 +71,9 @@ istio:
     jaeger:
       client_id: platform1_a8604cc9-f5e9-4656-802d-d05624370245_bb8-jaeger
       client_secret: "change_me"
+=======
+    tag: "1.7.3-bb.4"
+>>>>>>> origin/master
   values: {}
 
 istiooperator:
@@ -121,7 +125,7 @@ eckoperator:
   git:
     repo: https://repo1.dsop.io/platform-one/big-bang/apps/core/eck-operator.git
     path: "./chart"
-    tag: "1.3.0-bb.1"
+    tag: "1.3.0-bb.2"
   values: {}
 
 fluentbit:
@@ -141,7 +145,7 @@ monitoring:
   git:
     repo: https://repo1.dsop.io/platform-one/big-bang/apps/core/monitoring.git
     path: "./chart"
-    tag: "11.0.0-bb.3"
+    tag: "11.0.0-bb.4"
   sso:
     enabled: false
     namespace: monitoring-sso
