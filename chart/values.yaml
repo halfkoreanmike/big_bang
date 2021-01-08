@@ -189,9 +189,7 @@ addons:
     git:
       repo: https://repo1.dsop.io/platform-one/big-bang/apps/sandbox/authservice.git
       path: "./chart"
-      # tag: "0.1.4-bb.0"
-      # TODO(@runyontr) remove before merging
-      branch: keys-for-chains
+      tag: "0.1.5-bb.0"
     #Dont put chain configuraitons in this section
     values: {}
       # put additional chain configuration in this section
