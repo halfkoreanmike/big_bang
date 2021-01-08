@@ -123,10 +123,12 @@ spec:
       backend alertmanager_main
         mode http
         option forwardfor
+        http-request replace-header Host .* monitoring-monitoring-kube-alertmanager.monitoring.svc.cluster.local
         server alertmanager monitoring-monitoring-kube-alertmanager.monitoring.svc.cluster.local:9093
       backend prometheus_main
         mode http
         option forwardfor
+        http-request replace-header Host .* monitoring-monitoring-kube-prometheus.monitoring.svc.cluster.local
         server prometheus monitoring-monitoring-kube-prometheus.monitoring.svc.cluster.local:9090
 
     image:
