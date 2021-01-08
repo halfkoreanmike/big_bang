@@ -872,7 +872,7 @@ spec:
         - mountPath: /tmp
           name: tmp
       imagePullSecrets:
-      - name: ironbank
+      - name: private-registry
       nodeSelector:
         kubernetes.io/arch: amd64
         kubernetes.io/os: linux
@@ -1210,7 +1210,7 @@ spec:
         - mountPath: /tmp
           name: temp
       imagePullSecrets:
-      - name: ironbank
+      - name: private-registry
       nodeSelector:
         kubernetes.io/arch: amd64
         kubernetes.io/os: linux
@@ -1663,7 +1663,7 @@ spec:
         - mountPath: /tmp
           name: temp
       imagePullSecrets:
-      - name: ironbank
+      - name: private-registry
       nodeSelector:
         kubernetes.io/arch: amd64
         kubernetes.io/os: linux
@@ -2181,7 +2181,7 @@ spec:
         - mountPath: /tmp
           name: temp
       imagePullSecrets:
-      - name: ironbank
+      - name: private-registry
       nodeSelector:
         kubernetes.io/arch: amd64
         kubernetes.io/os: linux
