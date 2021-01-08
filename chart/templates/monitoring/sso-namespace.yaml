@@ -21,7 +21,7 @@ data:
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
-  name: haproxy
+  name: haproxy-{{ .Values.monitoring.sso.namespace }}
   namespace: {{ .Release.Namespace }}
 spec:
   targetNamespace: {{ .Values.monitoring.sso.namespace }}
@@ -53,9 +53,7 @@ spec:
 
   values:
     hostname: {{ .Values.hostname }}
-    hosts:
-    - alertmanager
-    - prometheus
+
     podLabels:
       protect: keycloak
     config: |
