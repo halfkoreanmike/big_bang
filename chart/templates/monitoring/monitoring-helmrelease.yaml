@@ -59,6 +59,18 @@ spec:
       imagePullSecrets:
       - name: private-registry
 
+{{- if .Values.monitoring.sso.enabled }}
+    ingress:
+      kiali:
+        service: {{ .Values.monitoring.sso.namespace }}-haproxy-{{ .Values.monitoring.sso.namespace }}
+        port: 8080
+        namespace: {{ .Values.monitoring.sso.namespace }}
+      jaeger:
+        service: {{ .Values.monitoring.sso.namespace }}-haproxy-{{ .Values.monitoring.sso.namespace }}
+        port: 8080
+        namespace: {{ .Values.monitoring.sso.namespace }}
+{{- end }}
+
   # TODO: DRY this up
   {{- if or .Values.gatekeeper.enabled .Values.istio.enabled }}
   dependsOn:
