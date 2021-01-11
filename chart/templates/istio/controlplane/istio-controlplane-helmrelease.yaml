@@ -46,6 +46,18 @@ spec:
     imagePullSecrets:
       - private-registry
 
+{{- if .Values.istio.sso.enabled }}
+    ingress:
+      kiali:
+        service: {{ .Values.istio.sso.namespace }}-haproxy
+        port: 8080
+        namespace: {{ .Values.istio.sso.namespace }}
+      jaeger:
+        service: {{ .Values.istio.sso.namespace }}-haproxy
+        port: 8080
+        namespace: {{ .Values.istio.sso.namespace }}
+{{- end }}
+
   dependsOn:
     - name: istio-operator
       namespace: {{ .Release.Namespace }}
