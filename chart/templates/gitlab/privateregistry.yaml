@@ -1,0 +1,10 @@
+{{- if .Values.privateRegistries }}
+apiVersion: v1
+kind: Secret
+metadata:
+  name: private-registry
+  namespace: gitlab
+type: kubernetes.io/dockerconfigjson
+data:
+  .dockerconfigjson: {{ template "privateRegistries" . }}
+{{- end }}
