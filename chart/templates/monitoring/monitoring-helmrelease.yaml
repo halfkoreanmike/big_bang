@@ -61,11 +61,11 @@ spec:
 
 {{- if .Values.monitoring.sso.enabled }}
     ingress:
-      kiali:
+      prometheus:
         service: {{ .Values.monitoring.sso.namespace }}-haproxy-{{ .Values.monitoring.sso.namespace }}
         port: 8080
         namespace: {{ .Values.monitoring.sso.namespace }}
-      jaeger:
+      alertmanager:
         service: {{ .Values.monitoring.sso.namespace }}-haproxy-{{ .Values.monitoring.sso.namespace }}
         port: 8080
         namespace: {{ .Values.monitoring.sso.namespace }}
