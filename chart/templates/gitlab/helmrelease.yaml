@@ -43,9 +43,61 @@ spec:
       enabled: {{ .Values.istio.enabled }}
     monitoring:
       enabled: {{ .Values.monitoring.enabled }}
-    imagePullSecrets:
-      - private-registry
-
+    {{- if .Values.privateRegistries }}
+    ## values for image pull secrets
+    redis:
+      metrics:
+        image:
+          pullSecrets: 
+          - private-registry
+      image:
+        pullSecrets: 
+        - private-registry
+    registry:
+      image:
+        pullSecrets:
+        - name: private-registry
+    shared-secrets:
+      selfsign:
+        image:
+          pullSecrets:
+          - name: private-registry
+    gitlab:
+      task-runner:
+        image:
+          pullSecrets:
+          - name: private-registry
+      migrations:
+        image:
+          pullSecrets:
+          - name: private-registry
+      webservice:
+        image:
+          pullSecrets:
+          - name: private-registry 
+        workhorse:
+          pullSecrets:
+          - name: private-registry 
+      sidekiq:
+        image:
+          pullSecrets:
+          - name: private-registry
+      gitaly:
+        image:
+          pullSecrets:
+          - name: private-registry
+      gitlab-shell:
+        image:
+          pullSecrets:
+          - name: private-registry
+      gitlab-exporter:
+        image:
+          pullSecrets:
+          - name: private-registry
+    minio:
+      pullSecrets:
+      - name: private-registry
+    {{- end }}
     global:
       hosts:
         domain: code.{{ .Values.hostname }}
@@ -53,6 +105,17 @@ spec:
           name: code.{{ .Values.hostname }}
         registry:
           name: registry.{{ .Values.hostname }}
+      {{- if .Values.privateRegistries }}
+      ## values for image pull secrets
+      certificates:
+        image:
+          pullSecrets:
+          - name: private-registry
+      kubectl:
+        image:
+          pullSecrets:
+          - name: private-registry
+      {{ end }}
 
   {{- if or .Values.gatekeeper.enabled .Values.istio.enabled .Values.monitoring.enabled }}
   dependsOn:

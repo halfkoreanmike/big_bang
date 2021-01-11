@@ -4,12 +4,28 @@ hostname: bigbang.dev
 # TODO: All this does right now is toggle GitRepositories, it is _not_ fully functional
 offline: false
 
-# Registry credentials to use from pulling images from private registry, will create an appropriate imagePullSecret in all relevant namespaces
+# This tag is deprecated. All application packages must switch to "privateRegistries"
 registryCredentials:
   registry: registry1.dsop.io
   username: ""
   password: ""
   email: ""
+
+# Registry credentials to use from pulling images from private registries, will create an appropriate dockerconfigjson secret in all relevant namespaces
+# example tags to be added in customer template
+# privateRegistries:
+# - registry: registry1.dsop.io
+#   username: user.name
+#   password: user-secret
+#   email: xxx@xxx.xxx
+# - registry: registry1.dso.mil
+#   username: user.name
+#   password: user-secret
+#   email: xxx@xxx.xxx
+# - registry: registry.dso.mil
+#   username: user.name
+#   password: user-secret
+#   email: xxx@xxx.xxx
 
 # Global git values
 # Order of precedence is:
