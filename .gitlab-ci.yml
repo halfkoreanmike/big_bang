@@ -1,13 +1,12 @@
-# Define global rules for when pipelines run
+# global rules for when pipelines run
 workflow:
   rules:
-    # Skip pipeline when commit message starts with "wip"
-    - if: '$CI_COMMIT_MESSAGE =~ /^wip/'
-      when: never
-    # Skip pipeline for branches that start with "docs"
-    - if: '$CI_COMMIT_REF_NAME =~ /^docs/'
-      when: never
-    - when: always
+    # run pipeline for manual tag events
+    - if: $CI_COMMIT_TAG
+    # run pipeline on merge request events
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    # run pipeline on commits to default branch
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
 
 # include templates
 include:
@@ -83,11 +82,6 @@ clean install:
   stage: smoke tests
   extends:
     - .k3d
-  rules:
-    # Skip on merge requests (it is ran as part of the non MR pipeline)
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
-      when: never
-    - when: always
   variables:
     CLUSTER_NAME: "clean-${CI_COMMIT_SHORT_SHA}"
   script:
@@ -101,13 +95,17 @@ clean install:
 
 upgrade:
   stage: smoke tests
-  needs:
-    - job: pre vars
-      artifacts: true  
+  dependencies:
+    - pre vars
   extends:
     - .k3d
   rules:
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TITLE !~ /^Breaking Change/'
+    # skip job when MR title starts with 'Breaking Change'
+    - if: '$CI_MERGE_REQUEST_TITLE =~ /^Breaking Change/'
+      when: never
+    # run pipeline on merge request events
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      
   variables:
     CLUSTER_NAME: "clean-${CI_COMMIT_SHORT_SHA}"
   script:
@@ -126,8 +124,11 @@ package:
   stage: package
   image: registry.dsop.io/platform-one/big-bang/umbrella/synker:0.0.1
   rules:
-    - if: '$CI_COMMIT_TAG'
-    - when: never
+    # skip job for manual tag events
+    - if: $CI_COMMIT_TAG
+      when: never
+    # run job on commits to default branch
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
   dependencies:
     - clean install
   before_script:
@@ -164,8 +165,11 @@ release:
   stage: release
   image: registry.gitlab.com/gitlab-org/release-cli:latest
   rules:
-    - if: '$CI_COMMIT_TAG'
-    - when: never
+    # skip job for manual tag events
+    - if: $CI_COMMIT_TAG
+      when: never
+    # run job on commits to default branch
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
   variables:
     RELEASE_ENDPOINT: https://${RELEASE_BUCKET}.s3-${AWS_DEFAULT_REGION}.amazonaws.com/umbrella/${CI_COMMIT_TAG}
   script:
@@ -186,10 +190,10 @@ release:
 .infra fork:
   stage: network up
   rules:
-    # Skip when branch name starts with "hotfix" or "patch"
+    # skip job when branch name starts with "hotfix" or "patch"
     - if: '$CI_MERGE_REQUEST_SOURCE_BRANCH_NAME =~ /^(hotfix|patch)/'
       when: never
-    # Only run on merge requests when manually activated
+    # run job on merge requests when manually activated
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
       when: manual
       allow_failure: false
@@ -197,22 +201,23 @@ release:
 # Abstract for jobs responsible for creating infrastructure
 .infra create:
   rules:
-    # Skip when branch name starts with "hotfix" or "patch"
+    # skip job when branch name starts with "hotfix" or "patch"
     - if: '$CI_MERGE_REQUEST_SOURCE_BRANCH_NAME =~ /^(hotfix|patch)/'
       when: never
-    # Only run on merge requests
+    # run pipeline on commits to default branch
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
-
+    
 # Abstract for jobs responsible for cleaning up infrastructure
 .infra cleanup:
   rules:
-    # Skip when branch name starts with "hotfix" or "patch"
+    # skip job when branch name starts with "hotfix" or "patch"
     - if: '$CI_MERGE_REQUEST_SOURCE_BRANCH_NAME =~ /^(hotfix|patch)/'
       when: never
-    # Always run on merge requests
+    # run job on merge requests regardless of failure
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
       allow_failure: true
       when: always
+
 #-----------------------------------------------------------------------------------------------------------------------
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -235,6 +240,7 @@ aws/network down:
   environment:
     name: review/aws-${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA}
     action: stop
+
 #-----------------------------------------------------------------------------------------------------------------------
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -256,9 +262,8 @@ aws/rke2/bigbang up:
   extends:
     - .infra create
     - .bigbang
-  needs:
-    - job: aws/rke2/cluster up
-      artifacts: true
+  dependencies:
+    - aws/rke2/cluster up
   before_script:
     - mkdir -p ~/.kube
     - cp ${CI_PROJECT_DIR}/rke2.yaml ~/.kube/config
@@ -273,10 +278,9 @@ aws/rke2/bigbang test:
   extends:
     - .infra create
     - .bigbang
-  needs:
-    - job: aws/rke2/cluster up
-      artifacts: true
-    - job: aws/rke2/bigbang up
+  dependencies:
+    - aws/rke2/cluster up
+    - aws/rke2/bigbang up
   before_script:
     - mkdir -p ~/.kube
     - cp ${CI_PROJECT_DIR}/rke2.yaml ~/.kube/config
@@ -293,10 +297,9 @@ aws/rke2/bigbang down:
   extends:
     - .infra cleanup
     - .bigbang
-  needs:
-    - job: aws/rke2/cluster up
-      artifacts: true
-    - job: aws/rke2/bigbang test
+  dependencies:
+    - aws/rke2/cluster up
+    - aws/rke2/bigbang test
   before_script:
     - mkdir -p ~/.kube
     - cp ${CI_PROJECT_DIR}/rke2.yaml ~/.kube/config
@@ -311,6 +314,8 @@ aws/rke2/cluster down:
   extends:
     - .infra cleanup
     - .rke2 down
-  needs:
-    - job: aws/rke2/bigbang down
+  dependencies:
+    - aws/rke2/cluster up
+    - aws/rke2/bigbang down
+
 #-----------------------------------------------------------------------------------------------------------------------
