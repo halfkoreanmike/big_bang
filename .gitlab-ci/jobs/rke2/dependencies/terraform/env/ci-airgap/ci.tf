@@ -42,7 +42,7 @@ module "ci" {
   vpc_id              = data.terraform_remote_state.networking.outputs.vpc_id
   deploy_subnets      = data.terraform_remote_state.networking.outputs.private_subnets
   public_subnets      = data.terraform_remote_state.networking.outputs.public_subnets
-  airgap              = false
+  airgap              = true
   registry_username   = data.terraform_remote_state.utility.outputs.utility_username
   registry_password   = data.terraform_remote_state.utility.outputs.utility_password
 }
