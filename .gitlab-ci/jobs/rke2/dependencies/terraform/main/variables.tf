@@ -54,11 +54,6 @@ variable "registry_password" {
   default = ""
 }
 
-variable "pre_userdata" {
-  type    = string
-  default = ""
-}
-
 #
 # Server variables
 #
