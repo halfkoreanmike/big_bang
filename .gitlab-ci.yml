@@ -440,6 +440,7 @@ airgap/rke2/bigbang up:
       artifacts: true
   before_script:
     #Test
+    - sleep 480
     - curl --user pxwtLfRD:curl --user pxwtLfRD:Gy1jnb6WoNRjUwwh  -X GET http://registry.dsop.io:5000/v2/_catalog
 
     - mkdir -p ~/.kube
