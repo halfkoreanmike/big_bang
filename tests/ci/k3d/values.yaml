@@ -60,3 +60,6 @@ addons:
     enabled: true
   gitlab:
     enabled: true
+    values:
+      postgresql:
+        install: true
