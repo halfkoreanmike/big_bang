@@ -1,10 +1,9 @@
-{{/* this template is deprecated. All application packages must switch to "privateRegistries" */}}
 {{- define "imagePullSecret" }}
   {{- if .Values.registryCredentials -}}
     {{- $credType := typeOf .Values.registryCredentials -}}
           {{- /* If we have a list, embed that here directly. This allows for complex configuration from configmap, downward API, etc. */ -}}
     {{- if eq $credType "[]interface {}" -}}
-    {{ include "multipleCreds" . | b64enc }}
+    {{- include "multipleCreds" . | b64enc }}
     {{- else if eq $credType "map[string]interface {}" }}
       {{- /* If we have a map, treat those as key-value pairs. */ -}}
       {{- with .Values.registryCredentials }}
@@ -14,20 +13,20 @@
   {{- end }}
 {{- end }}
 
-{{- define "multipleCreds" }}
- {
-      "auths": {
-        {{- $length := len .Values.registryCredentials }}
-        {{- range $index, $entry := .Values.registryCredentials }}
-        "{{- $entry.registry }}": {
-          "username{{ $index }}":"{{- $entry.username }}",
-          "password":"{{- $entry.password }}",
-          "email":"{{- $entry.email }}",
-          "auth":"{{- (printf "%s:%s" $entry.username $entry.password | b64enc) }}"
-        }{{- if ne $length (add $index 1) }},{{- end }}
-        {{- end }}
-      }
-    }
+{{- define "multipleCreds" -}}
+{
+  "auths": {
+    {{- $length := len .Values.registryCredentials }}
+    {{- range $index, $entry := .Values.registryCredentials }}
+    "{{- $entry.registry }}": {
+      "username{{ $index }}":"{{- $entry.username }}",
+      "password":"{{- $entry.password }}",
+      "email":"{{- $entry.email }}",
+      "auth":"{{- (printf "%s:%s" $entry.username $entry.password | b64enc) }}"
+    }{{- if ne $length (add $index 1) }},{{- end }}
+    {{- end }}
+  }
+}
 {{- end }}
 
 {{/*
