@@ -300,6 +300,12 @@ aws/airgap/package:
     PKG_S3_BUCKET: umbrella-bigbang-airgap
     PKG_PATH: '$CI_COMMIT_SHORT_SHA'
   stage: network up
+  after_script:
+    - sed -i -e 's/https:\/\/repo1.dsop.io/http:\/\/repo1.dsop.io/g' tests/ci/shared-secrets.yaml chart/values.yaml
+    - base=$(basename $PWD) 
+    - cd .. && tar -czf umbrella.tar.gz $base
+    # Copy umbrella.tar.gz to s3
+    - aws s3 cp --quiet umbrella.tar.gz s3://${PKG_S3_BUCKET}/umbrella/${PKG_PATH}/
 
 # Create Utility Instance on AWS
 aws/airgap/utility up:
@@ -423,8 +429,8 @@ airgap/rke2/bigbang up:
   stage: bigbang up
   extends:
     - .infra create
-    - .bigbang
     - .terraformer_airgap
+    - .bigbang
     - .airgap
   #Temp: Until the utility server is functional. 
   allow_failure: true 
@@ -446,8 +452,8 @@ airgap/rke2/bigbang test:
   stage: test
   extends:
     - .infra create
-    - .bigbang
     - .terraformer_airgap
+    - .bigbang
     - .airgap
   #Temp: Until the utility server is functional. 
   allow_failure: true 
@@ -470,8 +476,8 @@ airgap/rke2/bigbang down:
   stage: bigbang down
   extends:
     - .infra cleanup
-    - .bigbang
     - .terraformer_airgap
+    - .bigbang
     - .airgap
   needs:
     - job: airgap/rke2/cluster up
