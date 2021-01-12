@@ -27,4 +27,6 @@ module "ci" {
   subnet_id = data.terraform_remote_state.networking.outputs.private_subnets[0]
   pkg_s3_bucket = var.pkg_s3_bucket
   pkg_path = var.pkg_path
+  utility_username = "pxwtLfRD"
+  utility_password = "Gy1jnb6WoNRjUwwh"
 }

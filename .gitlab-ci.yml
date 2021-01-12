@@ -29,6 +29,7 @@ stages:
 
 variables:
   RELEASE_BUCKET: umbrella-bigbang-releases
+  CI_PKG_BUCKET: umbrella-bigbang-airgap
   IMAGE_LIST: images.txt
   IMAGE_PKG: images.tar.gz
   REPOS_PKG: repositories.tar.gz
@@ -162,7 +163,7 @@ package:
   extends:
     - .package
   variables:
-    PKG_S3_BUCKET: umbrella-bigbang-releases
+    PKG_S3_BUCKET: '$RELEASE_BUCKET'
     PKG_PATH: '$CI_COMMIT_TAG'
   rules:
     - if: '$CI_COMMIT_TAG'
@@ -294,7 +295,7 @@ aws/airgap/package:
     - .package
     - .airgap
   variables:
-    PKG_S3_BUCKET: umbrella-bigbang-airgap
+    PKG_S3_BUCKET: '$CI_PKG_BUCKET'
     PKG_PATH: '$CI_COMMIT_SHORT_SHA'
   stage: network up
   after_script:
@@ -303,6 +304,15 @@ aws/airgap/package:
     - cd .. && tar -czf umbrella.tar.gz $base
     # Copy umbrella.tar.gz to s3
     - aws s3 cp --quiet umbrella.tar.gz s3://${PKG_S3_BUCKET}/umbrella/${PKG_PATH}/
+
+#Delete Generated Packages
+aws/airgap/package delete:
+  stage: airgap down
+  variables:
+    PKG_S3_BUCKET: '$CI_PKG_BUCKET'
+    PKG_PATH: '$CI_COMMIT_SHORT_SHA'
+  script:
+    - aws s3 rm --recursive s3://${PKG_S3_BUCKET}/umbrella/${PKG_PATH}
 
 # Create Utility Instance on AWS
 aws/airgap/utility up:
@@ -429,6 +439,9 @@ airgap/rke2/bigbang up:
     - job: airgap/rke2/cluster up
       artifacts: true
   before_script:
+    #Test
+    - curl --user pxwtLfRD:curl --user pxwtLfRD:Gy1jnb6WoNRjUwwh  -X GET http://registry.dsop.io:5000/v2/_catalog
+
     - mkdir -p ~/.kube
     - cp ${CI_PROJECT_DIR}/rke2.yaml ~/.kube/config
 
