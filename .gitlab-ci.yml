@@ -234,7 +234,6 @@ release:
       when: never
     # Always run on merge requests
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
-      allow_failure: true
       when: always
 #-----------------------------------------------------------------------------------------------------------------------
 
@@ -268,7 +267,6 @@ airgap/network up:
   extends:
     - .infra fork
     - .network up
-    - .terraformer_airgap
     - .airgap
   stage: network up
   environment:
@@ -279,7 +277,6 @@ airgap/network down:
   extends:
     - .infra cleanup
     - .network down
-    - .terraformer_airgap
     - .airgap
   stage: network down
   environment:
@@ -312,7 +309,6 @@ aws/airgap/utility up:
   extends:
     - .infra create
     - .utility up
-    - .terraformer_airgap
     - .airgap
   stage: airgap up
   needs:
@@ -324,7 +320,6 @@ aws/airgap/utility down:
   extends:
     - .infra cleanup
     - .utility down
-    - .terraformer_airgap
     - .airgap
   stage: airgap down
 #-----------------------------------------------------------------------------------------------------------------------
@@ -418,7 +413,6 @@ airgap/rke2/cluster up:
   extends:
     - .infra create
     - .rke2 airgap up
-    - .terraformer_airgap
     - .airgap
   needs:
     - job: airgap/network up
@@ -429,11 +423,8 @@ airgap/rke2/bigbang up:
   stage: bigbang up
   extends:
     - .infra create
-    - .terraformer_airgap
     - .bigbang
     - .airgap
-  #Temp: Until the utility server is functional. 
-  allow_failure: true 
   needs:
     - job: airgap/rke2/cluster up
       artifacts: true
@@ -452,11 +443,8 @@ airgap/rke2/bigbang test:
   stage: test
   extends:
     - .infra create
-    - .terraformer_airgap
     - .bigbang
     - .airgap
-  #Temp: Until the utility server is functional. 
-  allow_failure: true 
   needs:
     - job: airgap/rke2/cluster up
       artifacts: true
@@ -476,7 +464,6 @@ airgap/rke2/bigbang down:
   stage: bigbang down
   extends:
     - .infra cleanup
-    - .terraformer_airgap
     - .bigbang
     - .airgap
   needs:
@@ -497,7 +484,6 @@ airgap/rke2/cluster down:
   extends:
     - .infra cleanup
     - .rke2 airgap down
-    - .terraformer_airgap
     - .airgap
   needs:
     - job: airgap/rke2/bigbang down
