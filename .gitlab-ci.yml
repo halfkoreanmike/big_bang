@@ -111,7 +111,7 @@ pre vars:
     - mv $IMAGE_LIST $IMAGE_PKG $REPOS_PKG release/
    
     # check content of release
-    - tree release/
+    - ls -R release/ | grep ":$" | sed -e 's/:$//' -e 's/[^-][^\/]*\//--/g' -e 's/^/   /' -e 's/-/|/'
     # Publish packages to s3 release
     - aws s3 sync --quiet release/ s3://${PKG_S3_BUCKET}/umbrella/${PKG_PATH}
 clean install:
