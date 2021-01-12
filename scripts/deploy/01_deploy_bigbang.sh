@@ -26,9 +26,9 @@ flux check
 # Deploy BigBang using dev sized scaling
 echo "Installing BigBang"
 helm upgrade -i bigbang chart -n bigbang --create-namespace \
---set registryCredentials[0].username=runyontr --set registryCredentials[0].password=${REGISTRY1_PASSWORD} \
+--set registryCredentials[0].username='robot$bigbang' --set registryCredentials[0].password=${REGISTRY1_PASSWORD} \
 --set registryCredentials[0].registry=registry1.dsop.io                                                         \
---set registryCredentials[1].username=runyontr --set registryCredentials[1].password=${REGISTRY1_PASSWORD} \
+--set registryCredentials[1].username='robot$bigbang' --set registryCredentials[1].password=${REGISTRY1_PASSWORD} \
 --set registryCredentials[1].registry=registry1.dso.mil                                                         \
 -f tests/ci/k3d/values.yaml
 
