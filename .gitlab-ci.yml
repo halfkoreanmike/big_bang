@@ -119,8 +119,8 @@ clean install:
   extends:
     - .k3d
   rules:
-    # Skip on merge requests (it is ran as part of the non MR pipeline)
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    # Skip on merge requests (it is ran as part of the non MR pipeline) except airgap
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME !~ /^(airgap)/'
       when: never
     - when: always
   variables:
@@ -300,6 +300,8 @@ aws/airgap/package:
     PKG_S3_BUCKET: '$CI_PKG_BUCKET'
     PKG_PATH: '$CI_COMMIT_SHORT_SHA'
   stage: network up
+  dependencies:
+    - clean install
   after_script:
     - sed -i -e 's/https:\/\/repo1.dsop.io/http:\/\/repo1.dsop.io/g' tests/ci/shared-secrets.yaml chart/values.yaml
     - base=$(basename $PWD) 
