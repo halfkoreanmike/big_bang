@@ -109,7 +109,9 @@ pre vars:
     # Prep release
     - mkdir -p release
     - mv $IMAGE_LIST $IMAGE_PKG $REPOS_PKG release/
-
+   
+    # check content of release
+    - tree release/
     # Publish packages to s3 release
     - aws s3 sync --quiet release/ s3://${PKG_S3_BUCKET}/umbrella/${PKG_PATH}
 clean install:
@@ -308,6 +310,8 @@ aws/airgap/package:
 #Delete Generated Packages
 aws/airgap/package delete:
   stage: airgap down
+  extends:
+    - .airgap
   variables:
     PKG_S3_BUCKET: '$CI_PKG_BUCKET'
     PKG_PATH: '$CI_COMMIT_SHORT_SHA'
@@ -439,8 +443,6 @@ airgap/rke2/bigbang up:
     - job: airgap/rke2/cluster up
       artifacts: true
   before_script:
-    #Test
-    - sleep 480
 
     - mkdir -p ~/.kube
     - cp ${CI_PROJECT_DIR}/rke2.yaml ~/.kube/config
