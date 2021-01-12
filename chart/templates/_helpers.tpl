@@ -1,31 +1,34 @@
 {{/* this template is deprecated. All application packages must switch to "privateRegistries" */}}
 {{- define "imagePullSecret" }}
-{{- with .Values.registryCredentials }}
-{{- printf "{\"auths\":{\"%s\":{\"username\":\"%s\",\"password\":\"%s\",\"email\":\"%s\",\"auth\":\"%s\"}}}" .registry .username .password .email (printf "%s:%s" .username .password | b64enc) | b64enc }}
-{{- end }}
+  {{- if .Values.registryCredentials -}}
+    {{- $credType := typeOf .Values.registryCredentials -}}
+          {{- /* If we have a list, embed that here directly. This allows for complex configuration from configmap, downward API, etc. */ -}}
+    {{- if eq $credType "[]interface {}" -}}
+    {{ include "multipleCreds" . | b64enc }}
+    {{- else if eq $credType "map[string]interface {}" }}
+      {{- /* If we have a map, treat those as key-value pairs. */ -}}
+      {{- with .Values.registryCredentials }}
+      {{- printf "{\"auths\":{\"%s\":{\"username\":\"%s\",\"password\":\"%s\",\"email\":\"%s\",\"auth\":\"%s\"}}}" .registry .username .password .email (printf "%s:%s" .username .password | b64enc) | b64enc }}
+      {{- end }}
+    {{- end -}}
+  {{- end }}
 {{- end }}
 
-{{- define "privateRegistries" -}}
-{{ include "privateRegistriesTemplate" . | b64enc }}
+{{- define "multipleCreds" }}
+ {
+      "auths": {
+        {{- $length := len .Values.registryCredentials }}
+        {{- range $index, $entry := .Values.registryCredentials }}
+        "{{- $entry.registry }}": {
+          "username{{ $index }}":"{{- $entry.username }}",
+          "password":"{{- $entry.password }}",
+          "email":"{{- $entry.email }}",
+          "auth":"{{- (printf "%s:%s" $entry.username $entry.password | b64enc) }}"
+        }{{- if ne $length (add $index 1) }},{{- end }}
+        {{- end }}
+      }
+    }
 {{- end }}
-
-{{- define "privateRegistriesTemplate" -}}
-{
-  "auths": {
-    {{- if .Values.privateRegistries }}
-    {{- $length := len .Values.privateRegistries }}
-    {{- range $index, $entry := .Values.privateRegistries }}
-    "{{- $entry.registry }}": {
-      "username{{ $index }}":"{{- $entry.username }}",
-      "password":"{{- $entry.password }}",
-      "email":"{{- $entry.email }}",
-      "auth":"{{- (printf "%s:%s" $entry.username $entry.password | b64enc) }}"
-    }{{- if ne $length (add $index 1) }},{{- end }}
-    {{- end }}
-    {{- end }}
-  }
-}
-{{- end -}}
 
 {{/*
 Build the appropriate spec.ref.{} given git branch, commit values
