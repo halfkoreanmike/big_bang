@@ -22,7 +22,7 @@ data "terraform_remote_state" "networking" {
 
 module "ci" {
   source = "../../main"
-  env       = "ci"
+  env       = var.env
   vpc_id    = data.terraform_remote_state.networking.outputs.vpc_id
   subnet_id = data.terraform_remote_state.networking.outputs.private_subnets[0]
   pkg_s3_bucket = var.pkg_s3_bucket

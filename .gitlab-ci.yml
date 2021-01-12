@@ -313,6 +313,7 @@ aws/airgap/package:
 aws/airgap/package delete:
   stage: airgap down
   extends:
+    - .package
     - .airgap
   variables:
     PKG_S3_BUCKET: '$CI_PKG_BUCKET'
