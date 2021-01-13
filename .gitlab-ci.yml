@@ -110,8 +110,6 @@ pre vars:
     - mkdir -p release
     - mv $IMAGE_LIST $IMAGE_PKG $REPOS_PKG release/
    
-    # check content of release
-    - ls -R release/ | grep ":$" | sed -e 's/:$//' -e 's/[^-][^\/]*\//--/g' -e 's/^/   /' -e 's/-/|/'
     # Publish packages to s3 release
     - aws s3 sync --quiet release/ s3://${PKG_S3_BUCKET}/umbrella/${PKG_PATH}
 
@@ -305,10 +303,8 @@ aws/airgap/package:
   dependencies:
     - clean install
   after_script:
-    - sed -i -e 's/https:\/\/repo1.dsop.io/http:\/\/repo1.dsop.io/g' tests/ci/shared-secrets.yaml chart/values.yaml
-    - base=$(basename $PWD) 
-    - cd .. && tar -czf umbrella.tar.gz $base
-    # Copy umbrella.tar.gz to s3
+    - git clone --branch ${CI_MERGE_REQUEST_SOURCE_BRANCH_NAME} --no-checkout https://repo1.dso.mil/platform-one/big-bang/umbrella.git
+    - tar -czf umbrella.tar.gz umbrella/
     - aws s3 cp --quiet umbrella.tar.gz s3://${PKG_S3_BUCKET}/umbrella/${PKG_PATH}/
 
 #Delete Generated Packages
@@ -372,12 +368,6 @@ aws/rke2/bigbang up:
     - cp ${CI_PROJECT_DIR}/rke2.yaml ~/.kube/config
     # Deploy a default storage class for aws
     - kubectl apply -f ${CI_PROJECT_DIR}/.gitlab-ci/jobs/rke2/dependencies/k8s-resources/aws/default-ebs-sc.yaml
-    # Test
-    - cat chart/values.yaml 
-    - cat tests/ci/shared-secrets.yaml
-    - sed -i 's/https:\/\/repo1.dsop.io/http:\/\/repo1.dsop.io/g' chart/values.yaml  tests/ci/shared-secrets.yaml
-    - cat chart/values.yaml
-    - cat scripts/deploy/flux.yaml | grep helm-controller
   script:
     - *deploy_bigbang
 
@@ -454,6 +444,8 @@ airgap/rke2/bigbang up:
     - job: airgap/rke2/cluster up
       artifacts: true
   before_script:
+    # Replace https with http for git server
+    - sed -i 's/https:\/\/repo1.dsop.io/http:\/\/repo1.dsop.io/g' chart/values.yaml  tests/ci/shared-secrets.yaml
 
     - mkdir -p ~/.kube
     - cp ${CI_PROJECT_DIR}/rke2.yaml ~/.kube/config

@@ -9,11 +9,15 @@ flux check --pre
 # Install flux in the cluster
 kubectl create ns flux-system || true
 
+if [[ ! "$CI_COMMIT_REF_NAME" =~ ^airgap ]]
+then
 kubectl create secret docker-registry ironbank -n flux-system \
    --docker-server=registry1.dsop.io \
    --docker-username='robot$bigbang' \
    --docker-password=${REGISTRY1_PASSWORD} \
    --docker-email=bigbang@bigbang.dev || true
+fi
+
 kubectl apply -f ./scripts/deploy/flux.yaml
 
 # Wait for flux
