@@ -63,3 +63,6 @@ addons:
     values:
       postgresql:
         install: true
+      global:
+        minio:
+          enabled: true
