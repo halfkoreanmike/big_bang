@@ -444,7 +444,7 @@ airgap/rke2/bigbang up:
     - .bigbang
     - .airgap
   variables:
-    USE_PRIVATE_REGISTRY: "true"
+    AIRGAP_REGISTRY: "true"
   needs:
     - job: airgap/rke2/cluster up
       artifacts: true
