@@ -9,8 +9,7 @@ flux check --pre
 # Install flux in the cluster
 kubectl create ns flux-system || true
 
-if [[ ! "$CI_COMMIT_REF_NAME" =~ ^airgap ]]
-then
+if [[ -z "${USE_PRIVATE_REGISTRY}" ]]; then
 kubectl create secret docker-registry ironbank -n flux-system \
    --docker-server=registry1.dsop.io \
    --docker-username='robot$bigbang' \
