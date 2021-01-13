@@ -76,9 +76,6 @@ pre vars:
   after_script:
     - kubectl get all -A
     - kubectl get helmrelease -A
-    # Test
-    - kubectl get gitrepository -A
-    - kubectl get secrets -A | grep docker
 
 .deploy_bigbang: &deploy_bigbang
   - for script in ./scripts/deploy/*.sh; do chmod +x $script && $script; done
