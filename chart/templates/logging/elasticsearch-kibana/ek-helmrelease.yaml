@@ -35,7 +35,7 @@ spec:
   valuesFrom:
     - name: values
       kind: Secret
-      valuesKey: "values.yaml"
+      valuesKey: "logging.yaml"
 
   values:
     hostname: {{ .Values.hostname }}
