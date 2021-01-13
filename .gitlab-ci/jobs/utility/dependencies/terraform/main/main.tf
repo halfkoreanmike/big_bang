@@ -137,6 +137,14 @@ resource "aws_security_group" "allow_repository" {
     cidr_blocks = [data.aws_vpc.vpc_id.cidr_block]
   }
 
+  ingress {
+    description = "Allow access to git repository"
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = [data.aws_vpc.vpc_id.cidr_block]
+  }
+
   egress {
     from_port   = 0
     to_port     = 0

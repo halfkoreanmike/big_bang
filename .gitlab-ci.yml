@@ -94,7 +94,7 @@ pre vars:
     # Populate images list in synker config
     # NOTE: This is stupid and hacky, use yq or something better to do this
     - cat images.txt | sed -e 's/^/    - /' >> synker.yaml
-
+    - cat images.txt
     - synker pull -b=1
 
     # Tar up synker as well?
@@ -114,6 +114,8 @@ pre vars:
     - ls -R release/ | grep ":$" | sed -e 's/:$//' -e 's/[^-][^\/]*\//--/g' -e 's/^/   /' -e 's/-/|/'
     # Publish packages to s3 release
     - aws s3 sync --quiet release/ s3://${PKG_S3_BUCKET}/umbrella/${PKG_PATH}
+
+
 clean install:
   stage: smoke tests
   extends:
@@ -370,6 +372,12 @@ aws/rke2/bigbang up:
     - cp ${CI_PROJECT_DIR}/rke2.yaml ~/.kube/config
     # Deploy a default storage class for aws
     - kubectl apply -f ${CI_PROJECT_DIR}/.gitlab-ci/jobs/rke2/dependencies/k8s-resources/aws/default-ebs-sc.yaml
+    # Test
+    - cat chart/values.yaml 
+    - cat tests/ci/shared-secrets.yaml
+    - sed -i 's/https:\/\/repo1.dsop.io/http:\/\/repo1.dsop.io/g' chart/values.yaml  tests/ci/shared-secrets.yaml
+    - cat chart/values.yaml
+    - cat scripts/deploy/flux.yaml | grep helm-controller
   script:
     - *deploy_bigbang
 
