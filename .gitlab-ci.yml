@@ -77,8 +77,8 @@ pre vars:
     - kubectl get all -A
     - kubectl get helmrelease -A
     # Test
-    - kubectl describe po -n gatekeeper-system
     - kubectl get gitrepository -A
+    - kubectl get secrets -A | grep docker
 
 .deploy_bigbang: &deploy_bigbang
   - for script in ./scripts/deploy/*.sh; do chmod +x $script && $script; done
@@ -458,8 +458,6 @@ airgap/rke2/bigbang up:
     # Deploy a default storage class for aws
     - kubectl apply -f ${CI_PROJECT_DIR}/.gitlab-ci/jobs/rke2/dependencies/k8s-resources/aws/default-ebs-sc.yaml
   script:
-    # Test
-    - cat chart/values.yaml
     - *deploy_bigbang
 
 # Run tests on BigBang on RKE2 cluster on AWS
