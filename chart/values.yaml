@@ -60,9 +60,9 @@ istio:
   git:
     repo: https://repo1.dsop.io/platform-one/big-bang/apps/core/istio-controlplane.git
     path: "./chart"
-    tag: "1.7.3-bb.4"
+    tag: "1.7.3-bb.5"
   sso:
-    enabled: true
+    enabled: false
     namespace: istio-addons-sso
     kiali:
       client_id: platform1_a8604cc9-f5e9-4656-802d-d05624370245_bb8-kiali
@@ -141,9 +141,9 @@ monitoring:
   git:
     repo: https://repo1.dsop.io/platform-one/big-bang/apps/core/monitoring.git
     path: "./chart"
-    tag: "11.0.0-bb.4"
+    tag: "11.0.0-bb.5"
   sso:
-    enabled: true
+    enabled: false
     namespace: monitoring-sso
     prometheus:
       client_id: platform1_a8604cc9-f5e9-4656-802d-d05624370245_bb8-prometheus
@@ -185,7 +185,7 @@ addons:
     #   chain:
     #     minimal:
     #       callback_uri: "https://somecallback"
-    enabled: true
+    enabled: false
     git:
       repo: https://repo1.dsop.io/platform-one/big-bang/apps/sandbox/authservice.git
       path: "./chart"
