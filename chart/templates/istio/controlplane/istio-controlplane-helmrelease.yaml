@@ -33,14 +33,30 @@ spec:
   {{- end }}
 
   valuesFrom:
-    - name: values
-      kind: Secret
-      valuesKey: "istio.yaml"
+  - name: values
+    kind: Secret
+    valuesKey: "istio.yaml"
   values:
     hostname: {{ .Values.hostname }}
 
+    sso:
+      enabled: {{ .Values.istio.sso.enabled }}
+      namespace: {{ .Values.istio.sso.namespace }}
+    
     imagePullSecrets:
       - private-registry
+
+{{- if .Values.istio.sso.enabled }}
+    ingress:
+      kiali:
+        service: {{ .Values.istio.sso.namespace }}-haproxy-{{ .Values.istio.sso.namespace }}
+        port: 8080
+        namespace: {{ .Values.istio.sso.namespace }}
+      jaeger:
+        service: {{ .Values.istio.sso.namespace }}-haproxy-{{ .Values.istio.sso.namespace }}
+        port: 8080
+        namespace: {{ .Values.istio.sso.namespace }}
+{{- end }}
 
   dependsOn:
     - name: istio-operator
