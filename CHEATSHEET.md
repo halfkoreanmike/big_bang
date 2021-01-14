@@ -29,5 +29,3 @@ git cz
 git log --graph --decorate --pretty=oneline --abbrev-commit
 git rebase -i
 ```
-
-Foo bar baz
