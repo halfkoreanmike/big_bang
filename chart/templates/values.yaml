@@ -38,8 +38,8 @@ stringData:
   logging.yaml: |
 {{ toYaml .Values.logging.values | indent 4 }}
   monitoring.yaml: |
-    grafana_client_id: {{ .Values.monitoring.sso.grafana.client_id }}
-    grafana_client_secret: {{ .Values.monitoring.sso.grafana.client_secret }}
+    grafana_client_id: {{ .Values.monitoring.sso.grafana.client_id | quote }}
+    grafana_client_secret: {{ .Values.monitoring.sso.grafana.client_secret | quote }}
 {{ if .Values.monitoring.values }}
 {{ toYaml .Values.monitoring.values | indent 4 }}
 {{- end }}
