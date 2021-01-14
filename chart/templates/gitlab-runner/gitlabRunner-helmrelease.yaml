@@ -5,7 +5,7 @@ metadata:
   name: gitlab-runner
   namespace: {{ .Release.Namespace }}
 spec:
-  targetNamespace: gitlab-runner
+  targetNamespace: gitlab
   chart:
     spec:
       chart: {{ .Values.addons.gitlabRunner.git.path }}
