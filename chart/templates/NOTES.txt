@@ -1,0 +1,6 @@
+{{- if and $.Values.eckoperator.enabled $.Values.logging.enabled $.Values.logging.values.sso.enabled }}
+{{- if and (not $.Values.eckoperator.values.license.trial) (not $.Values.eckoperator.values.license.keyJSON) }}
+PLATFORM ONE LOGGING WARNING: 
+  You have enabled SSO but not provided an enterprise license configuration to use.
+  Edit the values for the eck-operator to specify a license key JSON or use the trial license for development.
+{{- end }}
