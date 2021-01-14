@@ -1,0 +1,18 @@
+Thank you for supporting PlatformOne! 
+
+{{ if $.Values.addons.gitlab.enabled }}
+Gitlab is enabled.
+{{- if $.Values.addons.gitlab.values.postgresql.install }}
+PLATFORM ONE GITLAB WARNING:
+  You have enabled an internal postgres database in the values configuration.
+  PlatformOne does not support this option for production deployments because your persistent data can be permanently lost.
+  This option should only be used for development or CI pipelines.
+{{- end -}}
+
+{{- if $.Values.addons.gitlab.values.global.minio.enabled }}
+PLATFORM ONE GITLAB WARNING: 
+  You have enabled a MinIO internal service in the values configuration.
+  PlatformOne does not support this option for production deployments because your persistent data can be permanently lost.
+  This option should only be used for development or CI pipelines.
+{{- end }}
+{{- end }}
