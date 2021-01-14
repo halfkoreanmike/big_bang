@@ -25,3 +25,8 @@ npm install -g commitizen
 git cz
 ```
 
+```
+git log --graph --decorate --pretty=oneline --abbrev-commit
+git rebase -i
+```
+
