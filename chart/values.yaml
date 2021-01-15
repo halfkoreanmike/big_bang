@@ -31,6 +31,16 @@ git:
     publicKey: ""
     knownHosts: ""
 
+# Gloabl SSO parameters
+sso:
+  oidc:
+    host: login.dsop.io
+    realm: baby-yoda
+  certificate_authority: ""
+  jwks: ""
+  client_id: ""
+  client_secret: ""
+
 # Flux reconciliation parameters
 flux:
   interval: 2m
@@ -50,7 +60,16 @@ istio:
   git:
     repo: https://repo1.dsop.io/platform-one/big-bang/apps/core/istio-controlplane.git
     path: "./chart"
-    tag: "1.7.3-bb.4"
+    tag: "1.7.3-bb.5"
+  sso:
+    enabled: false
+    namespace: istio-addons-sso
+    kiali:
+      client_id: platform1_a8604cc9-f5e9-4656-802d-d05624370245_bb8-kiali
+      client_secret: "change_me"
+    jaeger:
+      client_id: platform1_a8604cc9-f5e9-4656-802d-d05624370245_bb8-jaeger
+      client_secret: "change_me"
   values: {}
 
 istiooperator:
@@ -122,7 +141,19 @@ monitoring:
   git:
     repo: https://repo1.dsop.io/platform-one/big-bang/apps/core/monitoring.git
     path: "./chart"
-    tag: "11.0.0-bb.4"
+    tag: "11.0.0-bb.6"
+  sso:
+    enabled: false
+    namespace: monitoring-sso
+    prometheus:
+      client_id: platform1_a8604cc9-f5e9-4656-802d-d05624370245_bb8-prometheus
+      client_secret: "change_me"
+    alertmanager:
+      client_id: platform1_a8604cc9-f5e9-4656-802d-d05624370245_bb8-alertmanager
+      client_secret: "change_me"
+    grafana:
+      client_id: ""
+      client_secret: ""
   values: {}
 # ----------------------------------------------------------------------------------------------------------------------
 
@@ -148,9 +179,25 @@ addons:
     values: {}
 
   authservice:
+    # if enabling authservice, a filter needs to be provided by either enabling
+    # sso for monitoring or istio, or manually adding a filter chain in the values here:
+    # values:
+    #   chain:
+    #     minimal:
+    #       callback_uri: "https://somecallback"
     enabled: false
     git:
       repo: https://repo1.dsop.io/platform-one/big-bang/apps/sandbox/authservice.git
       path: "./chart"
-      tag: "0.1.4-bb.0"
+      tag: "0.1.5-bb.0"
+    #Dont put chain configuraitons in this section
+    values: {}
+      # put additional chain configuration in this section
+    chains: {}
+
+  haproxy:
+    git: 
+      repo: https://repo1.dso.mil/platform-one/big-bang/apps/sandbox/haproxy.git
+      path: "./chart"
+      tag: 1.1.2-bb.0
     values: {}
