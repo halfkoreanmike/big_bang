@@ -49,13 +49,13 @@ spec:
 {{- if .Values.istio.sso.enabled }}
     ingress:
       kiali:
-        service: {{ .Values.istio.sso.namespace }}-haproxy-{{ .Values.istio.sso.namespace }}
+        service: authservice-haproxy-sso
         port: 8080
-        namespace: {{ .Values.istio.sso.namespace }}
+        namespace: authservice
       jaeger:
-        service: {{ .Values.istio.sso.namespace }}-haproxy-{{ .Values.istio.sso.namespace }}
+        service: authservice-haproxy-sso
         port: 8080
-        namespace: {{ .Values.istio.sso.namespace }}
+        namespace: authservice
 {{- end }}
 
   dependsOn:

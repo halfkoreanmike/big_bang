@@ -62,13 +62,13 @@ spec:
 {{- if .Values.monitoring.sso.enabled }}
     ingress:
       prometheus:
-        service: {{ .Values.monitoring.sso.namespace }}-haproxy-{{ .Values.monitoring.sso.namespace }}
+        service: authservice-haproxy-sso
         port: 8080
-        namespace: {{ .Values.monitoring.sso.namespace }}
+        namespace: authservice
       alertmanager:
-        service: {{ .Values.monitoring.sso.namespace }}-haproxy-{{ .Values.monitoring.sso.namespace }}
+        service: authservice-haproxy-sso
         port: 8080
-        namespace: {{ .Values.monitoring.sso.namespace }}
+        namespace: authservice
 {{- end }}
 
   # TODO: DRY this up
