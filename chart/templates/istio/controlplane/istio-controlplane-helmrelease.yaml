@@ -33,9 +33,9 @@ spec:
   {{- end }}
 
   valuesFrom:
-    - name: values
-      kind: Secret
-      valuesKey: "istio.yaml"
+  - name: values
+    kind: Secret
+    valuesKey: "istio.yaml"
   values:
     hostname: {{ .Values.hostname }}
 
