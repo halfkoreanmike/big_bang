@@ -46,16 +46,10 @@ spec:
       - name: private-registry
     monitoring:
       enabled: {{ .Values.monitoring.enabled }}
-    istio:
-      enabled: {{ .Values.istio.enabled }}
 
   dependsOn:
     {{- if .Values.gatekeeper.enabled }}
     - name: gatekeeper
-      namespace: {{ .Release.Namespace }}
-    {{- end }}
-    {{- if .Values.istio.enabled }}
-    - name: istio
       namespace: {{ .Release.Namespace }}
     {{- end }}
     {{- if .Values.monitoring.enabled }}
