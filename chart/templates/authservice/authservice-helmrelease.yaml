@@ -5,7 +5,7 @@ metadata:
   name: authservice
   namespace: {{ .Release.Namespace }}
 spec:
-  targetNamespace: istio-system
+  targetNamespace: authservice
   chart:
     spec:
       chart: {{ .Values.addons.authservice.git.path }}

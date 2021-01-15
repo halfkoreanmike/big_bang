@@ -63,12 +63,11 @@ istio:
     tag: "1.7.3-bb.5"
   sso:
     enabled: false
-    namespace: istio-addons-sso
     kiali:
-      client_id: platform1_a8604cc9-f5e9-4656-802d-d05624370245_bb8-kiali
+      client_id: kiali
       client_secret: "change_me"
     jaeger:
-      client_id: platform1_a8604cc9-f5e9-4656-802d-d05624370245_bb8-jaeger
+      client_id: jaeger
       client_secret: "change_me"
   values: {}
 
@@ -144,12 +143,11 @@ monitoring:
     tag: "11.0.0-bb.6"
   sso:
     enabled: false
-    namespace: monitoring-sso
     prometheus:
-      client_id: platform1_a8604cc9-f5e9-4656-802d-d05624370245_bb8-prometheus
+      client_id: prometheus
       client_secret: "change_me"
     alertmanager:
-      client_id: platform1_a8604cc9-f5e9-4656-802d-d05624370245_bb8-alertmanager
+      client_id: alertmanager
       client_secret: "change_me"
     grafana:
       client_id: ""
