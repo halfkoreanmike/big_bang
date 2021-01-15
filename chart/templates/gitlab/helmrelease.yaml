@@ -5,6 +5,7 @@ metadata:
   name: gitlab
   namespace: {{ .Release.Namespace }}
 spec:
+  releaseName: gitlab
   targetNamespace: gitlab
   chart:
     spec:
