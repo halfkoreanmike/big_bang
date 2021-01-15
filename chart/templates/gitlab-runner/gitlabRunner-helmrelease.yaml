@@ -40,7 +40,7 @@ spec:
 
   values:
     imagePullSecrets:
-    - name: private-registry
+    - private-registry
     runners:
       imagePullSecrets:
       - name: private-registry
