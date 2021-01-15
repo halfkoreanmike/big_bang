@@ -189,7 +189,4 @@ addons:
       repo: "https://repo1.dsop.io/platform-one/big-bang/apps/developer-tools/gitlab-runner.git"
       path: "./chart"
       tag: "0.19.2-bb.1"
-    values:
-      gitlabUrl: http://gitlab-gitlab-webservice.gitlab.svc.cluster.local:8181
-      runners:
-        secret: gitlab-gitlab-gitlab-runner-secret
+    values: {}
