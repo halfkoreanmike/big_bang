@@ -1,0 +1,15 @@
+{{- if $.Values.addons.anchore.enabled }}
+Anchore is enabled.
+{{- if or $.Values.addons.anchore.values.postgresql.enabled (index $.Values.addons.anchore.values "anchore-feeds-db" "enabled") }}
+PLATFORM ONE ANCHORE WARNING:
+  You have enabled an internal postgres database in the values configuration.
+  PlatformOne does not support this option for production deployments.
+  This option should only be used for development or CI pipelines.
+{{- end }}
+{{- if (index $.Values.addons.anchore.values "anchore-ui-redis" "enabled") }}
+PLATFORM ONE ANCHORE WARNING:
+  You have enabled an internal redis database in the values configuration.
+  PlatformOne does not support this option for production deployments.
+  This option should only be used for development or CI pipelines.
+{{- end }}
+{{- end }}

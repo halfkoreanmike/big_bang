@@ -58,3 +58,8 @@ addons:
     enabled: true
   authservice:
     enabled: true
+  anchore:
+    enabled: true
+    values:
+      postgresql:
+        enabled: true

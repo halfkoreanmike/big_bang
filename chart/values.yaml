@@ -154,3 +154,26 @@ addons:
       path: "./chart"
       tag: "0.1.4-bb.0"
     values: {}
+
+  anchore:
+    enabled: false
+    git:
+      repo: https://repo1.dso.mil/platform-one/big-bang/apps/security-tools/anchore-enterprise.git
+      path: "./chart"
+      tag: "1.9.5-bb.0"
+    values:
+      postgresql:
+          enabled: false
+          # postgresUser: user
+          # postgresPassword: password
+          # postgresDatabase: dbName
+          # externalEndpoint: host:port
+      anchore-feeds-db:
+          enabled: false
+          # postgresUser: user
+          # postgresPassword: password
+          # postgresDatabase: dbName
+          # externalEndpoint: host:port
+      anchore-ui-redis:
+          enabled: false
+          # externalEndpoint: "redis://:password@host:port"
