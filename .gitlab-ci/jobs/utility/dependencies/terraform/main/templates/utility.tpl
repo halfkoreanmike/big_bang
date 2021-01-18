@@ -97,6 +97,10 @@ Filter "/etc/tinyproxy/whitelist"
 EOF
 
 cat << 'EOF' > "$(pwd)"/data/proxy/whitelist
+index.docker.io:443
+production.cloudflare.docker.com:443
+registry-1.docker.io:443
+auth.docker.io:443
 repo1.dsop.io
 repo1.dsop.io:80
 registry.dsop.io:5000
