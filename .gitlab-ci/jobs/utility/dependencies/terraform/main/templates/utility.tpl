@@ -81,16 +81,43 @@ MaxSpareServers 5
 StartServers 2
 MaxRequestsPerChild 0
 
+Allow 127.0.0.1
+Allow ${vpc_cidr}
+
+ConnectPort 22
 ConnectPort 8888
 ConnectPort 80
 ConnectPort 443
 ConnectPort 563
+
+FilterExtended On
+FilterURLs On
+FilterDefaultDeny Yes
+Filter "/etc/tinyproxy/whitelist"
+EOF
+
+cat << 'EOF' > "$(pwd)"/data/proxy/whitelist
+prometheus-community.github.io:443
+grafana.github.io:443
+charts.helm.sh:443
+index.docker.io:443
+production.cloudflare.docker.com:443
+registry-1.docker.io:443
+auth.docker.io:443
+repo1.dsop.io
+rhui3.us-west-2.aws.ce.redhat.com:443
+repo1.dsop.io:80
+registry.dsop.io:5000
+registry1.dsop.io:5000
+elasticloadbalancing.us-gov-west-1.amazonaws.com:443
+ec2.us-gov-west-1.amazonaws.com:443
 EOF
 
 cat << 'EOF' > "$(pwd)"/data/proxy/Dockerfile
 FROM alpine:latest
 RUN apk add --no-cache tinyproxy
 COPY tinyproxy.conf /etc/tinyproxy/tinyproxy.conf
+COPY whitelist /etc/tinyproxy/whitelist
 EXPOSE 8888
 CMD ["/usr/bin/tinyproxy", "-d", "-c", "/etc/tinyproxy/tinyproxy.conf"]
 EOF

@@ -83,6 +83,7 @@ data "template_file" "init" {
   vars = {
     utility_username = local.utility_username
     utility_password = local.utility_password
+    vpc_cidr         = data.aws_vpc.vpc_id.cidr_block
     pkg_s3_bucket    = var.pkg_s3_bucket
     pkg_path         = var.pkg_path
     aws_region       = var.aws_region

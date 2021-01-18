@@ -31,6 +31,11 @@ helm upgrade -i bigbang chart -n bigbang --create-namespace \
   --set registryCredentials.username='robot$bigbang' --set registryCredentials.password=${REGISTRY1_PASSWORD} \
   -f tests/ci/k3d/values.yaml
 else
+#set proxy on source-controller
+kubectl set env deploy/source-controller -n flux-system HTTP_PROXY=http://proxy.dsop.io:8888
+kubectl set env deploy/source-controller -n flux-system HTTPS_PROXY=http://proxy.dsop.io:8888
+kubectl set env deploy/source-controller -n flux-system NO_PROXY="notification-controller,10.42.0.0/16,10.43.0.0/16"
+
 helm upgrade -i bigbang chart -n bigbang --create-namespace \
   -f tests/ci/k3d/values.yaml
 fi
