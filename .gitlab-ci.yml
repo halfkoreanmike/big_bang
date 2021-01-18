@@ -229,15 +229,15 @@ release:
       when: always
 
 
-# Abstract for jobs responsible for cleaning up infrastructure
-.airgap:
-  rules:
-    # Run when branch name starts with "airgap"
-    - if: '$CI_MERGE_REQUEST_SOURCE_BRANCH_NAME !~ /^(airgap)/'
-      when: never
-    # Always run on merge requests
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
-      when: always
+# # Abstract for jobs responsible for cleaning up infrastructure
+# .airgap:
+#   rules:
+#     # Run when branch name starts with "airgap"
+#     - if: '$CI_MERGE_REQUEST_SOURCE_BRANCH_NAME !~ /^(airgap)/'
+#       when: never
+#     # Always run on merge requests
+#     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+#       when: always
 #-----------------------------------------------------------------------------------------------------------------------
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -270,7 +270,6 @@ airgap/network up:
   extends:
     - .infra fork
     - .network up
-    - .airgap
   stage: network up
   environment:
     name: review/aws-${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA}-airgap
@@ -280,7 +279,6 @@ airgap/network down:
   extends:
     - .infra cleanup
     - .network down
-    - .airgap
   stage: network down
   environment:
     name: review/aws-${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA}-airgap
@@ -295,7 +293,6 @@ aws/airgap/package:
   extends:
     - .infra fork
     - .package
-    - .airgap
   variables:
     PKG_S3_BUCKET: '$CI_PKG_BUCKET'
     PKG_PATH: '$CI_COMMIT_SHORT_SHA'
@@ -312,7 +309,6 @@ aws/airgap/package delete:
   stage: airgap down
   extends:
     - .package
-    - .airgap
   variables:
     PKG_S3_BUCKET: '$CI_PKG_BUCKET'
     PKG_PATH: '$CI_COMMIT_SHORT_SHA'
@@ -324,7 +320,6 @@ aws/airgap/utility up:
   extends:
     - .infra create
     - .utility up
-    - .airgap
   stage: airgap up
   needs:
     - job: airgap/network up
@@ -335,7 +330,6 @@ aws/airgap/utility down:
   extends:
     - .infra cleanup
     - .utility down
-    - .airgap
   stage: airgap down
 #-----------------------------------------------------------------------------------------------------------------------
 
@@ -428,7 +422,6 @@ airgap/rke2/cluster up:
   extends:
     - .infra create
     - .rke2 airgap up
-    - .airgap
   needs:
     - job: airgap/network up
     - job: aws/airgap/utility up
@@ -439,7 +432,6 @@ airgap/rke2/bigbang up:
   extends:
     - .infra create
     - .bigbang
-    - .airgap
   variables:
     AIRGAP_REGISTRY: "true"
   needs:
@@ -464,7 +456,6 @@ airgap/rke2/bigbang test:
   extends:
     - .infra create
     - .bigbang
-    - .airgap
   needs:
     - job: airgap/rke2/cluster up
       artifacts: true
@@ -485,7 +476,6 @@ airgap/rke2/bigbang down:
   extends:
     - .infra cleanup
     - .bigbang
-    - .airgap
   needs:
     - job: airgap/rke2/cluster up
       artifacts: true
@@ -504,7 +494,6 @@ airgap/rke2/cluster down:
   extends:
     - .infra cleanup
     - .rke2 airgap down
-    - .airgap
   needs:
     - job: airgap/rke2/bigbang down
 #-----------------------------------------------------------------------------------------------------------------------
