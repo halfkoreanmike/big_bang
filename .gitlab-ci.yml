@@ -270,6 +270,7 @@ airgap/network up:
   extends:
     - .infra fork
     - .network up
+    - .terraformer_airgap
   stage: network up
   environment:
     name: review/aws-${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA}-airgap
@@ -279,6 +280,7 @@ airgap/network down:
   extends:
     - .infra cleanup
     - .network down
+    - .terraformer_airgap
   stage: network down
   environment:
     name: review/aws-${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA}-airgap
@@ -320,6 +322,7 @@ aws/airgap/utility up:
   extends:
     - .infra create
     - .utility up
+    - .terraformer_airgap
   stage: airgap up
   needs:
     - job: airgap/network up
@@ -330,6 +333,7 @@ aws/airgap/utility down:
   extends:
     - .infra cleanup
     - .utility down
+    - .terraformer_airgap
   stage: airgap down
 #-----------------------------------------------------------------------------------------------------------------------
 
@@ -422,6 +426,7 @@ airgap/rke2/cluster up:
   extends:
     - .infra create
     - .rke2 airgap up
+    - .terraformer_airgap
   needs:
     - job: airgap/network up
     - job: aws/airgap/utility up
@@ -494,6 +499,7 @@ airgap/rke2/cluster down:
   extends:
     - .infra cleanup
     - .rke2 airgap down
+    - .terraformer_airgap
   needs:
     - job: airgap/rke2/bigbang down
 #-----------------------------------------------------------------------------------------------------------------------
