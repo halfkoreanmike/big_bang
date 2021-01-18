@@ -97,13 +97,11 @@ Filter "/etc/tinyproxy/whitelist"
 EOF
 
 cat << 'EOF' > "$(pwd)"/data/proxy/whitelist
-registry-1.docker.io:443
-auth.docker.io:443
 repo1.dsop.io
-rhui3.us-west-2.aws.ce.redhat.com:443
 repo1.dsop.io:80
 registry.dsop.io:5000
 registry1.dsop.io:5000
+rhui3.us-west-2.aws.ce.redhat.com:443
 elasticloadbalancing.us-gov-west-1.amazonaws.com:443
 ec2.us-gov-west-1.amazonaws.com:443
 EOF
