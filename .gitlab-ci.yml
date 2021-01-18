@@ -201,7 +201,7 @@ release:
   stage: network up
   rules:
     # Skip when branch name starts with "hotfix" or "patch"
-    - if: '$CI_MERGE_REQUEST_SOURCE_BRANCH_NAME =~ /^(hotfix|patch|airgap)/'
+    - if: '$CI_MERGE_REQUEST_SOURCE_BRANCH_NAME =~ /^(hotfix|patch)/'
       when: never
     # Only run on merge requests when manually activated
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
@@ -212,7 +212,7 @@ release:
 .infra create:
   rules:
     # Skip when branch name starts with "hotfix" or "patch"
-    - if: '$CI_MERGE_REQUEST_SOURCE_BRANCH_NAME =~ /^(hotfix|patch|airgap)/'
+    - if: '$CI_MERGE_REQUEST_SOURCE_BRANCH_NAME =~ /^(hotfix|patch)/'
       when: never
     # Only run on merge requests
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
@@ -221,7 +221,7 @@ release:
 .infra cleanup:
   rules:
     # Skip when branch name starts with "hotfix" or "patch"
-    - if: '$CI_MERGE_REQUEST_SOURCE_BRANCH_NAME =~ /^(hotfix|patch|airgap)/'
+    - if: '$CI_MERGE_REQUEST_SOURCE_BRANCH_NAME =~ /^(hotfix|patch)/'
       when: never
     # Always run on merge requests
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
