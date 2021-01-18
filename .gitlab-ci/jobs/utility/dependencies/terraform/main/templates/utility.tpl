@@ -100,6 +100,8 @@ cat << 'EOF' > "$(pwd)"/data/proxy/whitelist
 prometheus-community.github.io:443
 grafana.github.io:443
 github-production-release-asset-2e65be.s3.amazonaws.com:443
+github.com:443
+charts.helm.sh:443
 index.docker.io:443
 production.cloudflare.docker.com:443
 registry-1.docker.io:443
