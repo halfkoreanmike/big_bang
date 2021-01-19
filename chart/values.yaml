@@ -163,3 +163,11 @@ addons:
       path: "./chart"
       tag: "0.1.4-bb.0"
     values: {}
+
+  airflow:
+    enabled: true
+    git:
+      repo: https://code.il2.dso.mil/jaic-devsecops/apps.git
+      path: "./airflow/helm"
+      branch: "jcf-208"
+    values: {}
