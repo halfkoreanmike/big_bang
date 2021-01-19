@@ -155,6 +155,14 @@ airflow:
     branch: "jcf-208"
   values: {}
 
+helloworld:
+  enabled: true
+  git:
+    repo: https://code.il2.dso.mil/jaic-devsecops/apps.git
+    path: "./helloworld-chart"
+    branch: "jcf-208"
+  values: {}
+
 addons:
   argocd:
     enabled: false
