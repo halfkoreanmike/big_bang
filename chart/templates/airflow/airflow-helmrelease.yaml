@@ -1,4 +1,3 @@
-{{- if .Values.istio.enabled }}
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
@@ -39,5 +38,3 @@ spec:
 
   values:
     createNamespace: false
-
-{{- end }}
