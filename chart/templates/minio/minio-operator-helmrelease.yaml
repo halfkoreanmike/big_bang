@@ -35,7 +35,7 @@ spec:
   valuesFrom:
     - name: values
       kind: Secret
-      valuesKey: "miniooperator.yaml"
+      valuesKey: "minio.yaml"
 
   values:
     podAnnotations:
