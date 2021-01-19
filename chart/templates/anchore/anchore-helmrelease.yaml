@@ -5,6 +5,7 @@ metadata:
   name: anchore
   namespace: {{ .Release.Namespace }}
 spec:
+  releaseName: anchore
   targetNamespace: anchore
   chart:
     spec:
