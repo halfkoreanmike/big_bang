@@ -29,4 +29,6 @@ stringData:
 {{ toYaml .Values.twistlock.values | indent 4 }} 
   clusterauditor.yaml: |
 {{ toYaml .Values.twistlock.values | indent 4 }}
+  minio.yaml: |
+  {{ toYaml .Values.minio.values | indent 4 }}
 data:
