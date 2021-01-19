@@ -36,7 +36,7 @@ sso:
   oidc:
     host: login.dsop.io
     realm: baby-yoda
-  certificate_authority: ""
+  certificate_authority: ''
   jwks: ""
   client_id: ""
   client_secret: ""
