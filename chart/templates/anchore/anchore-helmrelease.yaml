@@ -58,6 +58,9 @@ spec:
       externalEndpoint: {{ .Values.addons.anchore.postgresql.endpoint }}
     anchoreGlobal:
       imagePullSecretName: private-registry
+      oauthEnabled: {{ .Values.sso.enabled }}
+      saml:
+        secret: TBD
     anchoreEnterpriseGlobal:
       imagePullSecretName: private-registry
     anchore-feeds-db:
