@@ -41,17 +41,37 @@ spec:
     hostname: {{ .Values.hostname }}
     istio:
       enabled: {{ .Values.istio.enabled }}
+    enterpriseLicenseYaml: {{ .Values.addons.anchore.enterprise.licenseYaml }}
+    sso:
+      enabled: {{ .Values.sso.enabled }}
+      spEntityId: {{ .Values.addons.anchore.sso.clientId }}
+      acsUrl: "https://anchore.{{ .Values.hostname }}/service/sso/auth/keycloak"
+      idpMetadataUrl: "https://{{ .Values.sso.oidc.host }}/auth/realms/{{ .Values.sso.oidc.realm }}/protocol/saml/descriptor"
+    anchoreEnterpriseGlobal:
+      enabled: {{ .Values.addons.anchore.enterprise.enabled }}
     postgresql:
       imagePullSecrets: private-registry
+      enabled: {{ .Values.addons.anchore.postgresql.enabled }}
+      postgresUser: {{ .Values.addons.anchore.postgresql.user }}
+      postgresPassword: {{ .Values.addons.anchore.postgresql.password }}
+      postgresDatabase: {{ .Values.addons.anchore.postgresql.mainDB }}
+      externalEndpoint: {{ .Values.addons.anchore.postgresql.endpoint }}
     anchoreGlobal:
       imagePullSecretName: private-registry
     anchoreEnterpriseGlobal:
       imagePullSecretName: private-registry
     anchore-feeds-db:
       imagePullSecrets: private-registry
+      enabled: {{ .Values.addons.anchore.postgresql.enabled }}
+      postgresUser: {{ .Values.addons.anchore.postgresql.user }}
+      postgresPassword: {{ .Values.addons.anchore.postgresql.password }}
+      postgresDatabase: {{ .Values.addons.anchore.postgresql.enterpriseFeedsDB }}
+      externalEndpoint: {{ .Values.addons.anchore.postgresql.endpoint }}
     anchoreEnterpriseUi:
       imagePullSecretName: private-registry
     anchore-ui-redis:
+      enabled: {{ .Values.addons.anchore.enterpriseUiRedis.enabled }}
+      externalEndpoint: "redis://:{{ .Values.addons.anchore.enterpriseUiRedis.password }}@{{ .Values.addons.anchore.enterpriseUiRedis.endpoint }}"
       image:
         pullSecrets:
         - private-registry
