@@ -10,7 +10,7 @@ apiVersion: v1
 kind: Secret
 metadata:
   name: appsrepo
-  namespace: flux-system
+  namespace: bigbang
 type: opaque
 data:
    .dockerconfigjson: eyAiYXV0aHMiOiB7ICJodHRwczovL3JlZ2lzdHJ5LmlsMi5kc29wLmlvIjogeyJhdXRoIjogImJXRjBkQzUyWVhOeGRXVjZPbEYxTFhSdUxUaHhhM1JYT0hOdFJEWm1hRzloIiB9IH0gfQo=
