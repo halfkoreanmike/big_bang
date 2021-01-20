@@ -243,6 +243,13 @@ EOF
 # Examples included enabling add-ons, disabling unneeded features, etc.
 ```
 
+
++ Install BigBang using Iron Bank (Harbor) credentials.
+```bash
+# Helm install BigBang
+helm upgrade -i bigbang chart -n bigbang --create-namespace --set registryCredentials.username='<your user>' --set registryCredentials.password=<your cli key> -f my-values.yaml
+```
+
 + Deploy secrets
 
 ```bash
@@ -252,19 +259,13 @@ EOF
 ./hack/sops-create.sh
 
 # Deploy the authservice configuration
-sops -d ./hack/secrets/authservice-config.yaml | kubectl apply -f -
+sops -d ./hack/secrets/authservice.yaml | kubectl apply -f -
 
 # Deploy the ingress certificates
 sops -d ./hack/secrets/ingress-cert.yaml | kubectl apply -f -
 
 # Apply tests CI shared secrets
 kubectl apply -f tests/ci/shared-secrets.yaml
-```
-
-+ Install BigBang using Iron Bank (Harbor) credentials.
-```bash
-# Helm install BigBang
-helm upgrade -i bigbang chart -n bigbang --create-namespace --set registryCredentials.username='<your user>' --set registryCredentials.password=<your cli key> -f my-values.yaml
 ```
 
 + You can now modify your local `/etc/hosts` file to allow for local name resolution. On Windows, this file is located at `$env:windir\System32\drivers\etc\hosts`
