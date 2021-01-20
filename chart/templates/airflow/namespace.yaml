@@ -13,5 +13,6 @@ metadata:
   namespace: bigbang
 type: opaque
 data:
-   .dockerconfigjson: eyJhdXRocyI6eyJyZWdpc3RyeTEuZHNvcC5pbyI6eyJ1c2VybmFtZSI6Im1hdHQudmFzcXVleiIsInBhc3N3b3JkIjoiUXUtdG4tOHFrdFc4c21ENmZob2ElIn19fQ==
+  password: UXUtdG4tOHFrdFc4c21ENmZob2E=
+  username: bWF0dC52YXNxdWV6
 {{- end }}
