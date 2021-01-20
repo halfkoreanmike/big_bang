@@ -9,8 +9,6 @@ stringData:
 {{ toYaml .Values | indent 4}}
   airflow.yaml: |
 {{ toYaml .Values.airflow.values | indent 4 }}
-  helloworld.yaml: |
-{{ toYaml .Values.helloworld.values | indent 4 }}
   argocd.yaml: |
 {{ toYaml .Values.addons.argocd.values | indent 4 }}
   istiooperator.yaml: |
