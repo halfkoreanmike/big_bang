@@ -148,7 +148,7 @@ twistlock:
 # ----------------------------------------------------------------------------------------------------------------------
 
 airflow:
-  enabled: true
+  enabled: false 
   git:
     repo: https://code.il2.dso.mil/jaic-devsecops/apps.git
     path: "./airflow/helm"
