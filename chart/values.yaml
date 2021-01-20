@@ -36,7 +36,7 @@ sso:
   oidc:
     host: login.dsop.io
     realm: baby-yoda
-  certificate_authority: ""
+  certificate_authority: ''
   jwks: ""
   client_id: ""
   client_secret: ""
@@ -60,7 +60,7 @@ istio:
   git:
     repo: https://repo1.dsop.io/platform-one/big-bang/apps/core/istio-controlplane.git
     path: "./chart"
-    tag: "1.7.3-bb.5"
+    tag: "1.7.3-bb.6"
   sso:
     enabled: false
     kiali:
@@ -187,7 +187,7 @@ addons:
     git:
       repo: https://repo1.dsop.io/platform-one/big-bang/apps/sandbox/authservice.git
       path: "./chart"
-      tag: "0.1.5-bb.0"
+      tag: "0.1.6-bb.0"
     # Dont put chain configuraitons in this section
     values: {}
       # put additional chain configuration in this section
