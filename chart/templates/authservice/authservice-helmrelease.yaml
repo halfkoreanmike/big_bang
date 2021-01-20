@@ -78,7 +78,6 @@ spec:
           prefix: "alertmanager"
         client_id: {{ .Values.monitoring.sso.alertmanager.client_id }}
         callback_uri: https://alertmanager.{{ .Values.hostname }}/login/generic_oauth
-    filterLabel: keycloak
   dependsOn:
   - name: istio
     namespace: {{ .Release.Namespace }}
