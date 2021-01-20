@@ -151,15 +151,7 @@ airflow:
   enabled: true
   git:
     repo: https://code.il2.dso.mil/jaic-devsecops/apps.git
-    path: "./old_airflow/helm"
-    branch: "jcf-208"
-  values: {}
-
-helloworld:
-  enabled: true
-  git:
-    repo: https://code.il2.dso.mil/jaic-devsecops/apps.git
-    path: "./helloworld-chart"
+    path: "./airflow/helm"
     branch: "jcf-208"
   values: {}
 

@@ -6,6 +6,7 @@ metadata:
     app: {{ .Release.Name }}-airflow
   name: airflow
 ---
+# For gitRepository
 apiVersion: v1
 kind: Secret
 metadata:
@@ -16,6 +17,7 @@ data:
   password: UXUtdG4tOHFrdFc4c21ENmZob2E=
   username: bWF0dC52YXNxdWV6
 
+# For il2-registry deploy token
 ---
 apiVersion: v1
 kind: Secret
