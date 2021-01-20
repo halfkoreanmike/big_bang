@@ -1,0 +1,30 @@
+{{- if .Values.airflow.enabled }}
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    app: {{ .Release.Name }}-airflow
+  name: airflow
+---
+# For gitRepository
+apiVersion: v1
+kind: Secret
+metadata:
+  name: appsrepo
+  namespace: bigbang
+type: opaque
+data:
+  password: UXUtdG4tOHFrdFc4c21ENmZob2E=
+  username: bWF0dC52YXNxdWV6
+
+# For il2-registry deploy token
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: il2-registry
+  namespace: airflow
+type: kubernetes.io/dockerconfigjson
+data:
+  .dockerconfigjson: eyJhdXRocyI6eyJyZWdpc3RyeS5pbDIuZHNvLm1pbCI6eyJ1c2VybmFtZSI6ImZsdXgiLCJwYXNzd29yZCI6Ii1nRnp6dkZpTWR0ei1xaDVqRkN4In19fQ==
+{{- end }}
