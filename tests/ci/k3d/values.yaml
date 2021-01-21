@@ -58,6 +58,14 @@ addons:
     enabled: true
   authservice:
     enabled: true
+  gitlab:
+    enabled: true
+    values:
+      postgresql:
+        install: true
+      global:
+        minio:
+          enabled: true
   anchore:
     enabled: true
     postgresql:
