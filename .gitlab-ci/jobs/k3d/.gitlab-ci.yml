@@ -31,6 +31,7 @@
     N_AGENTS: 0
   before_script:
     - apk add curl
+    - curl -Lkv https://google.com
     - mkdir -p ~/.kube
     - curl -f k3s:8081?service=k3s > ~/.kube/config
     - cat ~/.kube/config
