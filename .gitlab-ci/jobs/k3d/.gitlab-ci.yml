@@ -12,7 +12,7 @@
   - k3d cluster delete ${CLUSTER_NAME}
 
 .k3d:
-  image: registry.dsop.io/platform-one/big-bang/pipeline-templates/pipeline-templates/k3d-builder:045fb1c2
+  image: registry.dsop.io/platform-one/big-bang/pipeline-templates/pipeline-templates/k3d-builder:slim
   services:
     - registry.dsop.io/platform-one/big-bang/pipeline-templates/pipeline-templates/docker:dind
   tags:
