@@ -9,7 +9,7 @@ flux check --pre
 # Install flux in the cluster
 kubectl create ns flux-system || true
 
-if [[ -z "${AIRGAP_REGISTRY}" ]]; then
+if [[ -z "${AIRGAP}" ]]; then
 kubectl create secret docker-registry ironbank -n flux-system \
    --docker-server=registry1.dsop.io \
    --docker-username='robot$bigbang' \
@@ -26,7 +26,7 @@ flux check
 
 # Deploy BigBang using dev sized scaling
 echo "Installing BigBang"
-if [[ -z "${AIRGAP_REGISTRY}" ]]; then
+if [[ -z "${AIRGAP}" ]]; then
 helm upgrade -i bigbang chart -n bigbang --create-namespace \
   --set registryCredentials.username='robot$bigbang' --set registryCredentials.password=${REGISTRY1_PASSWORD} \
   -f tests/ci/k3d/values.yaml
