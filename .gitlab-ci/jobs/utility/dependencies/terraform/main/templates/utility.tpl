@@ -105,6 +105,10 @@ repo1.dsop.io
 repo1.dsop.io:80
 registry.dsop.io:5000
 registry1.dsop.io:5000
+repo1.dso.mil
+repo1.dso.mil:80
+registry.dso.mil:5000
+registry1.dso.mil:5000
 rhui3.us-west-2.aws.ce.redhat.com:443
 elasticloadbalancing.us-gov-west-1.amazonaws.com:443
 ec2.us-gov-west-1.amazonaws.com:443
