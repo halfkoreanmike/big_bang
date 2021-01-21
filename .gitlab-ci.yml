@@ -41,6 +41,9 @@ commitlint:
   image: registry.dsop.io/platform-one/big-bang/pipeline-templates/pipeline-templates/pre-envs:ubi8.3
   stage: .pre
   allow_failure: true
+  tags:
+    - bigbang
+    - dogfood
   script:
   - dnf module install -y nodejs
   - npm install --only=dev
@@ -50,6 +53,9 @@ commitlint:
 pre vars:
   image: registry.dsop.io/platform-one/big-bang/pipeline-templates/pipeline-templates/pre-envs:ubi8.3
   stage: .pre
+  tags:
+    - bigbang
+    - dogfood
   artifacts:
     reports:
       dotenv: variables.env
@@ -83,6 +89,9 @@ pre vars:
 
 .bigbang:
   image: registry.dsop.io/platform-one/big-bang/pipeline-templates/pipeline-templates/k3d-builder:0.0.1
+  tags:
+    - bigbang
+    - dogfood
   after_script:
     - kubectl get all -A
     - kubectl get helmrelease -A
