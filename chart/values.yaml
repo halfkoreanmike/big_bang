@@ -139,12 +139,12 @@ twistlock:
 # ----------------------------------------------------------------------------------------------------------------------
 
 # ----------------------------------------------------------------------------------------------------------------------
-# Minio
+# Minio Operator
 #
-minio:
+miniooperator:
   enabled: true
   git:
-    repo: https://repo1.dso.mil/platform-one/big-bang/apps/application-utilities/minio.git
+    repo: https://repo1.dso.mil/platform-one/big-bang/apps/application-utilities/minio-operator.git
     path: "./chart"
     branch: "bb-1233"
   values: {}
