@@ -30,6 +30,11 @@
     N_SERVERS: 1
     N_AGENTS: 0
   before_script:
+    - mkdir -p ~/.kube
+    - curl -f k3s:8081?service=k3s > ~/.kube/config
+    - cat ~/.kube/config
+    - kubectl version
+    - kubectl cluster-info
   #    - *k3d_before_script
 #  after_script:
 #    - *k3d_after_script
