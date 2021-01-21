@@ -170,9 +170,9 @@ addons:
       tag: "0.1.6-bb.0"
     values: {}
 
-  gitlab:
-    enabled: false
-    git:
-      repo: https://repo1.dso.mil/platform-one/big-bang/apps/developer-tools/gitlab.git
-      path: "./chart"
-      tag: "4.2.0-bb.1"
+  # gitlab:
+  #   enabled: false
+  #   git:
+  #     repo: https://repo1.dso.mil/platform-one/big-bang/apps/developer-tools/gitlab.git
+  #     path: "./chart"
+  #     tag: "4.2.0-bb.1"
