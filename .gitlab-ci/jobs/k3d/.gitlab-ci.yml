@@ -33,7 +33,7 @@
     - apk add curl
     - mkdir -p ~/.kube
     - curl -f k3s:8081?service=k3s > ~/.kube/config
-    - cat "$KUBECONFIG"
+    - cat ~/.kube/config
     - kubectl version
     - kubectl cluster-info
   #    - *k3d_before_script
