@@ -12,21 +12,24 @@
   - k3d cluster delete ${CLUSTER_NAME}
 
 .k3d:
-  image: registry.dsop.io/platform-one/big-bang/pipeline-templates/pipeline-templates/k3d-builder:045fb1c2
+  image: registry.gitlab.com/gitlab-org/cluster-integration/helm-install-image/releases/3.2.4-kube-1.16.15-alpine-3.12
+#  services:
+#    - registry.dsop.io/platform-one/big-bang/pipeline-templates/pipeline-templates/docker:dind
   services:
-    - registry.dsop.io/platform-one/big-bang/pipeline-templates/pipeline-templates/docker:dind
+    - name: registry.gitlab.com/gitlab-org/cluster-integration/test-utils/k3s-gitlab-ci/releases/v1.18.10-k3s1:latest
+      alias: k3s
   tags:
     - bigbang
     - privileged
     - dogfood
   variables:
-    DOCKER_HOST: tcp://localhost:2375/
+    DOCKER_HOST: tcp://dind:2375
     DOCKER_DRIVER: overlay2
     DOCKER_TLS_CERTDIR: ""
     CLUSTER_NAME: ${CI_COMMIT_REF_SLUG}
     N_SERVERS: 1
     N_AGENTS: 0
   before_script:
-    - *k3d_before_script
-  after_script:
-    - *k3d_after_script
+  #    - *k3d_before_script
+#  after_script:
+#    - *k3d_after_script
