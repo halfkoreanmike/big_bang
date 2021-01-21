@@ -128,7 +128,7 @@ pre vars:
     - mkdir -p /root/.docker
     - echo $DOCKER_AUTH_CONFIG > /root/.docker/config.json
   script:
-    - &package_script
+    - *package_script
 
 
 
@@ -318,7 +318,7 @@ aws/airgap/package:
     - tar -czf umbrella.tar.gz umbrella/
     - mkdir -p release
     - mv umbrella.tar.gz release/
-    - &package_script
+    - *package_script
 
 #Delete Generated Packages
 aws/airgap/package delete:
