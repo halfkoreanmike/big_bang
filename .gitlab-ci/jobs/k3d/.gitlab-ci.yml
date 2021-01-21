@@ -12,7 +12,7 @@
   - k3d cluster delete ${CLUSTER_NAME}
 
 .k3d:
-  image: registry.gitlab.com/gitlab-org/cluster-integration/helm-install-image/releases/2.16.6-kube-1.13.12
+  image: registry.gitlab.com/gitlab-org/cluster-integration/helm-install-image/releases/3.2.4-kube-1.16.15-alpine-3.12
 #  services:
 #    - registry.dsop.io/platform-one/big-bang/pipeline-templates/pipeline-templates/docker:dind
   services:
@@ -31,8 +31,8 @@
     N_AGENTS: 0
   before_script:
     - apk add curl
-    - curl -f k3s:8081?service=k3s > kubeconfig
-    - export KUBECONFIG=kubeconfig
+    - mkdir -p ~/.kube
+    - curl -f k3s:8081?service=k3s > ~/.kube/config
     - cat "$KUBECONFIG"
     - kubectl version
     - kubectl cluster-info
