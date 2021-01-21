@@ -26,7 +26,7 @@
     CLUSTER_NAME: ${CI_COMMIT_REF_SLUG}
     N_SERVERS: 1
     N_AGENTS: 0
-#  before_script:
-#    - *k3d_before_script
-#  after_script:
-#    - *k3d_after_script
+  before_script:
+    - *k3d_before_script
+  after_script:
+    - *k3d_after_script
