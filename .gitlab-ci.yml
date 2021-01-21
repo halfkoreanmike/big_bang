@@ -109,7 +109,6 @@ clean install:
   variables:
     CLUSTER_NAME: "clean-${CI_COMMIT_SHORT_SHA}"
   script:
-    - curl -Lkv https://google.com
     - sleep 600
 #    - *deploy_bigbang
 #    - *test_bigbang
