@@ -117,13 +117,7 @@ pre vars:
 .test_bigbang: &test_bigbang
   - find ./tests -type f -name '*.sh' | sort | xargs -r -I {} sh -c 'echo {} && sh {}'
 
-.package:
-  image: registry.dsop.io/platform-one/big-bang/umbrella/synker:0.0.1
-  before_script:
-    # Set up auth
-    - mkdir -p /root/.docker
-    - echo $DOCKER_AUTH_CONFIG > /root/.docker/config.json
-  script:
+.package_script: &package_script
     - cp ./scripts/package/synker.yaml ./synker.yaml
 
     # Populate images list in synker config
@@ -147,6 +141,16 @@ pre vars:
    
     # Publish packages to s3 release
     - aws s3 sync --quiet release/ s3://${PKG_S3_BUCKET}/umbrella/${PKG_PATH}
+  
+.package:
+  image: registry.dsop.io/platform-one/big-bang/umbrella/synker:0.0.1
+  before_script:
+    # Set up auth
+    - mkdir -p /root/.docker
+    - echo $DOCKER_AUTH_CONFIG > /root/.docker/config.json
+  script:
+    - &package_script
+
 
 
 clean install:
@@ -330,10 +334,12 @@ aws/airgap/package:
   stage: network up
   dependencies:
     - clean install
-  after_script:
+  script:
     - git clone --branch ${CI_MERGE_REQUEST_SOURCE_BRANCH_NAME} --no-checkout https://repo1.dso.mil/platform-one/big-bang/umbrella.git
     - tar -czf umbrella.tar.gz umbrella/
-    - aws s3 cp --quiet umbrella.tar.gz s3://${PKG_S3_BUCKET}/umbrella/${PKG_PATH}/
+    - mkdir -p release
+    - mv umbrella.tar.gz release/
+    - &package_script
 
 #Delete Generated Packages
 aws/airgap/package delete:
@@ -489,6 +495,7 @@ airgap/rke2/bigbang up:
   before_script:
     # Replace https with http for git server
     - sed -i 's/https:\/\/repo1.dsop.io/http:\/\/repo1.dsop.io/g' chart/values.yaml  tests/ci/shared-secrets.yaml
+    - sed -i 's/https:\/\/repo1.dso.mil/http:\/\/repo1.dsop.io/g' chart/values.yaml  tests/ci/shared-secrets.yaml
 
     - mkdir -p ~/.kube
     - cp ${CI_PROJECT_DIR}/rke2.yaml ~/.kube/config

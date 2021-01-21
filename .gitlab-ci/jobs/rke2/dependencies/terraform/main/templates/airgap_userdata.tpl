@@ -25,12 +25,26 @@ mirrors:
   registry1.dsop.io:
     endpoint:
       - "http://registry1.dsop.io:5000"
+  registry.dso.mil:
+    endpoint:
+      - "http://registry.dso.mil:5000"
+  registry1.dso.mil:
+    endpoint:
+      - "http://registry1.dso.mil:5000"
 configs:
   "registry.dsop.io:5000":
     auth:
       username: ${registry_username}
       password: ${registry_password}
   "registry1.dsop.io:5000":
+    auth:
+      username: ${registry_username}
+      password: ${registry_password}
+  "registry.dso.mil:5000":
+    auth:
+      username: ${registry_username}
+      password: ${registry_password}
+  "registry1.dso.mil:5000":
     auth:
       username: ${registry_username}
       password: ${registry_password}
