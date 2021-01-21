@@ -13,14 +13,14 @@
 
 .k3d:
   image: registry.dsop.io/platform-one/big-bang/pipeline-templates/pipeline-templates/k3d-builder:slim
-  services:
-    - registry.dsop.io/platform-one/big-bang/pipeline-templates/pipeline-templates/docker:dind
+#  services:
+#    - registry.dsop.io/platform-one/big-bang/pipeline-templates/pipeline-templates/docker:dind
   tags:
     - bigbang
     - privileged
     - dogfood
   variables:
-    DOCKER_HOST: tcp://localhost:2375/
+    DOCKER_HOST: tcp://dind:2375/
     DOCKER_DRIVER: overlay2
     DOCKER_TLS_CERTDIR: ""
     CLUSTER_NAME: ${CI_COMMIT_REF_SLUG}
