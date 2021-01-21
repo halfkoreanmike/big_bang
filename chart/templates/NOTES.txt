@@ -79,7 +79,6 @@ addons:
           secret: gitlab-object-storage
           key: registry
 
-
 {{- if $.Values.addons.gitlab.values.postgresql.install }}
 PLATFORM ONE GITLAB WARNING:
   You have enabled an internal postgres database in the values configuration.
@@ -97,7 +96,7 @@ PLATFORM ONE GITLAB WARNING:
 
 {{- if $.Values.addons.anchore.enabled }}
 Anchore is enabled.
-{- if $.Values.addons.anchore.postgresql.enabled }}
+{{- if $.Values.addons.anchore.postgresql.enabled }}
 PLATFORM ONE ANCHORE WARNING:
   You have enabled an internal postgres database in the values configuration.
   PlatformOne does not support this option for production deployments.
