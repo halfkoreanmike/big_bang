@@ -18,7 +18,7 @@
   tags:
     - bigbang
     - privileged
-    - public
+    - dogfood
   variables:
     DOCKER_HOST: tcp://localhost:2375/
     DOCKER_DRIVER: overlay2
