@@ -43,10 +43,10 @@ spec:
       enabled: {{ .Values.istio.enabled }}
     enterpriseLicenseYaml: {{ .Values.addons.anchore.enterprise.licenseYaml }}
     sso:
-      enabled: {{ .Values.sso.enabled }}
+      enabled: {{ .Values.addons.anchore.sso.enabled }}
       spEntityId: {{ .Values.addons.anchore.sso.clientId }}
       acsUrl: "https://anchore.{{ .Values.hostname }}/service/sso/auth/keycloak"
-      idpMetadataUrl: "https://{{ .Values.sso.oidc.host }}/auth/realms/{{ .Values.sso.oidc.realm }}/protocol/saml/descriptor"
+      idpMetadataUrl: "https://{{ .Values.addons.anchore.sso.oidc.host }}/auth/realms/{{ .Values.addons.anchore.sso.oidc.realm }}/protocol/saml/descriptor"
     anchoreEnterpriseGlobal:
       enabled: {{ .Values.addons.anchore.enterprise.enabled }}
     postgresql:

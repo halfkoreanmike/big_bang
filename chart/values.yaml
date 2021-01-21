@@ -188,7 +188,11 @@ addons:
       licenseYaml: |
         FULL LICENSE YAML
     sso:
+      enabled: false
       clientId: ""
+      oidc:
+        host: ""
+        realm: ""
     postgresql:
       enabled: false
       user: ""
