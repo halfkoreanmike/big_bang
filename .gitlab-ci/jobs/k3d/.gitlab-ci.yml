@@ -14,15 +14,14 @@
 .k3d:
   image: registry.dsop.io/platform-one/big-bang/pipeline-templates/pipeline-templates/k3d-builder:045fb1c2
   services:
-    - registry.dsop.io/platform-one/big-bang/pipeline-templates/pipeline-templates/docker:dind
+    - name: docker:19.03.12-dind
+      alias: docker
   tags:
     - bigbang
     - privileged
     - docker
   variables:
-    DOCKER_HOST: tcp://docker:2375/
-    DOCKER_DRIVER: overlay2
-    DOCKER_TLS_CERTDIR: ""
+    DOCKER_TLS_CERTDIR: "/certs"
     CLUSTER_NAME: ${CI_COMMIT_REF_SLUG}
     N_SERVERS: 1
     N_AGENTS: 0
