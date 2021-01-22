@@ -33,10 +33,11 @@ include:
     - terraform validate
   
 .terraformer_airgap:
-  extends:
-    - .terraformer
   variables: 
     TF_VAR_env: ${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA}-airgap
+  extends:
+    - .terraformer
+
 
 .terraform destroy workspace:
   after_script:
