@@ -4,7 +4,6 @@
 #  - echo "nameserver 127.0.0.1" >> /etc/resolv.conf
   # Standup cluster
   - k3d cluster create ${CLUSTER_NAME}  --k3s-server-arg "--disable=traefik" --k3s-server-arg "--disable=metrics-server" -p 80:80@loadbalancer -p 443:443@loadbalancer --wait --agents $N_AGENTS --servers $N_SERVERS
-  - sed -i 's/0.0.0.0/docker/' ~/.kube/config
   - while ! (kubectl get node | grep "server" > /dev/null); do sleep 3; done
   - kubectl get nodes
   - k3d node list
