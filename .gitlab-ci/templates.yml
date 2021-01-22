@@ -37,6 +37,13 @@ include:
     TF_VAR_env: ${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA}-airgap
   extends:
     - .terraformer
+  before_script:
+    - echo "$TF_VAR_env"
+    - cd ${CI_PROJECT_DIR}/${TF_ROOT}
+    - terraform version
+    - terraform init -input=false
+    - terraform workspace select $TF_VAR_env || terraform workspace new $TF_VAR_env
+    - terraform validate
 
 
 .terraform destroy workspace:
