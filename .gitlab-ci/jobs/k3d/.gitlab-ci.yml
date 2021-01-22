@@ -21,8 +21,8 @@
     - privileged
     - docker
   variables:
-    DOCKER_HOST: "tcp://docker:2376"
-    DOCKER_TLS_CERTDIR: "/certs"
+    DOCKER_HOST: "tcp://docker:2375"
+    DOCKER_TLS_CERTDIR: ""
     CLUSTER_NAME: ${CI_COMMIT_REF_SLUG}
     N_SERVERS: 1
     N_AGENTS: 0
