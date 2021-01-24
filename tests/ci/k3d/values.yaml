@@ -59,7 +59,7 @@ addons:
   authservice:
     enabled: true
   gitlab:
-    enabled: false
+    enabled: true
     values:
       postgresql:
         install: true
