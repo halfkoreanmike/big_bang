@@ -36,7 +36,7 @@ helm upgrade -i bigbang chart -n bigbang --create-namespace \
 -f tests/ci/k3d/values.yaml
 else
 helm upgrade -i bigbang chart -n bigbang --create-namespace \
--f tests/ci/k3d/values.yaml
+-f tests/ci/k3d/values.yaml --set registryCredentials=null
 fi
 
 ## Apply secrets kustomization pointing to current branch
