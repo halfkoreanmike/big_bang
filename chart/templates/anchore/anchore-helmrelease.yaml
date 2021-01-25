@@ -67,6 +67,7 @@ spec:
       saml:
         secret: sso-secret
       {{- end }}
+    {{- if .Values.addons.anchore.enterprise.enabled }}
     anchore-feeds-db:
       imagePullSecrets: private-registry
       enabled: {{ .Values.addons.anchore.postgresql.enabled }}
@@ -83,6 +84,7 @@ spec:
       image:
         pullSecrets:
         - private-registry
+    {{- end }}
 
   {{- if or .Values.istio.enabled .Values.monitoring.enabled }}
   dependsOn:
