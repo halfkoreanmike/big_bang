@@ -43,8 +43,7 @@ commitlint:
   allow_failure: true
   tags:
     - bigbang
-    - dockermachine
-    - privileged
+    - dogfood
   script:
   - dnf module install -y nodejs
   - npm install --only=dev
