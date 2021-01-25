@@ -33,4 +33,6 @@ stringData:
 {{ toYaml .Values.miniooperator.values | indent 4 }}
   minio.yaml: |
 {{ toYaml .Values.minio.values | indent 4 }}
+  gitlab.yaml: |
+{{ toYaml .Values.addons.gitlab.values | indent 4 }}
 data:
