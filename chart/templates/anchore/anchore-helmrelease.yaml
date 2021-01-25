@@ -49,6 +49,7 @@ spec:
       idpMetadataUrl: "https://{{ .Values.addons.anchore.sso.oidc.host }}/auth/realms/{{ .Values.addons.anchore.sso.oidc.realm }}/protocol/saml/descriptor"
     anchoreEnterpriseGlobal:
       enabled: {{ .Values.addons.anchore.enterprise.enabled }}
+      imagePullSecretName: private-registry
     postgresql:
       imagePullSecrets: private-registry
       enabled: {{ .Values.addons.anchore.postgresql.enabled }}
@@ -66,8 +67,6 @@ spec:
       saml:
         secret: sso-secret
       {{- end }}
-    anchoreEnterpriseGlobal:
-      imagePullSecretName: private-registry
     anchore-feeds-db:
       imagePullSecrets: private-registry
       enabled: {{ .Values.addons.anchore.postgresql.enabled }}
