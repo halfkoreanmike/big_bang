@@ -60,7 +60,7 @@ spec:
       imagePullSecretName: private-registry
       enableMetrics: {{ .Values.monitoring.enabled }}
       metricsAuthDisabled: {{ .Values.monitoring.enabled }}
-      {{- if .Values.sso.enabled }}
+      {{- if .Values.addons.anchore.sso.enabled }}
       oauthEnabled: {{ .Values.addons.anchore.sso.enabled }}
       saml:
         secret: sso-secret
