@@ -13,9 +13,9 @@
   - k3d cluster delete ${CLUSTER_NAME}
 
 .k3d:
-  image: registry.dsop.io/platform-one/big-bang/pipeline-templates/pipeline-templates/k3d-builder:slim
+  image: registry.dso.mil/platform-one/big-bang/pipeline-templates/pipeline-templates/clusterutils:latest
   services:
-    - name: docker:20.10.2-dind
+    - name: docker:19.03.12-dind
       alias: docker
   tags:
     - bigbang
