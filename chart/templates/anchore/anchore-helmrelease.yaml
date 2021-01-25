@@ -79,6 +79,7 @@ spec:
     anchore-ui-redis:
       enabled: {{ .Values.addons.anchore.enterpriseUiRedis.enabled }}
       externalEndpoint: "redis://:{{ .Values.addons.anchore.enterpriseUiRedis.password }}@{{ .Values.addons.anchore.enterpriseUiRedis.endpoint }}"
+      password: {{ .Values.addons.anchore.enterpriseUiRedis.password }}
       image:
         pullSecrets:
         - private-registry
