@@ -49,7 +49,6 @@ spec:
       idpMetadataUrl: "https://{{ .Values.addons.anchore.sso.oidc.host }}/auth/realms/{{ .Values.addons.anchore.sso.oidc.realm }}/protocol/saml/descriptor"
     anchoreEnterpriseGlobal:
       enabled: {{ .Values.addons.anchore.enterprise.enabled }}
-      imagePullSecretName: private-registry
     postgresql:
       imagePullSecrets: private-registry
       enabled: {{ .Values.addons.anchore.postgresql.enabled }}
@@ -58,7 +57,6 @@ spec:
       postgresDatabase: {{ .Values.addons.anchore.postgresql.mainDB }}
       externalEndpoint: {{ .Values.addons.anchore.postgresql.endpoint }}
     anchoreGlobal:
-      defaultAdminPassword: {{ .Values.addons.anchore.adminPassword }}
       imagePullSecretName: private-registry
       enableMetrics: {{ .Values.monitoring.enabled }}
       metricsAuthDisabled: {{ .Values.monitoring.enabled }}
@@ -67,7 +65,8 @@ spec:
       saml:
         secret: sso-secret
       {{- end }}
-    {{- if .Values.addons.anchore.enterprise.enabled }}
+    anchoreEnterpriseGlobal:
+      imagePullSecretName: private-registry
     anchore-feeds-db:
       imagePullSecrets: private-registry
       enabled: {{ .Values.addons.anchore.postgresql.enabled }}
@@ -79,12 +78,10 @@ spec:
       imagePullSecretName: private-registry
     anchore-ui-redis:
       enabled: {{ .Values.addons.anchore.enterpriseUiRedis.enabled }}
-      password: {{ .Values.addons.anchore.enterpriseUiRedis.password }}
       externalEndpoint: "redis://:{{ .Values.addons.anchore.enterpriseUiRedis.password }}@{{ .Values.addons.anchore.enterpriseUiRedis.endpoint }}"
       image:
         pullSecrets:
         - private-registry
-    {{- end }}
 
   {{- if or .Values.istio.enabled .Values.monitoring.enabled }}
   dependsOn:

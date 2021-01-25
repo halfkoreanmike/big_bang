@@ -183,7 +183,6 @@ addons:
       repo: https://repo1.dso.mil/platform-one/big-bang/apps/security-tools/anchore-enterprise.git
       path: "./chart"
       tag: "1.9.5-bb.1"
-    adminPassword: ""
     enterprise:
       enabled: false
       licenseYaml: |
