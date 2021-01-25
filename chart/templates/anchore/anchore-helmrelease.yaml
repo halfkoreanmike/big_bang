@@ -57,6 +57,7 @@ spec:
       postgresDatabase: {{ .Values.addons.anchore.postgresql.mainDB }}
       externalEndpoint: {{ .Values.addons.anchore.postgresql.endpoint }}
     anchoreGlobal:
+      defaultAdminPassword: {{ .Values.addons.anchore.adminPassword }}
       imagePullSecretName: private-registry
       enableMetrics: {{ .Values.monitoring.enabled }}
       metricsAuthDisabled: {{ .Values.monitoring.enabled }}
