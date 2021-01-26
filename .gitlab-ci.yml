@@ -134,8 +134,7 @@ clean install:
     - *test_bigbang
 
     # Fetch list of all actively running images
-    - curl -f k3s:8081/images | jq -r '.images[].repoTags[0] > images.txt
-    
+    - curl -f k3s:8081/images | jq -r '.images[].repoTags[0]' > images.txt
   artifacts:
     paths:
       - images.txt
