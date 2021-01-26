@@ -5,7 +5,8 @@
   tags:
     - bigbang
     - privileged
-    - dockermachine
+#    - dockermachine
+    - dogfood
 
 .k3s-ci:
   extends:
