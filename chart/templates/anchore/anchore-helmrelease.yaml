@@ -41,7 +41,7 @@ spec:
     hostname: {{ .Values.hostname }}
     istio:
       enabled: {{ .Values.istio.enabled }}
-    enterpriseLicenseYaml: "{{ .Values.addons.anchore.enterprise.licenseYaml }}"
+    enterpriseLicenseYaml: {{ toYaml .Values.addons.anchore.enterprise.licenseYaml }}
     sso:
       enabled: {{ .Values.addons.anchore.sso.enabled }}
       spEntityId: {{ .Values.addons.anchore.sso.clientId }}
