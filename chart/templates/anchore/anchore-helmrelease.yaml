@@ -42,7 +42,7 @@ spec:
     istio:
       enabled: {{ .Values.istio.enabled }}
     {{- if .Values.addons.anchore.enterprise.licenseYaml }}
-    enterpriseLicenseYaml: {{ .Values.addons.anchore.enterprise.licenseYaml }}
+    enterpriseLicenseYaml: {{ toYaml .Values.addons.anchore.enterprise.licenseYaml }}
     {{- end }}
     sso:
       enabled: {{ .Values.addons.anchore.sso.enabled }}
