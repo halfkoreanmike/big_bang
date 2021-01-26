@@ -5,7 +5,6 @@
   tags:
     - bigbang
     - privileged
-#    - dockermachine
     - dogfood
 
 .k3s-ci:
@@ -13,7 +12,7 @@
     - .k8s-util
     - .dind-runner
   services:
-    - name: registry.dso.mil/platform-one/big-bang/pipeline-templates/pipeline-templates/k3s-ci:v1.20.2-k3s1
+    - name: registry.dso.mil/platform-one/big-bang/pipeline-templates/pipeline-templates/k3s-ci:v1.20.2-k3s1-bb.0
       alias: k3s
       command:
         - "server"
