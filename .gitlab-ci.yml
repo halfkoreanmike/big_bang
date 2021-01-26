@@ -62,6 +62,9 @@ commits:
   image: registry.dsop.io/platform-one/big-bang/pipeline-templates/pipeline-templates/pre-envs:ubi8.3
   stage: .pre
   allow_failure: true
+  tags:
+    - bigbang
+    - dogfood
   script:
   - dnf module install -y nodejs
   - npm install --only=dev
@@ -71,6 +74,9 @@ commits:
 pre vars:
   image: registry.dsop.io/platform-one/big-bang/pipeline-templates/pipeline-templates/pre-envs:ubi8.3
   stage: .pre
+  tags:
+    - bigbang
+    - dogfood
   artifacts:
     reports:
       dotenv: variables.env
@@ -104,6 +110,9 @@ pre vars:
 
 .bigbang:
   image: registry.dsop.io/platform-one/big-bang/pipeline-templates/pipeline-templates/k3d-builder:0.0.1
+  tags:
+    - bigbang
+    - dogfood
   after_script:
     - kubectl get all -A
     - kubectl get helmrelease -A
@@ -117,13 +126,18 @@ pre vars:
 clean install:
   stage: smoke tests
   extends:
-    - .k3d
+    - .k3s-ci
   variables:
     CLUSTER_NAME: "clean-${CI_COMMIT_SHORT_SHA}"
   script:
     - *deploy_bigbang
     - *test_bigbang
-    - docker exec -i k3d-${CLUSTER_NAME}-server-0 crictl images -o json | jq -r '.images[].repoTags[0] | select(. != null)' > images.txt
+
+    # Fetch list of all actively running images
+    - kubectl get pods --all-namespaces -o jsonpath="{.items[*].spec.containers[*].image}" | uniq | tr -s '[[:space:]]' '\n' > images.txt
+
+    # TODO: add this as an http endpoint we can query instead
+#    - docker exec -i k3d-${CLUSTER_NAME}-server-0 crictl images -o json | jq -r '.images[].repoTags[0] | select(. != null)' > images.txt
   artifacts:
     paths:
       - images.txt
@@ -134,7 +148,7 @@ upgrade:
   dependencies:
     - pre vars
   extends:
-    - .k3d
+    - .k3s-ci
   rules:
     # skip job when MR title starts with 'Breaking Change'
     - if: '$CI_MERGE_REQUEST_TITLE =~ /^Breaking Change/'
@@ -142,7 +156,7 @@ upgrade:
     # run pipeline on merge request events
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
   variables:
-    CLUSTER_NAME: "clean-${CI_COMMIT_SHORT_SHA}"
+    CLUSTER_NAME: "upgrade-${CI_COMMIT_SHORT_SHA}"
   script:
     - if $CHART_BREAKING_CHANGE; then echo "Breaking change detected by chart version difference, skipping job"; exit 0; fi
     - echo "Install Big Bang from ${CI_DEFAULT_BRANCH}"
