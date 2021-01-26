@@ -104,28 +104,10 @@ pre vars:
 
 clean install:
   stage: smoke tests
-#  extends:
-#    - .k3d
+  extends:
+    - .k3s-ci
   variables:
     CLUSTER_NAME: "clean-${CI_COMMIT_SHORT_SHA}"
-  image: registry.dsop.io/platform-one/big-bang/pipeline-templates/pipeline-templates/k3d-builder:045fb1c2
-  tags:
-    - bigbang
-    - privileged
-    - dockermachine
-  services:
-    - name: registry.gitlab.com/gitlab-org/cluster-integration/test-utils/k3s-gitlab-ci/build/master:v1.19.3-k3s1
-      alias: k3s
-      command:
-        - "server"
-        - "--tls-san=k3s"
-        - "--disable=metrics-server"
-        - "--disable=traefik"
-  before_script:
-    - mkdir -p ~/.kube
-    - curl -f k3s:8081?service=k3s > ~/.kube/config
-    - kubectl version
-    - kubectl cluster-info
   script:
     - *deploy_bigbang
     - *test_bigbang
