@@ -1,0 +1,19 @@
+{{- if .Values.addons.sonarqube.enabled }}
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    app: sonarqube
+  name: sonarqube
+---
+{{- if ( include "imagePullSecret" . ) }}
+apiVersion: v1
+kind: Secret
+metadata:
+  name: private-registry
+  namespace: sonarqube
+type: kubernetes.io/dockerconfigjson
+data:
+  .dockerconfigjson: {{ template "imagePullSecret" . }}
+{{- end }}
+{{- end }}
