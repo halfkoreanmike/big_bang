@@ -21,6 +21,6 @@
         - "--disable=traefik"
   before_script:
     - mkdir -p ~/.kube
-    - curl -f k3s:8081?service=k3s > ~/.kube/config
+    - curl -sfL k3s:8081?service=k3s > ~/.kube/config
     - kubectl version
     - kubectl cluster-info
