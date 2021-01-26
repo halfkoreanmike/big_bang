@@ -186,8 +186,7 @@ addons:
     adminPassword: ""
     enterprise:
       enabled: false
-      licenseYaml: |
-        FULL LICENSE YAML
+      licenseYaml: ""
     sso:
       enabled: false
       clientId: ""
