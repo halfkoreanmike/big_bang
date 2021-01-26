@@ -176,3 +176,10 @@ addons:
       repo: https://repo1.dso.mil/platform-one/big-bang/apps/developer-tools/gitlab.git
       path: "./chart"
       tag: "4.2.0-bb.1"
+
+  sonarqube:
+    enabled: false
+    git:
+      repo: https://repo1.dso.mil/platform-one/big-bang/apps/developer-tools/sonarqube.git
+      path: "./chart"
+      tag: "9.2.6-bb.0"
