@@ -194,6 +194,7 @@ addons:
       enabled: false
       clientId: ""
       samlDescriptorUrl: ""
+      roleAttribute: "" # Optional, set the Keycloak attribute to be used for role mapping
     postgresql:
       enabled: false
       user: ""

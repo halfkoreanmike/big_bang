@@ -53,6 +53,7 @@ spec:
       spEntityId: {{ .Values.addons.anchore.sso.clientId }}
       acsUrl: "https://anchore.{{ .Values.hostname }}/service/sso/auth/keycloak"
       idpMetadataUrl: {{ .Values.addons.anchore.sso.samlDescriptorUrl }}
+      roleAttribute: {{ .Values.addons.anchore.sso.roleAttribute }}
     anchoreEnterpriseGlobal:
       enabled: {{ .Values.addons.anchore.enterprise.enabled }}
       imagePullSecretName: private-registry
