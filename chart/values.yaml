@@ -61,7 +61,7 @@ istio:
   git:
     repo: https://repo1.dso.mil/platform-one/big-bang/apps/core/istio-controlplane.git
     path: "./chart"
-    tag: "container-dso"
+    branch: "container-dso"
   values: {}
 
 istiooperator:
@@ -69,7 +69,7 @@ istiooperator:
   git:
     repo: https://repo1.dso.mil/platform-one/big-bang/apps/core/istio-operator.git
     path: "./chart"
-    tag: "container-dso"
+    branch: "container-dso"
   values: {}
 # ----------------------------------------------------------------------------------------------------------------------
 
@@ -81,7 +81,7 @@ clusterAuditor:
   git: 
     repo: https://repo1.dso.mil/platform-one/big-bang/apps/core/cluster-auditor.git
     path: "./chart"
-    tag: "container-dso"
+    branch: "container-dso"
   values: {}
 # ----------------------------------------------------------------------------------------------------------------------
 
@@ -93,7 +93,7 @@ gatekeeper:
   git:
     repo: https://repo1.dso.mil/platform-one/big-bang/apps/core/policy.git
     path: "./chart"
-    tag: "container-dso"
+    branch: "container-dso"
   values: {}
 # ----------------------------------------------------------------------------------------------------------------------
 
@@ -105,7 +105,7 @@ logging:
   git:
     repo: https://repo1.dso.mil/platform-one/big-bang/apps/core/elasticsearch-kibana.git
     path: "./chart"
-    tag: "container-dso"
+    branch: "container-dso"
   values: {}
 
 eckoperator:
@@ -113,7 +113,7 @@ eckoperator:
   git:
     repo: https://repo1.dso.mil/platform-one/big-bang/apps/core/eck-operator.git
     path: "./chart"
-    tag: "container-dso"
+    branch: "container-dso"
   values: {}
 
 fluentbit:
@@ -121,7 +121,7 @@ fluentbit:
   git:
     repo: https://repo1.dso.mil/platform-one/big-bang/apps/core/fluentbit.git
     path: "./chart"
-    tag: "container-dso"
+    branch: "container-dso"
   values: {}
 # ----------------------------------------------------------------------------------------------------------------------
 
@@ -133,7 +133,7 @@ monitoring:
   git:
     repo: https://repo1.dso.mil/platform-one/big-bang/apps/core/monitoring.git
     path: "./chart"
-    tag: "container-dso"
+    branch: "container-dso"
   values: {}
 # ----------------------------------------------------------------------------------------------------------------------
 
@@ -145,7 +145,7 @@ twistlock:
   git:
     repo: https://repo1.dso.mil/platform-one/big-bang/apps/security-tools/twistlock.git
     path: "./chart"
-    tag: "container-dso"
+    branch: "container-dso"
   values: {}
 # ----------------------------------------------------------------------------------------------------------------------
 
@@ -155,7 +155,7 @@ addons:
     git:
       repo: https://repo1.dso.mil/platform-one/big-bang/apps/core/argocd.git
       path: "./chart"
-      tag: "container-dso"
+      branch: "container-dso"
     values: {}
 
   authservice:
@@ -163,7 +163,7 @@ addons:
     git:
       repo: https://repo1.dso.mil/platform-one/big-bang/apps/sandbox/authservice.git
       path: "./chart"
-      tag: "container-dso"
+      branch: "container-dso"
     values: {}
 
   gitlab:
