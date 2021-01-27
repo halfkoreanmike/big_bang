@@ -186,7 +186,10 @@ addons:
     adminPassword: ""
     enterprise:
       enabled: false
+      # Only pass one of the two license formats, b64encLicenseYaml should be base64 encoded
+      # This option is provided to ease any issues with indentation and spacing
       licenseYaml: ""
+      b64encLicenseYaml: ""
     sso:
       enabled: false
       clientId: ""

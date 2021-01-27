@@ -42,8 +42,11 @@ spec:
     istio:
       enabled: {{ .Values.istio.enabled }}
     {{- if .Values.addons.anchore.enterprise.licenseYaml }}
-    enterpriseLicenseYaml: |-
-      {{ .Values.addons.anchore.enterprise.licenseYaml }}
+    enterpriseLicense:
+      b64encYaml: {{ .Values.addons.anchore.enterprise.licenseYaml | b64enc }}
+    {{- else if .Values.addons.anchore.enterprise.b64encLicenseYaml }}
+    enterpriseLicense:
+      b64encYaml: {{ .Values.addons.anchore.enterprise.b64encLicenseYaml }}
     {{- end }}
     sso:
       enabled: {{ .Values.addons.anchore.sso.enabled }}
