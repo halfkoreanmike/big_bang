@@ -193,9 +193,7 @@ addons:
     sso:
       enabled: false
       clientId: ""
-      oidc:
-        host: ""
-        realm: ""
+      samlMetadataUrl: ""
     postgresql:
       enabled: false
       user: ""
