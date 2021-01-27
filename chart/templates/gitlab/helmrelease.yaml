@@ -7,7 +7,6 @@ metadata:
 spec:
   releaseName: gitlab
   targetNamespace: gitlab
-  releaseName: gitlab
   chart:
     spec:
       chart: {{ .Values.addons.gitlab.git.path }}
