@@ -193,7 +193,7 @@ addons:
     sso:
       enabled: false
       clientId: ""
-      samlMetadataUrl: ""
+      samlDescriptorUrl: ""
     postgresql:
       enabled: false
       user: ""
