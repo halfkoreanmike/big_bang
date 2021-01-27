@@ -12,7 +12,7 @@ kubectl create ns flux-system || true
 
 # TODO When changing the flux images to .mil this will need to chagne
 kubectl create secret docker-registry private-registry -n flux-system \
-   --docker-server=registry1.dsop.io \
+   --docker-server=registry1.dso.mil \
    --docker-username='robot$bigbang' \
    --docker-password=${REGISTRY1_PASSWORD} \
    --docker-email=bigbang@bigbang.dev || true
@@ -27,7 +27,7 @@ flux check
 echo "Installing BigBang"
 helm upgrade -i bigbang chart -n bigbang --create-namespace \
 --set registryCredentials[0].username='robot$bigbang' --set registryCredentials[0].password=${REGISTRY1_PASSWORD} \
---set registryCredentials[0].registry=registry1.dsop.io                                                         \
+--set registryCredentials[0].registry=registry1.dso.mil                                                         \
 --set registryCredentials[1].username='robot$bigbang' --set registryCredentials[1].password=${REGISTRY1_PASSWORD} \
 --set registryCredentials[1].registry=registry1.dso.mil                                                         \
 -f tests/ci/k3d/values.yaml

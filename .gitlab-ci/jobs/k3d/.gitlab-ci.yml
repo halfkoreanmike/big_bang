@@ -1,6 +1,6 @@
 .k3d_before_script: &k3d_before_script
   # Starting dnsmasq for cluster dns resolution
-  - docker run -d -p 53:53/udp -p 53:53 registry.dsop.io/platform-one/big-bang/pipeline-templates/pipeline-templates/go-dnsmasq:0eddd476
+  - docker run -d -p 53:53/udp -p 53:53 registry.dso.mil/platform-one/big-bang/pipeline-templates/pipeline-templates/go-dnsmasq:0eddd476
   - echo "nameserver 127.0.0.1" >> /etc/resolv.conf
   # Standup cluster
   - k3d cluster create ${CLUSTER_NAME}  --k3s-server-arg "--disable=traefik" --k3s-server-arg "--disable=metrics-server" -p 80:80@loadbalancer -p 443:443@loadbalancer --wait --agents $N_AGENTS --servers $N_SERVERS
@@ -12,9 +12,9 @@
   - k3d cluster delete ${CLUSTER_NAME}
 
 .k3d:
-  image: registry.dsop.io/platform-one/big-bang/pipeline-templates/pipeline-templates/k3d-builder:045fb1c2
+  image: registry.dso.mil/platform-one/big-bang/pipeline-templates/pipeline-templates/k3d-builder:045fb1c2
   services:
-    - registry.dsop.io/platform-one/big-bang/pipeline-templates/pipeline-templates/docker:dind
+    - registry.dso.mil/platform-one/big-bang/pipeline-templates/pipeline-templates/docker:dind
   tags:
     - bigbang
     - privileged
