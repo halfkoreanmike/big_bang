@@ -14,3 +14,7 @@ certs/
 
 # debug
 npm-debug.log*
+
+patch.yaml
+
+PERSONAL_NOTES.md
