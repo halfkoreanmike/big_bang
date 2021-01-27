@@ -15,6 +15,7 @@ certs/
 # debug
 npm-debug.log*
 
+# developer non sourced helper files
+# used for rolling notes / patch files
 patch.yaml
-
-PERSONAL_NOTES.md
+notes
