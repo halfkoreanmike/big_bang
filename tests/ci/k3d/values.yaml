@@ -68,5 +68,9 @@ addons:
           enabled: true
   anchore:
     enabled: true
+    adminPassword: notapassword
     postgresql:
       enabled: true
+      user: anchore
+      password: anchore123notsecret
+      mainDB: anchoredb
