@@ -180,7 +180,7 @@ addons:
   gitlabRunner:
     enabled: false
     git:
-      repo: https://repo1.dsop.io/platform-one/big-bang/apps/developer-tools/gitlab-runner.git
+      repo: https://repo1.dso.mil/platform-one/big-bang/apps/developer-tools/gitlab-runner.git
       path: "./chart"
       tag: "0.19.2-bb.1"
     values: {}
