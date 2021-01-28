@@ -155,7 +155,7 @@ monitoring:
   git:
     repo: https://repo1.dso.mil/platform-one/big-bang/apps/core/monitoring.git
     path: "./chart"
-    tag: "11.0.0-bb.7"
+    tag: "11.0.0-bb.10"
   sso:
     enabled: false
     prometheus:
@@ -216,6 +216,7 @@ addons:
       tag: "4.2.0-bb.1"
 
   haproxy:
+    enabled: false
     git:
       repo: https://repo1.dso.mil/platform-one/big-bang/apps/sandbox/haproxy.git
       path: "./chart"
