@@ -60,10 +60,18 @@ spec:
     postgresql:
       imagePullSecrets: private-registry
       enabled: {{ .Values.addons.anchore.postgresql.enabled }}
+      {{- if .Values.addons.anchore.postgresql.user }}
       postgresUser: {{ .Values.addons.anchore.postgresql.user }}
+      {{- end }}
+      {{- if .Values.addons.anchore.postgresql.password }}
       postgresPassword: {{ .Values.addons.anchore.postgresql.password }}
+      {{- end }}
+      {{- if .Values.addons.anchore.postgresql.mainDB }}
       postgresDatabase: {{ .Values.addons.anchore.postgresql.mainDB }}
+      {{- end }}
+      {{- if .Values.addons.anchore.postgresql.endpoint }}
       externalEndpoint: {{ .Values.addons.anchore.postgresql.endpoint }}
+      {{- end }}
     anchoreGlobal:
       defaultAdminPassword: {{ .Values.addons.anchore.adminPassword }}
       imagePullSecretName: private-registry
@@ -76,10 +84,18 @@ spec:
     anchore-feeds-db:
       imagePullSecrets: private-registry
       enabled: {{ .Values.addons.anchore.postgresql.enabled }}
+      {{- if .Values.addons.anchore.postgresql.user }}
       postgresUser: {{ .Values.addons.anchore.postgresql.user }}
+      {{- end }}
+      {{- if .Values.addons.anchore.postgresql.password }}
       postgresPassword: {{ .Values.addons.anchore.postgresql.password }}
+      {{- end }}
+      {{- if .Values.addons.anchore.postgresql.mainDB }}
       postgresDatabase: {{ .Values.addons.anchore.postgresql.enterpriseFeedsDB }}
+      {{- end }}
+      {{- if .Values.addons.anchore.postgresql.endpoint }}
       externalEndpoint: {{ .Values.addons.anchore.postgresql.endpoint }}
+      {{- end }}
     anchoreEnterpriseUi:
       imagePullSecretName: private-registry
     anchore-ui-redis:
