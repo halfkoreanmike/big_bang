@@ -55,6 +55,21 @@ spec:
     kube-state-metrics:
       imagePullSecrets:
       - name: private-registry
+    {{- if .Values.addons.gitlabRunner.enabled }}
+    additionalServiceMonitors:
+    {{- if .Values.addons.gitlabRunner.enabled }}
+    - name: gitlab-gitlab-runner
+      namespaceSelector:
+        matchNames:
+        - gitlab
+      selector:
+        matchLables:
+          release: gitlab-runner
+      endpoints:
+      - port: metrics
+        path: /metrics
+    {{- end }}
+    {{- end }}
 
   # TODO: DRY this up
   {{- if or .Values.gatekeeper.enabled .Values.istio.enabled }}
