@@ -40,7 +40,7 @@ spec:
     hostname: {{ .Values.hostname }}
     createNamespace: false
     imagePullSecrets:
-      - name: private-registry
+    - name: private-registry
     server:
       config:
         url: https://argocd.{{ .Values.hostname }}
