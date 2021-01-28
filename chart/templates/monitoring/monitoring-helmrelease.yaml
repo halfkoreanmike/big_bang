@@ -70,7 +70,7 @@ spec:
         - port: metrics
           path: /metrics
       {{- end }}
-    {{- end -}}
+    {{- end }}
 
   # TODO: DRY this up
   {{- if or .Values.gatekeeper.enabled .Values.istio.enabled }}
