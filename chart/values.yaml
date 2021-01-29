@@ -228,27 +228,26 @@ addons:
       repo: https://repo1.dso.mil/platform-one/big-bang/apps/security-tools/anchore-enterprise.git
       path: "./chart"
       tag: "1.9.5-bb.1"
-    adminPassword: ""
+    adminPassword: "" # Required, set the Admin password
     enterprise:
-      enabled: false
-      # Only pass one of the two license formats, b64encLicenseYaml should be base64 encoded
-      # This option is provided to ease any issues with indentation and spacing
-      licenseYaml: ""
-      b64encLicenseYaml: ""
+      enabled: false # Enable the enterprise services for Anchore, requires a license
+      # Only pass one of the two license formats
+      licenseYaml: "" # Plain yaml, ensure accurate spacing/indentation
+      b64encLicenseYaml: "" # License provided in base64 encoded format, reduces spacing/indentation issues
     sso:
-      enabled: false
-      clientId: ""
-      samlDescriptorUrl: ""
+      enabled: false # Toggle SSO on/off
+      clientId: "" # Specific client ID for Anchore
+      samlDescriptorUrl: "" # SAML Descriptor URL for the keycloak instance
       roleAttribute: "" # Optional, set the Keycloak attribute to be used for role mapping
     postgresql:
-      enabled: false
-      user: ""
-      password: ""
-      endpoint: ""
-      mainDB: ""
-      enterpriseFeedsDB: "" # Only used if enterprise.enabled = true
+      enabled: false # enabled = false means external DB, true means internal
+      user: "" # Required for external DB, optional for internal
+      password: "" # Required ALWAYS
+      endpoint: "" # Required for external DB, ignored for internal
+      mainDB: "" # Required for external DB, optional for internal
+      enterpriseFeedsDB: "" # Required for external DB with enterprise.enabled = true, optional for internal
     enterpriseUiRedis: # Only used if enterprise.enabled = true
-      enabled: false
-      password: ""
-      endpoint: ""
+      enabled: false # enabled = false means external Redis, true means internal
+      password: "" # Required ALWAYS
+      endpoint: "" # Required for external Redis
     values: {}
