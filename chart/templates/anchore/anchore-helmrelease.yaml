@@ -48,12 +48,14 @@ spec:
     enterpriseLicense:
       b64encYaml: {{ .Values.addons.anchore.enterprise.b64encLicenseYaml }}
     {{- end }}
+    {{- if .Values.addons.anchore.enterprise.enabled }}
     sso:
       enabled: {{ .Values.addons.anchore.sso.enabled }}
       spEntityId: {{ .Values.addons.anchore.sso.clientId }}
       acsUrl: "https://anchore.{{ .Values.hostname }}/service/sso/auth/keycloak"
       idpMetadataUrl: {{ .Values.addons.anchore.sso.samlDescriptorUrl }}
       roleAttribute: {{ .Values.addons.anchore.sso.roleAttribute }}
+    {{- end }}
     anchoreEnterpriseGlobal:
       enabled: {{ .Values.addons.anchore.enterprise.enabled }}
       imagePullSecretName: private-registry
@@ -77,8 +79,10 @@ spec:
       imagePullSecretName: private-registry
       enableMetrics: {{ .Values.monitoring.enabled }}
       metricsAuthDisabled: {{ .Values.monitoring.enabled }}
+      {{- if .Values.addons.anchore.enterprise.enabled }}
       oauthEnabled: {{ .Values.addons.anchore.sso.enabled }}
       hashedPasswords: {{ .Values.addons.anchore.sso.enabled }}
+      {{- end }}
     {{- if .Values.addons.anchore.enterprise.enabled }}
     anchore-feeds-db:
       imagePullSecrets: private-registry
