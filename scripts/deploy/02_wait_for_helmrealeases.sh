@@ -3,7 +3,7 @@
 set -e
 
 ## This is an array to instantiate the order of wait conditions
-ORDERED_HELMRELEASES="gatekeeper istio-operator istio monitoring eck-operator ek fluent-bit twistlock cluster-auditor authservice argocd gitlab"
+ORDERED_HELMRELEASES="gatekeeper istio-operator istio monitoring eck-operator ek fluent-bit twistlock cluster-auditor authservice argocd gitlab haproxy"
 
 
 ## This the actual deployed helmrelease objects in the cluster
@@ -53,4 +53,4 @@ do
 done
 
 echo "Waiting on Secrets Kustomization"
-kubectl wait --for=condition=Ready --timeout 30s kustomizations.kustomize.toolkit.fluxcd.io -n bigbang secrets
+kubectl wait --for=condition=Ready --timeout 120s kustomizations.kustomize.toolkit.fluxcd.io -n bigbang secrets
