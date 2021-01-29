@@ -86,7 +86,7 @@ spec:
       postgresUser: {{ .Values.addons.anchore.postgresql.user }}
       {{- end }}
       postgresPassword: {{ .Values.addons.anchore.postgresql.password }}
-      {{- if .Values.addons.anchore.postgresql.mainDB }}
+      {{- if .Values.addons.anchore.postgresql.enterpriseFeedsDB }}
       postgresDatabase: {{ .Values.addons.anchore.postgresql.enterpriseFeedsDB }}
       {{- end }}
       {{- if .Values.addons.anchore.postgresql.endpoint }}
