@@ -184,7 +184,7 @@ twistlock:
 
 addons:
   argocd:
-    enabled: false
+    enabled: true
     git:
       repo: https://repo1.dso.mil/platform-one/big-bang/apps/core/argocd.git
       path: "./chart"
