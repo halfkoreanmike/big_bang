@@ -151,32 +151,10 @@ twistlock:
     path: "./chart"
     tag: "0.0.2-bb.0"
   values: {}
-# ----------------------------------------------------------------------------------------------------------------------
 
-# ----------------------------------------------------------------------------------------------------------------------
-# Minio Operator
 #
-miniooperator:
-  enabled: true
-  git:
-    repo: https://repo1.dso.mil/platform-one/big-bang/apps/application-utilities/minio-operator.git
-    path: "./chart"
-    branch: "bb-1233"
-  values: {}
-
 # ----------------------------------------------------------------------------------------------------------------------
-# Minio Instance
 #
-minio:
-  enabled: true
-  git:
-    repo: https://repo1.dso.mil/platform-one/big-bang/apps/application-utilities/minio.git
-    path: "./chart"
-    branch: "bb-1233"
-  values: {}
-
-# ----------------------------------------------------------------------------------------------------------------------
-
 addons:
   argocd:
     enabled: false
@@ -200,3 +178,26 @@ addons:
       repo: https://repo1.dso.mil/platform-one/big-bang/apps/developer-tools/gitlab.git
       path: "./chart"
       tag: "4.2.0-bb.1"
+
+  # ----------------------------------------------------------------------------------------------------------------------
+  # Minio Operator
+  #
+  miniooperator:
+    enabled: true
+    git:
+      repo: https://repo1.dso.mil/platform-one/big-bang/apps/application-utilities/minio-operator.git
+      path: "./chart"
+      branch: "bb-1233"
+    values: {}
+
+  # ----------------------------------------------------------------------------------------------------------------------
+  # Minio Instance
+  #
+  minio:
+    enabled: true
+    git:
+      repo: https://repo1.dso.mil/platform-one/big-bang/apps/application-utilities/minio.git
+      path: "./chart"
+      branch: "bb-1233"
+    values: {}
+
