@@ -64,7 +64,7 @@ spec:
           matchNames:
           - gitlab
         selector:
-          matchLables:
+          matchLabels:
             release: gitlab-runner
         endpoints:
         - port: metrics
