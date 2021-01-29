@@ -77,6 +77,8 @@ spec:
       imagePullSecretName: private-registry
       enableMetrics: {{ .Values.monitoring.enabled }}
       metricsAuthDisabled: {{ .Values.monitoring.enabled }}
+      oauthEnabled: {{ .Values.addons.anchore.sso.enabled }}
+      hashedPasswords: {{ .Values.addons.anchore.sso.enabled }}
     {{- if .Values.addons.anchore.enterprise.enabled }}
     anchore-feeds-db:
       imagePullSecrets: private-registry
