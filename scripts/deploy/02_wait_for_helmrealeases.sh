@@ -53,4 +53,4 @@ do
 done
 
 echo "Waiting on Secrets Kustomization"
-kubectl wait --for=condition=Ready --timeout 120s kustomizations.kustomize.toolkit.fluxcd.io -n bigbang secrets
+kubectl wait --for=condition=Ready --timeout 30s kustomizations.kustomize.toolkit.fluxcd.io -n bigbang secrets
