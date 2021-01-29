@@ -63,7 +63,9 @@ spec:
       {{- if .Values.addons.anchore.postgresql.user }}
       postgresUser: {{ .Values.addons.anchore.postgresql.user }}
       {{- end }}
+      {{- if .Values.addons.anchore.postgresql.password }}
       postgresPassword: {{ .Values.addons.anchore.postgresql.password }}
+      {{- end }}
       {{- if .Values.addons.anchore.postgresql.mainDB }}
       postgresDatabase: {{ .Values.addons.anchore.postgresql.mainDB }}
       {{- end }}
@@ -85,8 +87,10 @@ spec:
       {{- if .Values.addons.anchore.postgresql.user }}
       postgresUser: {{ .Values.addons.anchore.postgresql.user }}
       {{- end }}
+      {{- if .Values.addons.anchore.postgresql.password }}
       postgresPassword: {{ .Values.addons.anchore.postgresql.password }}
-      {{- if .Values.addons.anchore.postgresql.mainDB }}
+      {{- end }}
+      {{- if .Values.addons.anchore.postgresql.enterpriseFeedsDB }}
       postgresDatabase: {{ .Values.addons.anchore.postgresql.enterpriseFeedsDB }}
       {{- end }}
       {{- if .Values.addons.anchore.postgresql.endpoint }}
