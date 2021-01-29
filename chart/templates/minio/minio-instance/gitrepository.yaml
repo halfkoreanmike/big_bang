@@ -6,7 +6,7 @@ metadata:
   namespace: {{ .Release.Namespace }}
 spec:
   interval: {{ .Values.flux.interval }}
-  url: {{ .Values.addons.minioinstance.minio.git.repo }}
+  url: {{ .Values.addons.minio.minioinstance.git.repo }}
   ref:
     {{- include "validRef" .Values.addons.minio.minioinstance.git | nindent 4 }}
   {{ include "gitIgnore" . }}
