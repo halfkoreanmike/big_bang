@@ -75,7 +75,9 @@ spec:
       externalEndpoint: {{ .Values.addons.anchore.postgresql.endpoint }}
       {{- end }}
     anchoreGlobal:
+      {{- if .Values.addons.anchore.adminPassword }}
       defaultAdminPassword: {{ .Values.addons.anchore.adminPassword }}
+      {{- end }}
       imagePullSecretName: private-registry
       enableMetrics: {{ .Values.monitoring.enabled }}
       metricsAuthDisabled: {{ .Values.monitoring.enabled }}
@@ -103,7 +105,9 @@ spec:
       imagePullSecretName: private-registry
     anchore-ui-redis:
       enabled: {{ .Values.addons.anchore.enterpriseUiRedis.enabled }}
+      {{- if not .Values.addons.anchore.enterpriseUiRedis.enabled }}
       externalEndpoint: "redis://:{{ .Values.addons.anchore.enterpriseUiRedis.password }}@{{ .Values.addons.anchore.enterpriseUiRedis.endpoint }}"
+      {{- end }}
       {{- if .Values.addons.anchore.enterpriseUiRedis.password }}
       password: {{ .Values.addons.anchore.enterpriseUiRedis.password }}
       {{- end }}
