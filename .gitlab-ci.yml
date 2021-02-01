@@ -196,7 +196,7 @@ upgrade:
     - if: '$CI_MERGE_REQUEST_SOURCE_BRANCH_NAME =~ /^(hotfix|patch)/'
       when: never
     # run infrastructure builds on MRs to master only (this bypasses merges to say, staging)
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "master"'
+    - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "master" && $CI_PIPELINE_SOURCE == "merge_request_event"'
     
 # Abstract for jobs responsible for cleaning up infrastructure
 .infra cleanup:
