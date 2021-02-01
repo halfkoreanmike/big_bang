@@ -195,8 +195,8 @@ upgrade:
     # skip job when branch name starts with "hotfix" or "patch"
     - if: '$CI_MERGE_REQUEST_SOURCE_BRANCH_NAME =~ /^(hotfix|patch)/'
       when: never
-    # run pipeline on commits to default branch
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    # run infrastructure builds on MRs to master only (this bypasses merges to say, staging)
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "master"'
     
 # Abstract for jobs responsible for cleaning up infrastructure
 .infra cleanup:
