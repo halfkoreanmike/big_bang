@@ -10,7 +10,10 @@ flux check --pre
 # Install flux in the cluster
 kubectl create ns flux-system || true
 
-# TODO When changing the flux images to .mil this will need to chagne
+# delete existing secret
+kubectl delete secret private-registry -n flux-system || true
+
+# TODO When changing the flux images to .mil this will need to change
 kubectl create secret docker-registry private-registry -n flux-system \
    --docker-server=registry1.dso.mil \
    --docker-username='robot$bigbang' \
