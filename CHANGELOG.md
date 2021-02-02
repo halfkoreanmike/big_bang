@@ -68,7 +68,7 @@ registryCredentials:
 - registry: registry1.dso.mil
   username: registry1user
   password: somesecretpassword
-- registry: registry.dso.mil
+- registry: registry.dsop.io
   username: registry1user
   password: somesecretpassword
 - registry: somewhere.else.io
