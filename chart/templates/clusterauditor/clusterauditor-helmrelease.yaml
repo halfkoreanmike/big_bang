@@ -40,7 +40,7 @@ spec:
   values:
     elasticsearch:
       imagePullSecrets:
-      - name: private-registry-mil
+      - name: private-registry
 
   dependsOn:
   - name: ek
