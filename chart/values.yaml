@@ -238,7 +238,7 @@ addons:
       enabled: false # Toggle SSO on/off - requires enterprise.enabled
       clientId: "" # Specific client ID for Anchore
       samlDescriptorUrl: "" # SAML Descriptor URL for the keycloak instance
-      roleAttribute: "" # Optional, set the Keycloak attribute to be used for role mapping
+      roleAttribute: "" # Optional, set a Keycloak attribute for role mapping - must exist and contain Anchore roles, i.e. read-write, full-control, etc
     postgresql:
       enabled: false # enabled = false means external DB, true means internal
       user: "" # Required for external DB, optional for internal
