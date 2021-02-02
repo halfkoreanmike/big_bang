@@ -30,10 +30,10 @@ flux check
 echo "Installing BigBang"
 helm upgrade -i bigbang chart -n bigbang --create-namespace \
 --set registryCredentials[0].username='robot$bigbang' --set registryCredentials[0].password=${REGISTRY1_PASSWORD} \
---set registryCredentials[0].registry=registry1.dso.mil                                                         \
+--set registryCredentials[0].registry=registry1.dso.mil \
 -f tests/ci/k3d/values.yaml
 
-## apply secrets kustomization pointing to current branch
+# apply secrets kustomization pointing to current branch
 echo "Deploying secrets from the ${CI_COMMIT_REF_NAME} branch"
 if [[ -z "${CI_COMMIT_TAG}" ]]; then
   cat tests/ci/shared-secrets.yaml | sed 's|master|'$CI_COMMIT_REF_NAME'|g' | kubectl apply -f -
