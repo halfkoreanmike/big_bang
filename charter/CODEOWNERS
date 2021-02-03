@@ -1,0 +1,5 @@
+# TODO: Make we can make a group that contains all the application owners
+# who can then approve changes to the charter
+# *.md @big-bang/application-owners
+*.md @megamind @runyontr @joshwolf @Ozzie100 @egnoriega
+Testing.md @tab
