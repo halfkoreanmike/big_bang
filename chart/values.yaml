@@ -4,14 +4,14 @@ hostname: bigbang.dev
 # TODO: All this does right now is toggle GitRepositories, it is _not_ fully functional
 offline: false
 
-# Regisitires can be an explicit map of registries as provided here
+# Registries can be an explicit map of registries as provided here
 registryCredentials:
   registry: registry1.dsop.io
   username: ""
   password: ""
   email: ""
 
-# Or a list of registires:
+# Or a list of registries:
 # registryCredentials:
 # - registry: registry1.dsop.io
 #   username: user.name
@@ -25,6 +25,10 @@ registryCredentials:
 #   username: user.name
 #   password: user-secret
 #   email: xxx@xxx.xxx
+
+# Openshift Container Platform Feature Toggle
+global:
+  openshift: false
 
 # Global git values
 # Order of precedence is:
