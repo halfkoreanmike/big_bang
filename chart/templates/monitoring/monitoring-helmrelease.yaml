@@ -50,6 +50,9 @@ spec:
       image:
         pullSecrets:
         - private-registry
+    prometheus:
+      prometheusSpec:
+        serviceMonitorSelectorNilUsesHelmValues: false
     prometheus-node-exporter:
       serviceAccount:
         imagePullSecrets:
@@ -57,23 +60,6 @@ spec:
     kube-state-metrics:
       imagePullSecrets:
       - name: private-registry
-    {{- if .Values.addons.gitlabRunner.enabled }}
-    prometheus:
-      additionalServiceMonitors:
-      {{- if .Values.addons.gitlabRunner.enabled }}
-      - name: gitlab-gitlab-runner
-        namespaceSelector:
-          matchNames:
-          - gitlab
-        selector:
-          matchLabels:
-            release: gitlab-runner
-        endpoints:
-        - port: metrics
-          path: /metrics
-      {{- end }}
-    {{- end }}
-
 {{- if .Values.monitoring.sso.enabled }}
     ingress:
       prometheus:
