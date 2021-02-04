@@ -44,11 +44,17 @@ spec:
     runners:
       imagePullSecrets:
       - private-registry
+    monitoring:
+      enabled: {{ .Values.monitoring.enabled }}
 
-  {{- if or .Values.gatekeeper.enabled .Values.addons.gitlab.enabled }}
+  {{- if or .Values.gatekeeper.enabled .Values.monitoring.enabled .Values.addons.gitlab.enabled }}
   dependsOn:
     {{- if .Values.gatekeeper.enabled }}
     - name: gatekeeper
+      namespace: {{ .Release.Namespace }}
+    {{- end }}
+    {{- if .Values.monitoring.enabled }}
+    - name: monitoring
       namespace: {{ .Release.Namespace }}
     {{- end }}
     {{- if .Values.addons.gitlab.enabled }}
