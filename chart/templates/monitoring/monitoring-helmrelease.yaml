@@ -50,9 +50,6 @@ spec:
       image:
         pullSecrets:
         - private-registry
-    prometheus:
-      prometheusSpec:
-        serviceMonitorSelectorNilUsesHelmValues: false
     prometheus-node-exporter:
       serviceAccount:
         imagePullSecrets:
