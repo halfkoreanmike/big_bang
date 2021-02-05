@@ -13,5 +13,16 @@ metadata:
 type: kubernetes.io/dockerconfigjson
 data:
   .dockerconfigjson: {{ template "imagePullSecret" . }}
+{{- if .Values.global.openshift }}
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: private-registry
+  namespace: kube-system
+type: kubernetes.io/dockerconfigjson
+data:
+  .dockerconfigjson: {{ template "imagePullSecret" . }}
+{{- end }}
 {{- end }}
 {{- end }}
