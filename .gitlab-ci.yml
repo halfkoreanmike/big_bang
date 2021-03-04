@@ -108,10 +108,12 @@ pre vars:
   script:
     - cp ./scripts/package/synker.yaml ./synker.yaml
 
+    #Download images needed for airgap
+    - ./tests/bash/images.sh
     # Populate images list in synker config
     # NOTE: This is stupid and hacky, use yq or something better to do this
-    - cat images.txt | sed -e 's/^/    - /' >> synker.yaml
-    - cat images.txt
+    - cat $IMAGE_LIST | sed -e 's/^/    - /' >> synker.yaml
+    - cat $IMAGE_LIST
     - synker pull -b=1
 
     # Tar up synker as well?
@@ -144,7 +146,7 @@ clean install:
     - *test_bigbang
 
     # Fetch list of all images ran
-    - curl -sfL k3s:8081/images | jq -r '.images[].repoTags[0]' > images.txt
+    - curl -sfL k3s:8081/images | jq -r '.images[].repoTags[0]' > $IMAGE_LIST
   artifacts:
     paths:
       - images.txt
@@ -205,7 +207,6 @@ upgrade:
     # Run on scheduled jobs
     - if: '$CI_PIPELINE_SOURCE == "schedule" && $CI_COMMIT_BRANCH == "master" || $CI_MERGE_REQUEST_LABELS =~ /ci/'
       allow_failure: true
-      #Debug
       when: manual
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -284,7 +285,7 @@ aws/airgap/package delete:
   extends:
     - .bigbang-dogfood
     - .package
-    - .infra fork
+    - .infra cleanup
   variables:
     PKG_S3_BUCKET: '$AIRGAP_PKG_BUCKET'
     PKG_PATH: '$CI_COMMIT_SHORT_SHA'
@@ -449,7 +450,6 @@ airgap/rke2/bigbang up:
 
     # Deploy a default storage class for aws
     - kubectl apply -f ${CI_PROJECT_DIR}/.gitlab-ci/jobs/rke2/dependencies/k8s-resources/aws/default-ebs-sc.yaml
-  allow_failure: true
   script:
     - *deploy_bigbang
 
@@ -461,7 +461,6 @@ airgap/rke2/bigbang test:
     - .bigbang-dogfood
     - .infra create
     - .bigbang
-  allow_failure: true
   needs:
     - job: airgap/rke2/cluster up
       artifacts: true

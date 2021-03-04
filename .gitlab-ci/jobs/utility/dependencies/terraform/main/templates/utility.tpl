@@ -96,11 +96,11 @@ FilterDefaultDeny Yes
 Filter "/etc/tinyproxy/whitelist"
 EOF
 
+# index.docker.io:443
+# production.cloudflare.docker.com:443
+# registry-1.docker.io:443
+# auth.docker.io:443
 cat << 'EOF' > "$(pwd)"/data/proxy/whitelist
-index.docker.io:443
-production.cloudflare.docker.com:443
-registry-1.docker.io:443
-auth.docker.io:443
 repo1.dso.mil
 repo1.dso.mil:80
 registry.dso.mil:5000

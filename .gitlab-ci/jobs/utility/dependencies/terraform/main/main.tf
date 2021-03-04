@@ -34,6 +34,15 @@ resource "aws_route53_zone" "dso" {
   tags = local.tags
 }
 
+resource "aws_route53_zone" "docker" {
+  name = "docker.io"
+
+  vpc {
+    vpc_id = data.aws_vpc.vpc_id.id
+  }
+  tags = local.tags
+}
+
 # Registry
 
 resource "aws_route53_record" "dso_registry" {
@@ -47,6 +56,14 @@ resource "aws_route53_record" "dso_registry" {
 resource "aws_route53_record" "dso_registry1" {
   zone_id = aws_route53_zone.dso.zone_id
   name    = "registry1.dso.mil"
+  type    = "A"
+  ttl     = "300"
+  records = [aws_instance.utility.private_ip]
+}
+
+resource "aws_route53_record" "docker_registry" {
+  zone_id = aws_route53_zone.docker.zone_id
+  name    = "docker.io"
   type    = "A"
   ttl     = "300"
   records = [aws_instance.utility.private_ip]
