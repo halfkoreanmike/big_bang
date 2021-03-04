@@ -1,6 +1,9 @@
 #!/bin/bash
 sudo apt-get update
 sudo apt install -y apache2-utils awscli
+docker pull nginx:alpine
+docker pull alpine:latest
+docker pull registry:2
 mkdir -p data/registry data/repository/git/umbrella.git data/proxy auth
 
 #Hash registry credentials
@@ -157,10 +160,8 @@ docker run -d \
 
 
 #configure Git Server
-aws s3 cp s3://${pkg_s3_bucket}/${pkg_path}/umbrella.tar.gz .
 aws s3 cp s3://${pkg_s3_bucket}/${pkg_path}/repositories.tar.gz . --quiet
 tar -xf repositories.tar.gz
-tar -xf umbrella.tar.gz
 rm -rf /data/repository/git/
 mv umbrella repos/
 for dir in repos/*    

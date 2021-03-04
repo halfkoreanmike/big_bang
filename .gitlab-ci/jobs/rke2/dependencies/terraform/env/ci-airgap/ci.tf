@@ -43,6 +43,7 @@ module "ci" {
   deploy_subnets      = data.terraform_remote_state.networking.outputs.private_subnets
   public_subnets      = data.terraform_remote_state.networking.outputs.public_subnets
   airgap              = true
+  utility_ip          = data.terraform_remote_state.utility.outputs.utility_ip
   registry_username   = data.terraform_remote_state.utility.outputs.utility_username
   registry_password   = data.terraform_remote_state.utility.outputs.utility_password
 }

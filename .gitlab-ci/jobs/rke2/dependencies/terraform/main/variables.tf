@@ -44,6 +44,11 @@ variable "download" {
   description = "Toggle dependency downloading"
 }
 
+variable "utility_ip" {
+  type    = string
+  default = ""
+}
+
 variable "registry_username" {
   type    = string
   default = ""
