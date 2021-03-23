@@ -160,8 +160,6 @@ upgrade:
     # Run on scheduled jobs OR when `test-ci` label is assigned
     - if: '($CI_PIPELINE_SOURCE == "schedule" && $CI_COMMIT_BRANCH == "master") || $CI_MERGE_REQUEST_LABELS =~ /test-ci/'
       allow_failure: false
-    - if: $CI_MERGE_REQUEST_LABELS =~ /ci/'
-      allow_failure: false
 
 # Abstract for jobs responsible for creating infrastructure
 .infra create:
