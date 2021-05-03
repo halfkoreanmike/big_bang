@@ -103,7 +103,7 @@ istio:
     path: "./chart"
     tag: "1.8.4-bb.1"
 
-  # -- Flux options specifically for the Istio Package
+  # -- Flux reconciliation overrides specifically for the Istio Package
   flux: {}
 
   # -- Certificate/Key pair to use as the default certificate for exposing BigBang created applications.
@@ -126,7 +126,7 @@ istiooperator:
     path: "./chart"
     tag: "1.8.4-bb.1"
 
-  # -- Flux options specifically for the Istio Operator Package
+  # -- Flux reconciliation overrides specifically for the Istio Operator Package
   flux: {}
 
   # -- Values to passthrough to the istio-operator chart: https://repo1.dso.mil/platform-one/big-bang/apps/core/istio-operator.git
@@ -143,7 +143,7 @@ jaeger:
     path: "./chart"
     tag: "2.19.1-bb.4"
 
-  # -- Flux options specifically for the Jaeger Package
+  # -- Flux reconciliation overrides specifically for the Jaeger Package
   flux: {}
 
   sso:
@@ -170,7 +170,7 @@ kiali:
     path: "./chart"
     tag: "1.32.0-bb.1"
 
-  # -- Flux options specifically for the Kiali Package
+  # -- Flux reconciliation overrides specifically for the Kiali Package
   flux: {}
 
   sso:
@@ -202,7 +202,7 @@ clusterAuditor:
     path: "./chart"
     tag: "0.1.9-bb.0"
 
-  # -- Flux options specifically for the Cluster Auditor Package
+  # -- Flux reconciliation overrides specifically for the Cluster Auditor Package
   flux: {}
 
   # -- Values to passthrough to the cluster auditor chart: https://repo1.dso.mil/platform-one/big-bang/apps/core/cluster-auditor.git
@@ -223,7 +223,7 @@ gatekeeper:
     path: "./chart"
     tag: "3.3.0-bb.0"
 
-  # -- Flux options specifically for the OPA Gatekeeper Package
+  # -- Flux reconciliation overrides specifically for the OPA Gatekeeper Package
   flux: {}
 
   # -- Values to passthrough to the gatekeeper chart: https://repo1.dso.mil/platform-one/big-bang/apps/core/policy.git
@@ -244,7 +244,7 @@ logging:
     path: "./chart"
     tag: "0.1.8-bb.0"
 
-  # -- Flux options specifically for the Logging (EFK) Package
+  # -- Flux reconciliation overrides specifically for the Logging (EFK) Package
   flux:
     timeout: 20m
 
@@ -280,7 +280,7 @@ eckoperator:
     path: "./chart"
     tag: "1.4.0-bb.1"
 
-  # -- Flux options specifically for the ECK Operator Package
+  # -- Flux reconciliation overrides specifically for the ECK Operator Package
   flux: {}
 
   # -- Values to passthrough to the eck-operator chart: https://repo1.dso.mil/platform-one/big-bang/apps/core/eck-operator.git
@@ -294,7 +294,7 @@ fluentbit:
     path: "./chart"
     tag: "0.15.8-bb.1"
 
-  # -- Flux options specifically for the Fluent-Bit Package
+  # -- Flux reconciliation overrides specifically for the Fluent-Bit Package
   flux: {}
 
   # -- Values to passthrough to the fluentbit chart: https://repo1.dso.mil/platform-one/big-bang/apps/core/fluentbit.git  
@@ -315,7 +315,7 @@ monitoring:
     path: "./chart"
     tag: "11.0.0-bb.17"
 
-  # -- Flux options specifically for the Monitoring Package
+  # -- Flux reconciliation overrides specifically for the Monitoring Package
   flux: {}
 
   sso:
@@ -365,7 +365,7 @@ twistlock:
     path: "./chart"
     tag: "0.0.3-bb.3"
 
-  # -- Flux options specifically for the Twistlock Package
+  # -- Flux reconciliation overrides specifically for the Twistlock Package
   flux: {}
 
   # -- Values to passthrough to the twistlock chart: https://repo1.dso.mil/platform-one/big-bang/apps/security-tools/twistlock.git
@@ -386,7 +386,7 @@ addons:
       path: "./chart"
       tag: "2.14.7-bb.3"
 
-    # -- Flux options specifically for the ArgoCD Package
+    # -- Flux reconciliation overrides specifically for the ArgoCD Package
     flux: {}
 
     sso:
@@ -426,7 +426,7 @@ addons:
       path: "./chart"
       tag: "0.4.0-bb.1"
 
-    # -- Flux options specifically for the Authservice Package
+    # -- Flux reconciliation overrides specifically for the Authservice Package
     flux: {}
 
     # -- Values to passthrough to the authservice chart: https://repo1.dso.mil/platform-one/big-bang/apps/core/authservice.git
@@ -448,7 +448,7 @@ addons:
       repo: https://repo1.dso.mil/platform-one/big-bang/apps/application-utilities/minio-operator.git
       path: "./chart"
       tag: "2.0.9-bb.3"
-    # -- Flux options specifically for the Minio Operator Package
+    # -- Flux reconciliation overrides specifically for the Minio Operator Package
     flux: {}
     # -- Values to passthrough to the minio operator chart: https://repo1.dso.mil/platform-one/big-bang/apps/application-utilities/minio-operator.git
     values: {}
@@ -463,7 +463,7 @@ addons:
       path: "./chart"
       tag: "2.0.9-bb.9"
 
-    # -- Flux options specifically for the Minio Package
+    # -- Flux reconciliation overrides specifically for the Minio Package
     flux: {}
 
     # -- Default access key to use for minio.
@@ -491,7 +491,7 @@ addons:
       path: "./chart"
       tag: "4.10.3-bb.0"
 
-    # -- Flux options specifically for the Gitlab Package
+    # -- Flux reconciliation overrides specifically for the Gitlab Package
     flux: {}
 
     sso:
@@ -562,7 +562,7 @@ addons:
       path: "./chart"
       tag: "0.26.0-bb.1"
 
-    # -- Flux options specifically for the Gitlab Runner Package
+    # -- Flux reconciliation overrides specifically for the Gitlab Runner Package
     flux: {}
 
     # -- Values to passthrough to the gitlab runner chart: https://repo1.dso.mil/platform-one/big-bang/apps/developer-tools/gitlab-runner.git
@@ -576,7 +576,7 @@ addons:
       path: "./chart"
       tag: "9.2.6-bb.7"
 
-    # -- Flux options specifically for the Sonarqube Package
+    # -- Flux reconciliation overrides specifically for the Sonarqube Package
     flux: {}
 
     sso:
@@ -636,7 +636,7 @@ addons:
       path: "./chart"
       tag: 1.1.2-bb.0
 
-    # -- Flux options specifically for the HAProxy Package
+    # -- Flux reconciliation overrides specifically for the HAProxy Package
     flux: {}
 
     # -- Values to passthrough to the haproxy chart: https://repo1.dso.mil/platform-one/big-bang/apps/sandbox/haproxy.git
@@ -653,7 +653,7 @@ addons:
       path: "./chart"
       tag: "1.12.7-bb.2"
 
-    # -- Flux options specifically for the Anchore Package
+    # -- Flux reconciliation overrides specifically for the Anchore Package
     flux:
       upgrade:
       disableWait: true
@@ -732,7 +732,7 @@ addons:
       path: "./chart"
       tag: "1.13.0-bb.2"
 
-    # -- Flux options specifically for the Mattermost Operator Package
+    # -- Flux reconciliation overrides specifically for the Mattermost Operator Package
     flux: {}
 
     # -- Values to passthrough to the mattermost operator chart: https://repo1.dso.mil/platform-one/big-bang/apps/collaboration-tools/mattermost-operator/-/blob/main/chart/values.yaml
@@ -749,7 +749,7 @@ addons:
       path: "./chart"
       tag: "0.1.3-bb.2"
 
-    # -- Flux options specifically for the Mattermost Package
+    # -- Flux reconciliation overrides specifically for the Mattermost Package
     flux: {}
 
     # -- Mattermost Enterprise functionality.
@@ -837,7 +837,7 @@ addons:
       path: "./chart"
       tag: "2.14.8-bb.0"
 
-    # -- Flux options specifically for the Velero Package
+    # -- Flux reconciliation overrides specifically for the Velero Package
     flux: {}
 
     # -- Values to passthrough to the Velero chart: https://repo1.dso.mil/platform-one/big-bang/apps/cluster-utilities/velero/-/blob/main/chart/values.yaml
