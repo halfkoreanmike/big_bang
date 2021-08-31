@@ -169,9 +169,8 @@ ci-cluster-destroy:
     - k3d cluster delete ${CI_JOB_ID}
     - docker network rm ${CI_JOB_ID}
 
-clean install:
-  extends:
-    - .k3d-ci
+ci-clean-install:
+  stage: validate and test
   variables:
     CLUSTER_NAME: "clean-${CI_COMMIT_SHORT_SHA}"
   rules:
@@ -195,7 +194,8 @@ clean install:
     expire_in: 7 days
     when: always
 
-upgrade:
+.upgrade:
+  stage: test
   dependencies:
     - pre vars
   extends:
