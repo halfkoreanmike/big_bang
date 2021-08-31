@@ -53,11 +53,11 @@ include:
 #  - release
 
 stages:
-  - create cluster
+  - cluster up
   - bigbang up
   - validate and test
   - bigbang down
-  - destroy cluster
+  - cluster down
   - package
   - release
 
@@ -131,47 +131,10 @@ pre vars:
       ./${test_script}
     done
 
-.ci-cluster-common:
-  image: registry.dso.mil/platform-one/big-bang/pipeline-templates/pipeline-templates/k8s-ci:v1.20.4-bb.3
-  tags:
-    - bigbang
-    - umbrella
-    - privileged
-    - dogfood
-  rules:
-    - if: $CLUSTER_TYPE == "CI"
-  variables:
-    DOCKER_HOST: tcp://localhost:2376
-    DOCKER_TLS_CERTDIR: "/certs"
-    DOCKER_TLS_VERIFY: 1
-    DOCKER_CERT_PATH: "$DOCKER_TLS_CERTDIR/client"
-    DOCKER_DRIVER: overlay2
-
-ci-cluster-create:
-  stage: create cluster
-  extends: .ci-cluster-common
-  script:
-    # Give docker-in-docker time to come alive
-    - i=0; while [ "$i" -lt 12 ]; do docker info &>/dev/null && break; sleep 5; i=$(( i + 1 )) ; done
-    - docker network create ${CI_JOB_ID} --driver=bridge -o "com.docker.network.driver.mtu"="1450"
-    - k3d cluster create ${CI_JOB_ID} --config tests/ci/k3d/config.yaml --network ${CI_JOB_ID}
-    - until kubectl get deployment coredns -n kube-system -o go-template='{{.status.availableReplicas}}' | grep -v -e '<no value>'; do sleep 1s; done
-    - kubectl get all -A
-
-ci-cluster-destroy:
-  stage: destroy cluster
-  extends: .ci-cluster-common
-  dependencies:
-    - ci-cluster-create
-  script:
-    - kubectl get all -A
-    - kubectl get gitrepository,helmrelease,kustomizations -A
-    - k3d cluster delete ${CI_JOB_ID}
-    - docker network rm ${CI_JOB_ID}
-
-ci-clean-install:
+ci-clean-install-validation:
   stage: validate and test
-  extends: .ci-cluster-common
+  extends:
+    - .k3d-ci
   variables:
     CLUSTER_NAME: "clean-${CI_COMMIT_SHORT_SHA}"
   rules:
@@ -195,8 +158,8 @@ ci-clean-install:
     expire_in: 7 days
     when: always
 
-.upgrade:
-  stage: test
+ci-upgrade-validation:
+  stage: validate and test
   dependencies:
     - pre vars
   extends:
