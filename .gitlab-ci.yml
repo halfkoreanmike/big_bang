@@ -170,7 +170,6 @@ ci-cluster-destroy:
     - docker network rm ${CI_JOB_ID}
 
 clean install:
-  stage: test
   extends:
     - .k3d-ci
   variables:
@@ -197,7 +196,6 @@ clean install:
     when: always
 
 upgrade:
-  stage: test
   dependencies:
     - pre vars
   extends:
