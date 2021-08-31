@@ -4,6 +4,7 @@ variables:
   IMAGE_PKG: images.tar.gz
   REPOS_PKG: repositories.tar.gz
   CLUSTER_TYPE: CI
+  PIPELINE_TYPE: CI
 
   # global rules for when pipelines run
 
@@ -13,19 +14,19 @@ workflow:
     - if: $CI_COMMIT_TAG
       variables:
         CLUSTER_TYPE: AWS
+        PIPELINE_TYPE: RELEASE
     # run pipeline on merge request events
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
       variables:
         CLUSTER_TYPE: CI
+        PIPELINE_TYPE: MR
     # run pipeline on commits to default branch
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       variables:
         CLUSTER_TYPE: AWS
-
+        PIPELINE_TYPE: RELEASE
     # skip pipeline for branches that start with "docs"
     - if: '$CI_COMMIT_REF_NAME =~ /^doc*/i'
-      variables:
-        CLUSTER_TYPE: NONE
       when: never
 
     # Debugging runs
@@ -50,11 +51,11 @@ include:
 #  - release
 
 stages:
-  - cluster up
+  - create cluster
   - bigbang up
   - validate and test
   - bigbang down
-  - cluster down
+  - destroy cluster
   - package
   - release
 
@@ -89,6 +90,7 @@ pre vars:
   script:
   # Dump cluster type
   - echo "Cluster type = $CLUSTER_TYPE"
+  - echo "PIPELINE Type = $PIPELINE_TYPE"
   # Create the TF_VAR_env variable
   - echo "TF_VAR_env=$(echo $CI_COMMIT_REF_SLUG | cut -c 1-7)-$(echo $CI_COMMIT_SHA | cut -c 1-7)" >> variables.env
   - cat variables.env
@@ -126,6 +128,42 @@ pre vars:
       echo "Executing ${test_script}..."
       ./${test_script}
     done
+
+.ci-cluster-common:
+  image: registry.dso.mil/platform-one/big-bang/pipeline-templates/pipeline-templates/k8s-ci:v1.20.4-bb.3
+  tags:
+    - bigbang
+    - umbrella
+    - privileged
+    - dogfood
+  variables:
+    DOCKER_HOST: tcp://localhost:2376
+    DOCKER_TLS_CERTDIR: "/certs"
+    DOCKER_TLS_VERIFY: 1
+    DOCKER_CERT_PATH: "$DOCKER_TLS_CERTDIR/client"
+    DOCKER_DRIVER: overlay2
+
+ci-cluster-create:
+  stage: create cluster
+  extends: .ci-cluster-common
+  script:
+    # Give docker-in-docker time to come alive
+    - i=0; while [ "$i" -lt 12 ]; do docker info &>/dev/null && break; sleep 5; i=$(( i + 1 )) ; done
+    - docker network create ${CI_JOB_ID} --driver=bridge -o "com.docker.network.driver.mtu"="1450"
+    - k3d cluster create ${CI_JOB_ID} --config tests/ci/k3d/config.yaml --network ${CI_JOB_ID}
+    - until kubectl get deployment coredns -n kube-system -o go-template='{{.status.availableReplicas}}' | grep -v -e '<no value>'; do sleep 1s; done
+    - kubectl get all -A
+
+ci-cluster-destroy:
+  stage: destroy cluster
+  extends: .ci-cluster-common
+  dependencies:
+    - ci-cluster-create
+  script:
+    - kubectl get all -A
+    - kubectl get gitrepository,helmrelease,kustomizations -A
+    - k3d cluster delete ${CI_JOB_ID}
+    - docker network rm ${CI_JOB_ID}
 
 clean install:
   stage: validate and test
