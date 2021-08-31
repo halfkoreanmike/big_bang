@@ -3,8 +3,10 @@ variables:
   IMAGE_LIST: images.txt
   IMAGE_PKG: images.tar.gz
   REPOS_PKG: repositories.tar.gz
+  # Valid cluster types are: "CI", "AWS"
   CLUSTER_TYPE: CI
-  PIPELINE_TYPE: CI
+  # Valid Pipeline Types are: "RELEASE", "MR"
+  PIPELINE_TYPE: MR
 
   # global rules for when pipelines run
 
@@ -136,6 +138,8 @@ pre vars:
     - umbrella
     - privileged
     - dogfood
+  rules:
+    - if: $CLUSTER_TYPE == "CI"
   variables:
     DOCKER_HOST: tcp://localhost:2376
     DOCKER_TLS_CERTDIR: "/certs"
@@ -166,7 +170,7 @@ ci-cluster-destroy:
     - docker network rm ${CI_JOB_ID}
 
 clean install:
-  stage: validate and test
+  stage: test
   extends:
     - .k3d-ci
   variables:
@@ -193,7 +197,7 @@ clean install:
     when: always
 
 upgrade:
-  stage: validate and test
+  stage: test
   dependencies:
     - pre vars
   extends:
