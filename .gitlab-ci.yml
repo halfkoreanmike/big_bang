@@ -171,6 +171,7 @@ ci-cluster-destroy:
 
 ci-clean-install:
   stage: validate and test
+  extends: .ci-cluster-common
   variables:
     CLUSTER_NAME: "clean-${CI_COMMIT_SHORT_SHA}"
   rules:
