@@ -115,7 +115,7 @@ pre vars:
     done
 
 clean install:
-  stage: smoke tests
+  stage: validate and test
   extends:
     - .k3d-ci
   variables:
@@ -141,7 +141,7 @@ clean install:
     when: always
 
 upgrade:
-  stage: smoke tests
+  stage: validate and test
   dependencies:
     - pre vars
   extends:
