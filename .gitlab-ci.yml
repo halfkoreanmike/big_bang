@@ -1,16 +1,34 @@
-# global rules for when pipelines run
+variables:
+  RELEASE_BUCKET: umbrella-bigbang-releases
+  IMAGE_LIST: images.txt
+  IMAGE_PKG: images.tar.gz
+  REPOS_PKG: repositories.tar.gz
+  CLUSTER_TYPE: CI
+
+  # global rules for when pipelines run
+
 workflow:
   rules:
     # run pipeline for manual tag events
     - if: $CI_COMMIT_TAG
+      variables:
+        CLUSTER_TYPE: AWS
     # run pipeline on merge request events
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      variables:
+        CLUSTER_TYPE: CI
     # run pipeline on commits to default branch
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      variables:
+        CLUSTER_TYPE: AWS
+
     # skip pipeline for branches that start with "docs"
     - if: '$CI_COMMIT_REF_NAME =~ /^doc*/i'
+      variables:
+        CLUSTER_TYPE: NONE
       when: never
-    # Debugging
+
+    # Debugging runs
     - if: $CI_COMMIT_BRANCH == "ci-cleanup"
     - if: $CI_COMMIT_MESSAGE =~ /(^|,)test-ci::ci(,|$)/
     - if: $CI_COMMIT_MESSAGE =~ /(^|,)test-ci::infra(,|$)/
@@ -39,13 +57,6 @@ stages:
   - cluster down
   - package
   - release
-
-
-variables:
-  RELEASE_BUCKET: umbrella-bigbang-releases
-  IMAGE_LIST: images.txt
-  IMAGE_PKG: images.tar.gz
-  REPOS_PKG: repositories.tar.gz
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Pre Stage Jobs
@@ -121,7 +132,8 @@ clean install:
   variables:
     CLUSTER_NAME: "clean-${CI_COMMIT_SHORT_SHA}"
   rules:
-    - if: '($CI_PIPELINE_SOURCE == "schedule" && $CI_COMMIT_BRANCH == "master") || $CI_MERGE_REQUEST_LABELS =~ /(^|,)test-ci::infra(,|$)/'
+    - if: $CLUSTER_TYPE == "CI"
+    - if: $CLUSTER_TYPE == "AWS"
       when: never
     - *chart_changes
   script:
@@ -147,8 +159,8 @@ upgrade:
   extends:
     - .k3d-ci
   rules:
-    # skip job for nightly master and "test-ci::infra" labeled pipelines
-    - if: '($CI_PIPELINE_SOURCE == "schedule" && $CI_COMMIT_BRANCH == "master") || $CI_MERGE_REQUEST_LABELS =~ /(^|,)test-ci::infra(,|$)/'
+    - if: $CLUSTER_TYPE == "CI"
+    - if: $CLUSTER_TYPE == "AWS"
       when: never
     # skip job when MR title starts with 'SKIP UPGRADE'
     - if: '$CI_MERGE_REQUEST_TITLE =~ /^SKIP UPGRADE/'
