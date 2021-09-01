@@ -56,7 +56,6 @@ stages:
   - cluster up
   - bigbang up
   - test
-  - test
   - bigbang down
   - cluster down
   - network down
