@@ -41,71 +41,39 @@ workflow:
         CLUSTER_TYPE: AWS
         PIPELINE_TYPE: RELEASE
 
-# include templates and common jobs and defintiions
+# include templates
 include:
   - local: '/.gitlab-ci/templates.yml'
-  # "Default" AWS Networking
-  - local: '/.gitlab-ci/jobs/networking/aws/.gitlab-ci.yml'
-  # Clusters in CI
-  - local: '/.gitlab-ci/jobs/ci-cluster/.gitlab-ci.yml'
-  # RKE2 Gitlab CI jobs
-  - local: '/.gitlab-ci/jobs/rke2/.gitlab-ci.yml'
+
+#stages:
+#  - smoke tests
+#  - network up
+#  - cluster up
+#  - bigbang up
+#  - test
+#  - bigbang down
+#  - cluster down
+#  - network down
+#  - package
+#  - release
 
 stages:
-  - network up
   - cluster up
   - bigbang up
-  - test
+  - validate and test
   - bigbang down
   - cluster down
-  - network down
   - package
   - release
 
-
-##-----------------------------------------------------------------------------------------------------------------------
-# Build and Test Templates
-
-
-.chart_changes: &chart_changes
-  changes:
-    - chart/**/*
-    - .gitlab-ci.yml
-    - .gitlab-ci/jobs/**/*
-    - scripts/**/*
-    - tests/**/*
-    - base/flux/*
-
-.deploy_bigbang: &deploy_bigbang
-  - |
-    set -e
-    for deploy_script in $(find ./scripts/deploy -type f -name '*.sh' | sort); do
-      chmod +x ${deploy_script}
-      echo "Executing ${deploy_script}..."
-      ./${deploy_script}
-    done
-
-.test_bigbang: &test_bigbang
-  - |
-    set -e
-    for test_script in $(find ./tests -type f -name '*.sh' | sort); do
-      chmod +x ${test_script}
-      echo "Executing ${test_script}..."
-      ./${test_script}
-    done
-
-##-----------------------------------------------------------------------------------------------------------------------
-# Common job and gitlab runner tag definitions
-
+#-----------------------------------------------------------------------------------------------------------------------
+# Pre Stage Jobs
+#
 .gitlab-runner-tags:
   tags:
     - bigbang
     - dogfood
     - generic
-
-#-----------------------------------------------------------------------------------------------------------------------
-# Pre Stage Jobs
-#
 
 .bigbang:
   image: registry.dso.mil/platform-one/big-bang/pipeline-templates/pipeline-templates/k8s-ci:v1.20.4-bb.3
@@ -134,11 +102,44 @@ pre vars:
   - echo "TF_VAR_env=$(echo $CI_COMMIT_REF_SLUG | cut -c 1-7)-$(echo $CI_COMMIT_SHA | cut -c 1-7)" >> variables.env
   - cat variables.env
 
+
 ##-----------------------------------------------------------------------------------------------------------------------
-## CI Pipeline cluster and testing.   Executed using Docker-in-Docker (DIND) infrastructre in the gitlab runners.
+#
+
+
+##-----------------------------------------------------------------------------------------------------------------------
+## Smoke Tests
+##
+
+.chart_changes: &chart_changes
+  changes:
+    - chart/**/*
+    - .gitlab-ci.yml
+    - .gitlab-ci/jobs/**/*
+    - scripts/**/*
+    - tests/**/*
+    - base/flux/*
+
+.deploy_bigbang: &deploy_bigbang
+  - |
+    set -e
+    for deploy_script in $(find ./scripts/deploy -type f -name '*.sh' | sort); do
+      chmod +x ${deploy_script}
+      echo "Executing ${deploy_script}..."
+      ./${deploy_script}
+    done
+
+.test_bigbang: &test_bigbang
+  - |
+    set -e
+    for test_script in $(find ./tests -type f -name '*.sh' | sort); do
+      chmod +x ${test_script}
+      echo "Executing ${test_script}..."
+      ./${test_script}
+    done
 
 ci-clean-install-validation:
-  stage: test
+  stage: validate and test
   extends:
     - .k3d-ci
   variables:
@@ -165,7 +166,7 @@ ci-clean-install-validation:
     when: always
 
 ci-upgrade-validation:
-  stage: test
+  stage: validate and test
   dependencies:
     - pre vars
   extends:
@@ -354,7 +355,7 @@ aws/rke2/cluster down:
   environment:
     name: review/aws-${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA}
 
-#-----------------------------------------------------------------------------------------------------------------------
+##-----------------------------------------------------------------------------------------------------------------------
 #
 
 #-----------------------------------------------------------------------------------------------------------------------
