@@ -7,7 +7,7 @@ variables:
   CLUSTER_TYPE: CI
   # Valid Pipeline Types are: "RELEASE", "MR"
   PIPELINE_TYPE: MR
-  DEBUGGING: FALSE
+  DEBUGGING: DISABLED
 
   # global rules for when pipelines run
 
@@ -42,12 +42,12 @@ workflow:
       variables:
         CLUSTER_TYPE: CI
         PIPELINE_TYPE: MR
-        DEBUGGING: TRUE
+        DEBUGGING: ENABLED
     - if: $CI_COMMIT_MESSAGE =~ /(^|,)test-ci::infra(,|$)/
       variables:
         CLUSTER_TYPE: AWS
         PIPELINE_TYPE: RELEASE
-        DEBUGGING: TRUE
+        DEBUGGING: ENABLED
 
 # include templates
 include:
@@ -99,6 +99,7 @@ pre vars:
   - echo "CLUSTER type = $CLUSTER_TYPE"
   - echo "PIPELINE Type = $PIPELINE_TYPE"
   - echo "CI COMMIT Message = $CI_COMMIT_MESSAGE"
+  - echo "DEUBGGING = $DEBUGGING"
   # Create the TF_VAR_env variable
   - echo "TF_VAR_env=$(echo $CI_COMMIT_REF_SLUG | cut -c 1-7)-$(echo $CI_COMMIT_SHA | cut -c 1-7)" >> variables.env
   - cat variables.env
