@@ -51,16 +51,16 @@ include:
   # RKE2 Gitlab CI jobs
   - local: '/.gitlab-ci/jobs/rke2/.gitlab-ci.yml'
 
-#stages:
-#  - network up
-#  - cluster up
-#  - bigbang up
-#  - validate and test
-#  - bigbang down
-#  - cluster down
-#  - network down
-#  - package
-#  - release
+stages:
+  - network up
+  - cluster up
+  - bigbang up
+  - validate and test
+  - bigbang down
+  - cluster down
+  - network down
+  - package
+  - release
 
 ##-----------------------------------------------------------------------------------------------------------------------
 # Build and Test Templates
