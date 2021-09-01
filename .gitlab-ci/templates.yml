@@ -1,5 +1,12 @@
-##-----------------------------------------------------------------------------------------------------------------------
-# Terraform Support Templates
+include:
+  # "Default" AWS Networking
+  - local: '/.gitlab-ci/jobs/networking/aws/.gitlab-ci.yml'
+
+  # Clusters in CI
+  - local: '/.gitlab-ci/jobs/ci-cluster/.gitlab-ci.yml'
+
+  # RKE2 Gitlab CI jobs
+  - local: '/.gitlab-ci/jobs/rke2/.gitlab-ci.yml'
 
 .terraformer:
   image:
