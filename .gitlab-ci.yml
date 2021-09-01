@@ -55,7 +55,8 @@ stages:
   - network up
   - cluster up
   - bigbang up
-  - validate and test
+  - test
+  - test
   - bigbang down
   - cluster down
   - network down
@@ -127,7 +128,7 @@ pre vars:
 ## CI Pipeline cluster and testing.   Executed using Docker-in-Docker (DIND) infrastructre in the gitlab runners.
 
 ci-clean-install-validation:
-  stage: validate and test
+  stage: test
   extends:
     - .k3d-ci
   variables:
@@ -154,7 +155,7 @@ ci-clean-install-validation:
     when: always
 
 ci-upgrade-validation:
-  stage: validate and test
+  stage: test
   dependencies:
     - pre vars
   extends:
