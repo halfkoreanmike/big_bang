@@ -1,12 +1,44 @@
-include:
-  # "Default" AWS Networking
-  - local: '/.gitlab-ci/jobs/networking/aws/.gitlab-ci.yml'
+##-----------------------------------------------------------------------------------------------------------------------
+# Common job and gitlab runner tag definitions
 
-  # Clusters in CI
-  - local: '/.gitlab-ci/jobs/ci-cluster/.gitlab-ci.yml'
+.gitlab-runner-tags:
+  tags:
+    - bigbang
+    - dogfood
+    - generic
 
-  # RKE2 Gitlab CI jobs
-  - local: '/.gitlab-ci/jobs/rke2/.gitlab-ci.yml'
+##-----------------------------------------------------------------------------------------------------------------------
+# Build and Test Templates
+
+.chart_changes: &chart_changes
+  changes:
+    - chart/**/*
+    - .gitlab-ci.yml
+    - .gitlab-ci/jobs/**/*
+    - scripts/**/*
+    - tests/**/*
+    - base/flux/*
+
+.deploy_bigbang: &deploy_bigbang
+  - |
+    set -e
+    for deploy_script in $(find ./scripts/deploy -type f -name '*.sh' | sort); do
+      chmod +x ${deploy_script}
+      echo "Executing ${deploy_script}..."
+      ./${deploy_script}
+    done
+
+.test_bigbang: &test_bigbang
+  - |
+    set -e
+    for test_script in $(find ./tests -type f -name '*.sh' | sort); do
+      chmod +x ${test_script}
+      echo "Executing ${test_script}..."
+      ./${test_script}
+    done
+
+##-----------------------------------------------------------------------------------------------------------------------
+# Terraform Support Templates
 
 .terraformer:
   image:

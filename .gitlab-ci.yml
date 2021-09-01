@@ -26,19 +26,30 @@ workflow:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       variables:
         CLUSTER_TYPE: AWS
-        PIPELINE_TYPE: RELEASE
+        PIPELINE_TYPE: MR
     # skip pipeline for branches that start with "docs"
     - if: '$CI_COMMIT_REF_NAME =~ /^doc*/i'
       when: never
 
     # Debugging runs
-    - if: $CI_COMMIT_BRANCH == "ci-cleanup"
     - if: $CI_COMMIT_MESSAGE =~ /(^|,)test-ci::ci(,|$)/
+      variables:
+        CLUSTER_TYPE: CI
+        PIPELINE_TYPE: MR
     - if: $CI_COMMIT_MESSAGE =~ /(^|,)test-ci::infra(,|$)/
+      variables:
+        CLUSTER_TYPE: AWS
+        PIPELINE_TYPE: RELEASE
 
-# include templates
+# include templates and common jobs and defintiions
 include:
   - local: '/.gitlab-ci/templates.yml'
+  # "Default" AWS Networking
+  - local: '/.gitlab-ci/jobs/networking/aws/.gitlab-ci.yml'
+  # Clusters in CI
+  - local: '/.gitlab-ci/jobs/ci-cluster/.gitlab-ci.yml'
+  # RKE2 Gitlab CI jobs
+  - local: '/.gitlab-ci/jobs/rke2/.gitlab-ci.yml'
 
 #stages:
 #  - smoke tests
@@ -64,11 +75,6 @@ stages:
 #-----------------------------------------------------------------------------------------------------------------------
 # Pre Stage Jobs
 #
-.gitlab-runner-tags:
-  tags:
-    - bigbang
-    - dogfood
-    - generic
 
 .bigbang:
   image: registry.dso.mil/platform-one/big-bang/pipeline-templates/pipeline-templates/k8s-ci:v1.20.4-bb.3
@@ -91,7 +97,7 @@ pre vars:
       dotenv: variables.env
   script:
   # Dump cluster type
-  - echo "Cluster type = $CLUSTER_TYPE"
+  - echo "CLUSTER type = $CLUSTER_TYPE"
   - echo "PIPELINE Type = $PIPELINE_TYPE"
   # Create the TF_VAR_env variable
   - echo "TF_VAR_env=$(echo $CI_COMMIT_REF_SLUG | cut -c 1-7)-$(echo $CI_COMMIT_SHA | cut -c 1-7)" >> variables.env
@@ -99,37 +105,9 @@ pre vars:
 
 
 ##-----------------------------------------------------------------------------------------------------------------------
-#
-##-----------------------------------------------------------------------------------------------------------------------
-## Smoke Tests
+## CI Pipeline cluster and testing.   Executed using Docker-in-Docker (DIND) infrastructre in the gitlab runners.
 ##
 
-.chart_changes: &chart_changes
-  changes:
-    - chart/**/*
-    - .gitlab-ci.yml
-    - .gitlab-ci/jobs/**/*
-    - scripts/**/*
-    - tests/**/*
-    - base/flux/*
-
-.deploy_bigbang: &deploy_bigbang
-  - |
-    set -e
-    for deploy_script in $(find ./scripts/deploy -type f -name '*.sh' | sort); do
-      chmod +x ${deploy_script}
-      echo "Executing ${deploy_script}..."
-      ./${deploy_script}
-    done
-
-.test_bigbang: &test_bigbang
-  - |
-    set -e
-    for test_script in $(find ./tests -type f -name '*.sh' | sort); do
-      chmod +x ${test_script}
-      echo "Executing ${test_script}..."
-      ./${test_script}
-    done
 
 ci-clean-install-validation:
   stage: validate and test
@@ -198,237 +176,238 @@ ci-upgrade-validation:
 ##-----------------------------------------------------------------------------------------------------------------------
 ## Infrastructure: Management Jobs
 ##
+
+# Abstract for job manually triggering infrastructure builds
+.infra fork:
+  stage: network up
+  rules:
+    # Run on scheduled jobs OR when `test-ci` label is assigned
+    - if: '($CI_PIPELINE_SOURCE == "schedule" && $CI_COMMIT_BRANCH == "master") || $CI_MERGE_REQUEST_LABELS =~ /(^|,)test-ci::infra(,|$)/'
+      allow_failure: false
+
+# Abstract for jobs responsible for creating infrastructure
+.infra create:
+  rules:
+    # Run on scheduled jobs OR when `test-ci` label is assigned
+    - if: '($CI_PIPELINE_SOURCE == "schedule" && $CI_COMMIT_BRANCH == "master") || $CI_MERGE_REQUEST_LABELS =~ /(^|,)test-ci::infra(,|$)/'
+    # skip job when branch name starts with "hotfix" or "patch"
+    - if: '$CI_MERGE_REQUEST_SOURCE_BRANCH_NAME =~ /^(hotfix|patch)/'
+      when: never
+
+# Abstract for jobs responsible for cleaning up infrastructure OR when `test-ci` label is assigned
+.infra cleanup:
+  rules:
+    # Run on scheduled jobs
+    - if: '($CI_PIPELINE_SOURCE == "schedule" && $CI_COMMIT_BRANCH == "master") || $CI_MERGE_REQUEST_LABELS =~ /(^|,)test-ci::infra(,|$)/'
+      allow_failure: true
+      when: always
+
+#-----------------------------------------------------------------------------------------------------------------------
+
+#-----------------------------------------------------------------------------------------------------------------------
+# Infrastructure: Networking
 #
-## Abstract for job manually triggering infrastructure builds
-#.infra fork:
-#  stage: network up
-#  rules:
-#    # Run on scheduled jobs OR when `test-ci` label is assigned
-#    - if: '($CI_PIPELINE_SOURCE == "schedule" && $CI_COMMIT_BRANCH == "master") || $CI_MERGE_REQUEST_LABELS =~ /(^|,)test-ci::infra(,|$)/'
-#      allow_failure: false
+
+aws/network up:
+  extends:
+    - .gitlab-runner-tags
+    - .infra fork
+    - .network up
+  environment:
+    name: review/aws-${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA}
+    auto_stop_in: 1 hour
+
+aws/network down:
+  extends:
+    - .gitlab-runner-tags
+    - .infra cleanup
+    - .network down
+  stage: network down
+  environment:
+    name: review/aws-${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA}
+    action: stop
+
+#-----------------------------------------------------------------------------------------------------------------------
+
+#-----------------------------------------------------------------------------------------------------------------------
+# Infrastructure: RKE2
 #
-## Abstract for jobs responsible for creating infrastructure
-#.infra create:
-#  rules:
-#    # Run on scheduled jobs OR when `test-ci` label is assigned
-#    - if: '($CI_PIPELINE_SOURCE == "schedule" && $CI_COMMIT_BRANCH == "master") || $CI_MERGE_REQUEST_LABELS =~ /(^|,)test-ci::infra(,|$)/'
-#    # skip job when branch name starts with "hotfix" or "patch"
-#    - if: '$CI_MERGE_REQUEST_SOURCE_BRANCH_NAME =~ /^(hotfix|patch)/'
-#      when: never
+
+# Create RKE2 cluster on AWS
+aws/rke2/cluster up:
+  stage: cluster up
+  extends:
+    - .gitlab-runner-tags
+    - .infra create
+    - .rke2 up
+  needs:
+    - job: aws/network up
+    - job: pre vars
+      artifacts: true
+  environment:
+    name: review/aws-${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA}
+
+# Install BigBang on RKE2 cluster on AWS
+aws/rke2/bigbang up:
+  stage: bigbang up
+  extends:
+    - .gitlab-runner-tags
+    - .infra create
+    - .bigbang
+  needs:
+    - job: aws/rke2/cluster up
+      artifacts: true
+  before_script:
+    - mkdir -p ~/.kube
+    - cp ${CI_PROJECT_DIR}/rke2.yaml ~/.kube/config
+    # Deploy a default storage class for aws
+    - kubectl apply -f ${CI_PROJECT_DIR}/.gitlab-ci/jobs/rke2/dependencies/k8s-resources/aws/default-ebs-sc.yaml
+
+  script:
+    - *deploy_bigbang
+  environment:
+    name: review/aws-${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA}
+
+# Run tests on BigBang on RKE2 cluster on AWS
+aws/rke2/bigbang test:
+  stage: test
+  extends:
+    - .gitlab-runner-tags
+    - .infra create
+    - .bigbang
+  needs:
+    - job: aws/rke2/cluster up
+      artifacts: true
+    - job: aws/rke2/bigbang up
+  before_script:
+    - mkdir -p ~/.kube
+    - cp ${CI_PROJECT_DIR}/rke2.yaml ~/.kube/config
+  script:
+    ## Move this yum install to the dockerfile for the builder
+    ## putting it here now for a quick way to install dig
+    - yum install bind-utils -y
+    - ./scripts/hosts.sh
+    - *test_bigbang
+  environment:
+    name: review/aws-${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA}
+
+# Uninstall BigBang on RKE2 cluster on AWS
+aws/rke2/bigbang down:
+  stage: bigbang down
+  extends:
+    - .gitlab-runner-tags
+    - .infra cleanup
+    - .bigbang
+  needs:
+    - job: aws/rke2/cluster up
+      artifacts: true
+    - job: aws/rke2/bigbang test
+  before_script:
+    - mkdir -p ~/.kube
+    - cp ${CI_PROJECT_DIR}/rke2.yaml ~/.kube/config
+  script:
+    - helm un -n bigbang bigbang
+    # TODO: Smarter wait
+    - sleep 180
+  environment:
+    name: review/aws-${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA}
+
+# Destroy RKE2 cluster on AWS
+aws/rke2/cluster down:
+  stage: cluster down
+  extends:
+    - .gitlab-runner-tags
+    - .infra cleanup
+    - .rke2 down
+  needs:
+    - job: aws/rke2/bigbang down
+    - job: pre vars
+      artifacts: true
+  environment:
+    name: review/aws-${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA}
+
+#-----------------------------------------------------------------------------------------------------------------------
 #
-## Abstract for jobs responsible for cleaning up infrastructure OR when `test-ci` label is assigned
-#.infra cleanup:
-#  rules:
-#    # Run on scheduled jobs
-#    - if: '($CI_PIPELINE_SOURCE == "schedule" && $CI_COMMIT_BRANCH == "master") || $CI_MERGE_REQUEST_LABELS =~ /(^|,)test-ci::infra(,|$)/'
-#      allow_failure: true
-#      when: always
+
+#-----------------------------------------------------------------------------------------------------------------------
+# Release Jobs
 #
-##-----------------------------------------------------------------------------------------------------------------------
-#
-##-----------------------------------------------------------------------------------------------------------------------
-## Infrastructure: Networking
-##
-#
-#aws/network up:
-#  extends:
-#    - .gitlab-runner-tags
-#    - .infra fork
-#    - .network up
-#  environment:
-#    name: review/aws-${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA}
-#    auto_stop_in: 1 hour
-#
-#aws/network down:
-#  extends:
-#    - .gitlab-runner-tags
-#    - .infra cleanup
-#    - .network down
-#  stage: network down
-#  environment:
-#    name: review/aws-${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA}
-#    action: stop
-#
-##-----------------------------------------------------------------------------------------------------------------------
-#
-##-----------------------------------------------------------------------------------------------------------------------
-## Infrastructure: RKE2
-##
-#
-## Create RKE2 cluster on AWS
-#aws/rke2/cluster up:
-#  stage: cluster up
-#  extends:
-#    - .gitlab-runner-tags
-#    - .infra create
-#    - .rke2 up
-#  needs:
-#    - job: aws/network up
-#    - job: pre vars
-#      artifacts: true
-#  environment:
-#    name: review/aws-${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA}
-#
-## Install BigBang on RKE2 cluster on AWS
-#aws/rke2/bigbang up:
-#  stage: bigbang up
-#  extends:
-#    - .gitlab-runner-tags
-#    - .infra create
-#    - .bigbang
-#  needs:
-#    - job: aws/rke2/cluster up
-#      artifacts: true
-#  before_script:
-#    - mkdir -p ~/.kube
-#    - cp ${CI_PROJECT_DIR}/rke2.yaml ~/.kube/config
-#    # Deploy a default storage class for aws
-#    - kubectl apply -f ${CI_PROJECT_DIR}/.gitlab-ci/jobs/rke2/dependencies/k8s-resources/aws/default-ebs-sc.yaml
-#
-#  script:
-#    - *deploy_bigbang
-#  environment:
-#    name: review/aws-${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA}
-#
-## Run tests on BigBang on RKE2 cluster on AWS
-#aws/rke2/bigbang test:
-#  stage: test
-#  extends:
-#    - .gitlab-runner-tags
-#    - .infra create
-#    - .bigbang
-#  needs:
-#    - job: aws/rke2/cluster up
-#      artifacts: true
-#    - job: aws/rke2/bigbang up
-#  before_script:
-#    - mkdir -p ~/.kube
-#    - cp ${CI_PROJECT_DIR}/rke2.yaml ~/.kube/config
-#  script:
-#    ## Move this yum install to the dockerfile for the builder
-#    ## putting it here now for a quick way to install dig
-#    - yum install bind-utils -y
-#    - ./scripts/hosts.sh
-#    - *test_bigbang
-#  environment:
-#    name: review/aws-${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA}
-#
-## Uninstall BigBang on RKE2 cluster on AWS
-#aws/rke2/bigbang down:
-#  stage: bigbang down
-#  extends:
-#    - .gitlab-runner-tags
-#    - .infra cleanup
-#    - .bigbang
-#  needs:
-#    - job: aws/rke2/cluster up
-#      artifacts: true
-#    - job: aws/rke2/bigbang test
-#  before_script:
-#    - mkdir -p ~/.kube
-#    - cp ${CI_PROJECT_DIR}/rke2.yaml ~/.kube/config
-#  script:
-#    - helm un -n bigbang bigbang
-#    # TODO: Smarter wait
-#    - sleep 180
-#  environment:
-#    name: review/aws-${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA}
-#
-## Destroy RKE2 cluster on AWS
-#aws/rke2/cluster down:
-#  stage: cluster down
-#  extends:
-#    - .gitlab-runner-tags
-#    - .infra cleanup
-#    - .rke2 down
-#  needs:
-#    - job: aws/rke2/bigbang down
-#    - job: pre vars
-#      artifacts: true
-#  environment:
-#    name: review/aws-${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA}
-#
-##-----------------------------------------------------------------------------------------------------------------------
-#
-##-----------------------------------------------------------------------------------------------------------------------
-## Release Jobs
-##
-#
-#package:
-#  stage: package
-#  image: registry.dso.mil/platform-one/big-bang/bigbang/synker:0.0.3
-#  extends:
-#    - .gitlab-runner-tags
-#  rules:
-#    # run job for manual tag events or test-ci::release MRs
-#    - if: '$CI_COMMIT_TAG || $CI_MERGE_REQUEST_LABELS =~ /(^|,)test-ci::release(,|$)/'
-#  before_script:
-#    # Set up auth
-#    - mkdir -p /root/.docker
-#    - |
-#      jq -n '{"auths": {"registry.dso.mil": {"auth": $bb_registry_auth}, "registry1.dso.mil": {"auth": $registry1_auth}, "registry.il2.dso.mil": {"auth": $il2_registry_auth} } }' \
-#        --arg bb_registry_auth ${BB_REGISTRY_AUTH} \
-#        --arg registry1_auth ${REGISTRY1_AUTH} \
-#        --arg il2_registry_auth ${IL2_REGISTRY_AUTH} > /root/.docker/config.json
-#  script:
-#    - cp ./scripts/package/synker.yaml ./synker.yaml
-#    # Populate images list in synker config
-#    - |
-#      for image in $(cat images.txt); do
-#        yq -i e "(.source.images |= . + \"${image}\")" "./synker.yaml"
-#      done
-#    - synker pull -b=1
-#    # Create image list from synker, overwrite since ./synker.yaml contains everything at this point
-#    - yq e '.source.images | .[] | ... comments=""' "./synker.yaml" > images.txt
-#    # Tar up synker as well?
-#    - cp /usr/local/bin/synker synker.yaml /var/lib/registry/
-#    # Grab the registry image
-#    - crane pull registry:2 registry.tar
-#    - mv registry.tar /var/lib/registry/
-#    - tar -C /var/lib/registry -czvf $IMAGE_PKG .
-#    - tar -czvf $IMAGE_PKG /var/lib/registry
-#    # Package dependent repos
-#    - ./scripts/package/gits.sh
-#    - tar -czf $REPOS_PKG repos/
-#    # Prep release
-#    - mkdir -p release
-#    - mv $IMAGE_LIST $IMAGE_PKG $REPOS_PKG release/
-#    # Publish packages to s3 release
-#    - |
-#      if [ -z $CI_COMMIT_TAG ]; then
-#        aws s3 sync --quiet release/ s3://umbrella-bigbang-releases/tests/${CI_COMMIT_SHA}
-#      else
-#        aws s3 sync --quiet release/ s3://umbrella-bigbang-releases/umbrella/${CI_COMMIT_TAG}
-#      fi
-#  after_script: []
-#
-#release:
-#  stage: release
-#  image: registry.gitlab.com/gitlab-org/release-cli:latest
-#  extends:
-#    - .gitlab-runner-tags
-#  rules:
-#    # run job for manual tag events or test-ci::release MRs
-#    - if: '$CI_COMMIT_TAG || $CI_MERGE_REQUEST_LABELS =~ /(^|,)test-ci::release(,|$)/'
-#  variables:
-#    RELEASE_ENDPOINT: https://${RELEASE_BUCKET}.s3-${AWS_DEFAULT_REGION}.amazonaws.com/umbrella/${CI_COMMIT_TAG}
-#  script:
-#    # Use release-cli to cut a release in Gitlab or simulate a dry-run & print asset links
-#    - |
-#      if [ -z $CI_COMMIT_TAG ]; then
-#        RELEASE_ENDPOINT="https://${RELEASE_BUCKET}.s3-${AWS_DEFAULT_REGION}.amazonaws.com/tests/${CI_COMMIT_SHA}"
-#        printf "Release will run: \n\
-#          release-cli create --name \"Big Bang \${CI_COMMIT_TAG}\" --tag-name \${CI_COMMIT_TAG} \n\
-#          --description \"Automated release notes are a WIP.\" \n\
-#          --assets-link \"{\"name\":\"${IMAGE_LIST}\",\"url\":\"${RELEASE_ENDPOINT}/${IMAGE_LIST}\"}\" \n\
-#          --assets-link \"{\"name\":\"${IMAGE_PKG}\",\"url\":\"${RELEASE_ENDPOINT}/${IMAGE_PKG}\"}\" \n\
-#          --assets-link \"{\"name\":\"${REPOS_PKG}\",\"url\":\"${RELEASE_ENDPOINT}/${REPOS_PKG}\"}\"\n"
-#      else
-#        release-cli create --name "Big Bang ${CI_COMMIT_TAG}" --tag-name ${CI_COMMIT_TAG} \
-#          --description "Automated release notes are a WIP." \
-#          --assets-link "{\"name\":\"${IMAGE_LIST}\",\"url\":\"${RELEASE_ENDPOINT}/${IMAGE_LIST}\"}" \
-#          --assets-link "{\"name\":\"${IMAGE_PKG}\",\"url\":\"${RELEASE_ENDPOINT}/${IMAGE_PKG}\"}" \
-#          --assets-link "{\"name\":\"${REPOS_PKG}\",\"url\":\"${RELEASE_ENDPOINT}/${REPOS_PKG}\"}"
-#      fi
-#
-##-----------------------------------------------------------------------------------------------------------------------
+
+package:
+  stage: package
+  image: registry.dso.mil/platform-one/big-bang/bigbang/synker:0.0.3
+  extends:
+    - .gitlab-runner-tags
+  rules:
+    # run job for manual tag events or test-ci::release MRs
+    - if: $PIPELINE_TYPE == "RELEASE"
+    - if: '$CI_COMMIT_TAG || $CI_MERGE_REQUEST_LABELS =~ /(^|,)test-ci::release(,|$)/'
+  before_script:
+    # Set up auth
+    - mkdir -p /root/.docker
+    - |
+      jq -n '{"auths": {"registry.dso.mil": {"auth": $bb_registry_auth}, "registry1.dso.mil": {"auth": $registry1_auth}, "registry.il2.dso.mil": {"auth": $il2_registry_auth} } }' \
+        --arg bb_registry_auth ${BB_REGISTRY_AUTH} \
+        --arg registry1_auth ${REGISTRY1_AUTH} \
+        --arg il2_registry_auth ${IL2_REGISTRY_AUTH} > /root/.docker/config.json
+  script:
+    - cp ./scripts/package/synker.yaml ./synker.yaml
+    # Populate images list in synker config
+    - |
+      for image in $(cat images.txt); do
+        yq -i e "(.source.images |= . + \"${image}\")" "./synker.yaml"
+      done
+    - synker pull -b=1
+    # Create image list from synker, overwrite since ./synker.yaml contains everything at this point
+    - yq e '.source.images | .[] | ... comments=""' "./synker.yaml" > images.txt
+    # Tar up synker as well?
+    - cp /usr/local/bin/synker synker.yaml /var/lib/registry/
+    # Grab the registry image
+    - crane pull registry:2 registry.tar
+    - mv registry.tar /var/lib/registry/
+    - tar -C /var/lib/registry -czvf $IMAGE_PKG .
+    - tar -czvf $IMAGE_PKG /var/lib/registry
+    # Package dependent repos
+    - ./scripts/package/gits.sh
+    - tar -czf $REPOS_PKG repos/
+    # Prep release
+    - mkdir -p release
+    - mv $IMAGE_LIST $IMAGE_PKG $REPOS_PKG release/
+    # Publish packages to s3 release
+    - |
+      if [ -z $CI_COMMIT_TAG ]; then
+        aws s3 sync --quiet release/ s3://umbrella-bigbang-releases/tests/${CI_COMMIT_SHA}
+      else
+        aws s3 sync --quiet release/ s3://umbrella-bigbang-releases/umbrella/${CI_COMMIT_TAG}
+      fi
+  after_script: []
+
+release:
+  stage: release
+  image: registry.gitlab.com/gitlab-org/release-cli:latest
+  extends:
+    - .gitlab-runner-tags
+  rules:
+    # run job for manual tag events or test-ci::release MRs
+    - if: $PIPELINE_TYPE == "RELEASE"
+    - if: '$CI_COMMIT_TAG || $CI_MERGE_REQUEST_LABELS =~ /(^|,)test-ci::release(,|$)/'
+  variables:
+    RELEASE_ENDPOINT: https://${RELEASE_BUCKET}.s3-${AWS_DEFAULT_REGION}.amazonaws.com/umbrella/${CI_COMMIT_TAG}
+  script:
+    # Use release-cli to cut a release in Gitlab or simulate a dry-run & print asset links
+    - |
+      if [ -z $CI_COMMIT_TAG ]; then
+        RELEASE_ENDPOINT="https://${RELEASE_BUCKET}.s3-${AWS_DEFAULT_REGION}.amazonaws.com/tests/${CI_COMMIT_SHA}"
+        printf "Release will run: \n\
+          release-cli create --name \"Big Bang \${CI_COMMIT_TAG}\" --tag-name \${CI_COMMIT_TAG} \n\
+          --description \"Automated release notes are a WIP.\" \n\
+          --assets-link \"{\"name\":\"${IMAGE_LIST}\",\"url\":\"${RELEASE_ENDPOINT}/${IMAGE_LIST}\"}\" \n\
+          --assets-link \"{\"name\":\"${IMAGE_PKG}\",\"url\":\"${RELEASE_ENDPOINT}/${IMAGE_PKG}\"}\" \n\
+          --assets-link \"{\"name\":\"${REPOS_PKG}\",\"url\":\"${RELEASE_ENDPOINT}/${REPOS_PKG}\"}\"\n"
+      else
+        release-cli create --name "Big Bang ${CI_COMMIT_TAG}" --tag-name ${CI_COMMIT_TAG} \
+          --description "Automated release notes are a WIP." \
+          --assets-link "{\"name\":\"${IMAGE_LIST}\",\"url\":\"${RELEASE_ENDPOINT}/${IMAGE_LIST}\"}" \
+          --assets-link "{\"name\":\"${IMAGE_PKG}\",\"url\":\"${RELEASE_ENDPOINT}/${IMAGE_PKG}\"}" \
+          --assets-link "{\"name\":\"${REPOS_PKG}\",\"url\":\"${RELEASE_ENDPOINT}/${REPOS_PKG}\"}"
+      fi
