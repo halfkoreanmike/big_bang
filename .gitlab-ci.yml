@@ -52,25 +52,15 @@ include:
   - local: '/.gitlab-ci/jobs/rke2/.gitlab-ci.yml'
 
 #stages:
-#  - smoke tests
 #  - network up
 #  - cluster up
 #  - bigbang up
-#  - test
+#  - validate and test
 #  - bigbang down
 #  - cluster down
 #  - network down
 #  - package
 #  - release
-
-stages:
-  - cluster up
-  - bigbang up
-  - validate and test
-  - bigbang down
-  - cluster down
-  - package
-  - release
 
 ##-----------------------------------------------------------------------------------------------------------------------
 # Build and Test Templates
