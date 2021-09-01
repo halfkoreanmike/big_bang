@@ -37,13 +37,13 @@ workflow:
     - if: '$CI_COMMIT_REF_NAME =~ /^doc*/i'
       when: never
 
-    # Debugging runs
-    - if: $CI_COMMIT_MESSAGE =~ /(^|,)test-ci::ci(,|$)/
+    # Debugging runs allowed by pushing commits to a branch with special test message
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_MESSAGE =~ /(^|,)test-ci::ci(,|$)/
       variables:
         CLUSTER_TYPE: CI
         PIPELINE_TYPE: MR
         DEBUGGING: ENABLED
-    - if: $CI_COMMIT_MESSAGE =~ /(^|,)test-ci::infra(,|$)/
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_MESSAGE =~ /(^|,)test-ci::infra(,|$)/
       variables:
         CLUSTER_TYPE: AWS
         PIPELINE_TYPE: RELEASE
