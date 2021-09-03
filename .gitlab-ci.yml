@@ -12,7 +12,6 @@
 # global rules for when pipelines run
 workflow:
   rules:
-    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_MESSAGE =~ /.*test-ci.*/i
     # run pipeline for manual tag events such as a new release
     - if: $CI_COMMIT_TAG
     # run pipeline on merge request events
@@ -22,6 +21,9 @@ workflow:
     # skip pipeline for branches that start with "docs"
     - if: '$CI_COMMIT_REF_NAME =~ /^doc*/i'
       when: never
+    # Enabled CI pipeline testing it commit message contains "test-ci"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_MESSAGE =~ /.*test-ci.*/i
+
 
 # Include templates and cluster creation jobs
 include:
