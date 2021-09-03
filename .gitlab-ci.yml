@@ -12,6 +12,7 @@
 # global rules for when pipelines run
 workflow:
   rules:
+    - if: $CI_PIPELINE_SOURCE == "push"
     # run pipeline for manual tag events such as a new release
     - if: $CI_COMMIT_TAG
     # run pipeline on merge request events
@@ -22,7 +23,7 @@ workflow:
     - if: '$CI_COMMIT_REF_NAME =~ /^doc*/i'
       when: never
 
-# include templates
+# Include templates and cluster creation jobs
 include:
   - local: '/.gitlab-ci/templates.yml'
 
