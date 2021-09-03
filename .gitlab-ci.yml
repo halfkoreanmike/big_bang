@@ -12,7 +12,7 @@
 # global rules for when pipelines run
 workflow:
   rules:
-    - if: $CI_PIPELINE_SOURCE == "push"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_MESSAGE =~ /.*test-ci.*/i
     # run pipeline for manual tag events such as a new release
     - if: $CI_COMMIT_TAG
     # run pipeline on merge request events
@@ -115,6 +115,7 @@ clean install:
   variables:
     CLUSTER_NAME: "clean-${CI_COMMIT_SHORT_SHA}"
   rules:
+    # Always run a clean installation test unless we are deploying the AWS cluster installation during a scheduled test (nightly master test)
     - if: '($CI_PIPELINE_SOURCE == "schedule" && $CI_COMMIT_BRANCH == "master") || $CI_MERGE_REQUEST_LABELS =~ /(^|,)test-ci::infra(,|$)/'
       when: never
     - *chart_changes
@@ -168,8 +169,6 @@ upgrade:
       - "cypress-tests/*/tests/cypress/videos"
     expire_in: 7 days
     when: always
-
-#-----------------------------------------------------------------------------------------------------------------------
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Infrastructure: Management Jobs
