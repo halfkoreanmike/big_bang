@@ -1,7 +1,18 @@
+# Bigbang CI pipelines defintiions
+# There are 4 different use-cases/pipelines that are supported by this file:
+#   1) Build and test changes made from a Merge Reuqest using a docker-in-docker (DIND) K3D cluster deployment inside the
+#      gitlab runner.
+#   2) Build and test a commit to the Master branch (default branch) using a AWS created K3S cluster which id deployed
+#       using Terraform
+#   3) Build and test a new release and/or tagged commitment using a docker-in-docker (DIND) K3D cluster deployment inside the
+#      gitlab runner.   Once a successful build and test is completed, package the build and perform a release operation.
+#   4) Periodically at a scheduled time, build and test the master branch  using a AWS created K3S cluster which id deployed
+#       using Terraform
+
 # global rules for when pipelines run
 workflow:
   rules:
-    # run pipeline for manual tag events
+    # run pipeline for manual tag events such as a new release
     - if: $CI_COMMIT_TAG
     # run pipeline on merge request events
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
