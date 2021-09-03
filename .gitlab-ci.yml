@@ -1,52 +1,15 @@
-variables:
-  RELEASE_BUCKET: umbrella-bigbang-releases
-  IMAGE_LIST: images.txt
-  IMAGE_PKG: images.tar.gz
-  REPOS_PKG: repositories.tar.gz
-  # Valid cluster types are: "CI", "AWS"
-  CLUSTER_TYPE: CI
-  # Valid Pipeline Types are: "RELEASE", "MR"
-  PIPELINE_TYPE: MR
-  DEBUGGING: DISABLED
-
-  # global rules for when pipelines run
-
+# global rules for when pipelines run
 workflow:
   rules:
     # run pipeline for manual tag events
     - if: $CI_COMMIT_TAG
-      variables:
-        CLUSTER_TYPE: AWS
-        PIPELINE_TYPE: RELEASE
     # run pipeline on merge request events
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-      variables:
-        CLUSTER_TYPE: CI
-        PIPELINE_TYPE: MR
-    # Allow manual pipeline runs via gitlab UI
-    - if: $CI_PIPELINE_SOURCE == "web"
-      variables:
-        CLUSTER_TYPE: CI
-        PIPELINE_TYPE: MR
     # run pipeline on commits to default branch
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
-      variables:
-        CLUSTER_TYPE: AWS
-        PIPELINE_TYPE: MR
     # skip pipeline for branches that start with "docs"
     - if: '$CI_COMMIT_REF_NAME =~ /^doc*/i'
       when: never
-    # Debugging runs allowed by pushing commits to a branch with special test message
-    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_MESSAGE =~ /(^|,)test-ci::ci(,|$)/
-      variables:
-        CLUSTER_TYPE: CI
-        PIPELINE_TYPE: MR
-        DEBUGGING: ENABLED
-    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_MESSAGE =~ /(^|,)test-ci::infra(,|$)/
-      variables:
-        CLUSTER_TYPE: AWS
-        PIPELINE_TYPE: RELEASE
-        DEBUGGING: ENABLED
 
 # include templates
 include:
@@ -58,17 +21,19 @@ stages:
   - cluster up
   - bigbang up
   - test
-  - validate and test
   - bigbang down
   - cluster down
   - network down
   - package
   - release
 
-#-----------------------------------------------------------------------------------------------------------------------
-# Pre Stage Jobs
-#
-.gitlab-runner-tags:
+variables:
+  RELEASE_BUCKET: umbrella-bigbang-releases
+  IMAGE_LIST: images.txt
+  IMAGE_PKG: images.tar.gz
+  REPOS_PKG: repositories.tar.gz
+
+.bigbang-gitlab-runner-tags:
   tags:
     - bigbang
     - dogfood
@@ -76,41 +41,33 @@ stages:
 
 .bigbang:
   image: registry.dso.mil/platform-one/big-bang/pipeline-templates/pipeline-templates/k8s-ci:v1.20.4-bb.3
-  extends: .gitlab-runner-tags
+  extends: .bigbang-gitlab-runner-tags
   after_script:
     - kubectl get all -A
     - kubectl get helmrelease -A
 
-##-----------------------------------------------------------------------------------------------------------------------
-## Pre Stage Jobs
-##
+#-----------------------------------------------------------------------------------------------------------------------
+# Pre Stage Jobs
+#
 
 pre vars:
   image: registry.dso.mil/platform-one/big-bang/pipeline-templates/pipeline-templates/pre-envs:ubi8.3
   stage: .pre
   extends:
-    - .gitlab-runner-tags
+    - .bigbang-gitlab-runner-tags
   artifacts:
     reports:
       dotenv: variables.env
   script:
-  # Dump cluster type
-  - echo "CLUSTER type = $CLUSTER_TYPE"
-  - echo "PIPELINE Type = $PIPELINE_TYPE"
-  - echo "CI COMMIT Message = $CI_COMMIT_MESSAGE"
-  - echo "DEUBGGING = $DEBUGGING"
   # Create the TF_VAR_env variable
   - echo "TF_VAR_env=$(echo $CI_COMMIT_REF_SLUG | cut -c 1-7)-$(echo $CI_COMMIT_SHA | cut -c 1-7)" >> variables.env
   - cat variables.env
 
+#-----------------------------------------------------------------------------------------------------------------------
 
-##-----------------------------------------------------------------------------------------------------------------------
+#-----------------------------------------------------------------------------------------------------------------------
+# Smoke Tests
 #
-
-
-##-----------------------------------------------------------------------------------------------------------------------
-## Smoke Tests
-##
 
 .chart_changes: &chart_changes
   changes:
@@ -139,15 +96,14 @@ pre vars:
       ./${test_script}
     done
 
-ci-clean-install-validation:
-  stage: validate and test
+clean install:
+  stage: smoke tests
   extends:
     - .k3d-ci
   variables:
     CLUSTER_NAME: "clean-${CI_COMMIT_SHORT_SHA}"
   rules:
-    - if: $CLUSTER_TYPE == "CI"
-    - if: $CLUSTER_TYPE == "AWS"
+    - if: '($CI_PIPELINE_SOURCE == "schedule" && $CI_COMMIT_BRANCH == "master") || $CI_MERGE_REQUEST_LABELS =~ /(^|,)test-ci::infra(,|$)/'
       when: never
     - *chart_changes
   script:
@@ -166,15 +122,15 @@ ci-clean-install-validation:
     expire_in: 7 days
     when: always
 
-ci-upgrade-validation:
-  stage: validate and test
+upgrade:
+  stage: smoke tests
   dependencies:
     - pre vars
   extends:
     - .k3d-ci
   rules:
-    - if: $CLUSTER_TYPE == "CI"
-    - if: $CLUSTER_TYPE == "AWS"
+    # skip job for nightly master and "test-ci::infra" labeled pipelines
+    - if: '($CI_PIPELINE_SOURCE == "schedule" && $CI_COMMIT_BRANCH == "master") || $CI_MERGE_REQUEST_LABELS =~ /(^|,)test-ci::infra(,|$)/'
       when: never
     # skip job when MR title starts with 'SKIP UPGRADE'
     - if: '$CI_MERGE_REQUEST_TITLE =~ /^SKIP UPGRADE/'
@@ -201,11 +157,11 @@ ci-upgrade-validation:
     expire_in: 7 days
     when: always
 
-##-----------------------------------------------------------------------------------------------------------------------
+#-----------------------------------------------------------------------------------------------------------------------
+
+#-----------------------------------------------------------------------------------------------------------------------
+# Infrastructure: Management Jobs
 #
-##-----------------------------------------------------------------------------------------------------------------------
-## Infrastructure: Management Jobs
-##
 
 # Abstract for job manually triggering infrastructure builds
 .infra fork:
@@ -240,7 +196,7 @@ ci-upgrade-validation:
 
 aws/network up:
   extends:
-    - .gitlab-runner-tags
+    - .bigbang-gitlab-runner-tags
     - .infra fork
     - .network up
   environment:
@@ -249,7 +205,7 @@ aws/network up:
 
 aws/network down:
   extends:
-    - .gitlab-runner-tags
+    - .bigbang-gitlab-runner-tags
     - .infra cleanup
     - .network down
   stage: network down
@@ -267,7 +223,7 @@ aws/network down:
 aws/rke2/cluster up:
   stage: cluster up
   extends:
-    - .gitlab-runner-tags
+    - .bigbang-gitlab-runner-tags
     - .infra create
     - .rke2 up
   needs:
@@ -281,7 +237,7 @@ aws/rke2/cluster up:
 aws/rke2/bigbang up:
   stage: bigbang up
   extends:
-    - .gitlab-runner-tags
+    - .bigbang-gitlab-runner-tags
     - .infra create
     - .bigbang
   needs:
@@ -302,7 +258,7 @@ aws/rke2/bigbang up:
 aws/rke2/bigbang test:
   stage: test
   extends:
-    - .gitlab-runner-tags
+    - .bigbang-gitlab-runner-tags
     - .infra create
     - .bigbang
   needs:
@@ -325,7 +281,7 @@ aws/rke2/bigbang test:
 aws/rke2/bigbang down:
   stage: bigbang down
   extends:
-    - .gitlab-runner-tags
+    - .bigbang-gitlab-runner-tags
     - .infra cleanup
     - .bigbang
   needs:
@@ -346,7 +302,7 @@ aws/rke2/bigbang down:
 aws/rke2/cluster down:
   stage: cluster down
   extends:
-    - .gitlab-runner-tags
+    - .bigbang-gitlab-runner-tags
     - .infra cleanup
     - .rke2 down
   needs:
@@ -356,8 +312,7 @@ aws/rke2/cluster down:
   environment:
     name: review/aws-${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA}
 
-##-----------------------------------------------------------------------------------------------------------------------
-#
+#-----------------------------------------------------------------------------------------------------------------------
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Release Jobs
@@ -367,10 +322,9 @@ package:
   stage: package
   image: registry.dso.mil/platform-one/big-bang/bigbang/synker:0.0.3
   extends:
-    - .gitlab-runner-tags
+    - .bigbang-gitlab-runner-tags
   rules:
     # run job for manual tag events or test-ci::release MRs
-    - if: $PIPELINE_TYPE == "RELEASE"
     - if: '$CI_COMMIT_TAG || $CI_MERGE_REQUEST_LABELS =~ /(^|,)test-ci::release(,|$)/'
   before_script:
     # Set up auth
@@ -416,10 +370,9 @@ release:
   stage: release
   image: registry.gitlab.com/gitlab-org/release-cli:latest
   extends:
-    - .gitlab-runner-tags
+    - .bigbang-gitlab-runner-tags
   rules:
     # run job for manual tag events or test-ci::release MRs
-    - if: $PIPELINE_TYPE == "RELEASE"
     - if: '$CI_COMMIT_TAG || $CI_MERGE_REQUEST_LABELS =~ /(^|,)test-ci::release(,|$)/'
   variables:
     RELEASE_ENDPOINT: https://${RELEASE_BUCKET}.s3-${AWS_DEFAULT_REGION}.amazonaws.com/umbrella/${CI_COMMIT_TAG}
@@ -441,3 +394,5 @@ release:
           --assets-link "{\"name\":\"${IMAGE_PKG}\",\"url\":\"${RELEASE_ENDPOINT}/${IMAGE_PKG}\"}" \
           --assets-link "{\"name\":\"${REPOS_PKG}\",\"url\":\"${RELEASE_ENDPOINT}/${REPOS_PKG}\"}"
       fi
+
+#-----------------------------------------------------------------------------------------------------------------------
