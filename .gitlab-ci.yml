@@ -51,7 +51,7 @@ variables:
   REPOS_PKG: repositories.tar.gz
 
 #-----------------------------------------------------------------------------------------------------------------------
-# Pre Stage Jobs
+# Pre Stage Jobs.   This execute before any job is run.
 #
 
 pre vars:
@@ -163,7 +163,7 @@ upgrade:
     when: always
 
 #-----------------------------------------------------------------------------------------------------------------------
-# Infrastructure: Management Jobs
+# Rules for execution of AWS based K3S cluster deployment:  Infrastructure jobs
 #
 
 # Abstract for job manually triggering infrastructure builds
