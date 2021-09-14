@@ -43,8 +43,12 @@ variables:
   image: registry.dso.mil/platform-one/big-bang/pipeline-templates/pipeline-templates/k8s-ci:v1.20.4-bb.3
   extends: .bigbang-dogfood
   after_script:
+    - echo -e "\e[0Ksection_start:`date +%s`:kubectl_get_all[collapsed=true]\r\e[0Kkubectl get all -A"
     - kubectl get all -A
+    - echo -e "\e[0Ksection_end:`date +%s`:kubectl_get_all\r\e[0K"
+    - echo -e "\e[0Ksection_start:`date +%s`:kubectl_get_helmrelease[collapsed=true]\r\e[0Kkubectl get helmrelease -A"
     - kubectl get helmrelease -A
+    - echo -e "\e[0Ksection_end:`date +%s`:kubectl_get_helmrelease\r\e[0K"
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Pre Stage Jobs
@@ -111,7 +115,7 @@ clean install:
   script:
     - *deploy_bigbang
     - *test_bigbang
-    
+
     # Fetch list of all images ran (retry crictl up to 6x)
     - echo -e "\e[0Ksection_start:`date +%s`:images_used[collapsed=true]\r\e[0KImages Used"
     - cid=$(docker ps -aqf "name=k3d-${CI_JOB_ID}-server-0")
