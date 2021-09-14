@@ -83,7 +83,6 @@ pre vars:
     set -e
     for deploy_script in $(find ./tests/deploy -type f -name '*.sh' | sort); do
       chmod +x ${deploy_script}
-      echo "Executing ${deploy_script}..."
       echo -e "\e[0Ksection_start:`date +%s`:${deploy_script##*/}[collapsed=true]\r\e[0K${deploy_script##*/}"  
       ./${deploy_script}
       echo -e "\e[0Ksection_end:`date +%s`:${deploy_script##*/}\r\e[0K"
@@ -94,8 +93,9 @@ pre vars:
     set -e
     for test_script in $(find ./tests/tests -type f -name '*.sh' | sort); do
       chmod +x ${test_script}
-      echo "Executing ${test_script}..."
+      echo -e "\e[0Ksection_start:`date +%s`:${test_script##*/}[collapsed=true]\r\e[0K${test_script##*/}"        
       ./${test_script}
+      echo -e "\e[0Ksection_end:`date +%s`:${test_script##*/}\r\e[0K"
     done
 
 clean install:
