@@ -84,7 +84,9 @@ pre vars:
     for deploy_script in $(find ./tests/deploy -type f -name '*.sh' | sort); do
       chmod +x ${deploy_script}
       echo "Executing ${deploy_script}..."
+      echo -e "\e[0Ksection_start:`date +%s`:${deploy_script##*/}[collapsed=true]\r\e[0K${deploy_script##*/}"  
       ./${deploy_script}
+      echo -e "\e[0Ksection_end:`date +%s`:${deploy_script##*/}\r\e[0K"
     done
 
 .test_bigbang: &test_bigbang
