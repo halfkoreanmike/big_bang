@@ -111,11 +111,13 @@ clean install:
   script:
     - *deploy_bigbang
     - *test_bigbang
-
+    
     # Fetch list of all images ran (retry crictl up to 6x)
+    - echo -e "\e[0Ksection_start:`date +%s`:images_used[collapsed=true]\r\e[0KImages Used"
     - cid=$(docker ps -aqf "name=k3d-${CI_JOB_ID}-server-0")
     - images=$(timeout 65 bash -c "until docker exec $cid crictl images -o json; do sleep 10; done;")
     - echo $images | jq -r '.images[].repoTags[0] | select(. != null)' | tee images.txt
+    - echo -e "\e[0Ksection_end:`date +%s`:images_used\r\e[0K"
   artifacts:
     paths:
       - images.txt
@@ -373,6 +375,7 @@ package:
         --arg registry1_auth ${REGISTRY1_AUTH} \
         --arg il2_registry_auth ${IL2_REGISTRY_AUTH} > /root/.docker/config.json
   script:
+    - echo -e "\e[0Ksection_start:`date +%s`:synker[collapsed=true]\r\e[0KSynker"    
     - cp ./scripts/package/synker.yaml ./synker.yaml
     # Populate images list in synker config
     - |
@@ -389,9 +392,12 @@ package:
     - mv registry.tar /var/lib/registry/
     - tar -C /var/lib/registry -czvf $IMAGE_PKG .
     - tar -czvf $IMAGE_PKG /var/lib/registry
+    - echo -e "\e[0Ksection_end:`date +%s`:synker\r\e[0K"
     # Package dependent repos
+    - echo -e "\e[0Ksection_start:`date +%s`:package_repos[collapsed=true]\r\e[0KPackage Repos"
     - ./scripts/package/gits.sh
     - tar -czf $REPOS_PKG repos/
+    - echo -e "\e[0Ksection_end:`date +%s`:package_repos\r\e[0K"
     # Prep release
     - mkdir -p release
     - mv $IMAGE_LIST $IMAGE_PKG $REPOS_PKG release/
