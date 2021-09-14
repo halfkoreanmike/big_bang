@@ -13,15 +13,19 @@
 .network up:
   extends: .network
   script:
+    - echo -e "\e[0Ksection_start:`date +%s`:network_up[collapsed=true]\r\e[0KNetwork Up"  
     - *calc_unique_cidr
     - echo "Creating network with cidr range ${TF_VAR_vpc_cidr}"
     - terraform apply -auto-approve
+    - echo -e "\e[0Ksection_end:`date +%s`:network_up\r\e[0K"    
 
 .network down:
   extends:
     - .network
     - .terraform destroy workspace
   script:
+    - echo -e "\e[0Ksection_start:`date +%s`:network_down[collapsed=true]\r\e[0KNetwork Down"
     - *calc_unique_cidr
     - echo "Destroying network"
     - terraform destroy -auto-approve
+    - echo -e "\e[0Ksection_end:`date +%s`:network_down\r\e[0K"

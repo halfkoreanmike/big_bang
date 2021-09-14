@@ -6,10 +6,12 @@
 .rke2 up:
   extends: .rke2 tf
   script:
+    - echo -e "\e[0Ksection_start:`date +%s`:rke2_up[collapsed=true]\r\e[0KRKE2 Up"
     # Fetch dependencies
     - apk add bash aws-cli
     - terraform apply -input=false -auto-approve
     - mv rke2.yaml ${CI_PROJECT_DIR}/rke2.yaml
+    - echo -e "\e[0Ksection_end:`date +%s`:rke2_up\r\e[0K"
   artifacts:
     paths:
       - ${CI_PROJECT_DIR}/rke2.yaml
@@ -19,4 +21,6 @@
     - .rke2 tf
     - .terraform destroy workspace
   script:
+    - echo -e "\e[0Ksection_start:`date +%s`:rke2_down[collapsed=true]\r\e[0KRKE2 Down"
     - terraform destroy -input=false -auto-approve
+    - echo -e "\e[0Ksection_end:`date +%s`:rke2_down\r\e[0K"

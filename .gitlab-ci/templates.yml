@@ -19,12 +19,14 @@ include:
     TF_IN_AUTOMATION: "1"
     TF_VAR_ci_pipeline_url: $CI_PIPELINE_URL
   before_script:
+    - echo -e "\e[0Ksection_start:`date +%s`:terraform_init[collapsed=true]\r\e[0KTerraform Init"
     - echo "$TF_VAR_env"
     - cd ${CI_PROJECT_DIR}/${TF_ROOT}
     - terraform version
     - terraform init -input=false
     - terraform workspace select $TF_VAR_env || terraform workspace new $TF_VAR_env
     - terraform validate
+    - echo -e "\e[0Ksection_end:`date +%s`:terraform_init\r\e[0K"
 
 .terraform destroy workspace:
   after_script:
