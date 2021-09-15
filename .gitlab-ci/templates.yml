@@ -30,5 +30,7 @@ include:
 
 .terraform destroy workspace:
   after_script:
+    - echo -e "\e[0Ksection_start:`date +%s`:terraform_destroy_workspace[collapsed=true]\r\e[0KTerraform Destroy Workspace"
     - cd ${CI_PROJECT_DIR}/${TF_ROOT}
     - terraform workspace select default && terraform workspace delete "${TF_VAR_env}"
+    - echo -e "\e[0Ksection_end:`date +%s`:terraform_destroy_workspace\r\e[0K"

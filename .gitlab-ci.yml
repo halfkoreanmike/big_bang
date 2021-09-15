@@ -303,8 +303,10 @@ aws/rke2/bigbang test:
   script:
     ## Move this yum install to the dockerfile for the builder
     ## putting it here now for a quick way to install dig
+    - echo -e "\e[0Ksection_start:`date +%s`:host_setup[collapsed=true]\r\e[0KHost Setup"
     - yum install bind-utils -y
     - ./scripts/hosts.sh
+    - echo -e "\e[0Ksection_end:`date +%s`:host_setup\r\e[0K"
     - *test_bigbang
   environment:
     name: review/aws-${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA}
