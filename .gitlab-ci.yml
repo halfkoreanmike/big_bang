@@ -385,7 +385,7 @@ package:
         --arg registry1_auth ${REGISTRY1_AUTH} \
         --arg il2_registry_auth ${IL2_REGISTRY_AUTH} > /root/.docker/config.json
   script:
-    - echo -e "\e[0Ksection_start:`date +%s`:synker[collapsed=true]\r\e[0K\e[33;1mSynker\e[37m"
+    - echo -e "\e[0Ksection_start:`date +%s`:synker_pull[collapsed=true]\r\e[0K\e[33;1mSynker Pull\e[37m"
     - cp ./scripts/package/synker.yaml ./synker.yaml
     # Populate images list in synker config
     - |
@@ -393,18 +393,22 @@ package:
         yq -i e "(.source.images |= . + \"${image}\")" "./synker.yaml"
       done
     - synker pull -b=1
+    - echo -e "\e[0Ksection_end:`date +%s`:synker_pull\r\e[0K"
+    - echo -e "\e[0Ksection_start:`date +%s`:synker_image_list[collapsed=true]\r\e[0K\e[33;1mCreate Image List\e[37m"
     # Create image list from synker, overwrite since ./synker.yaml contains everything at this point
     - yq e '.source.images | .[] | ... comments=""' "./synker.yaml" > images.txt
+    - echo -e "\e[0Ksection_end:`date +%s`:synker_image_list\r\e[0K"
     # Tar up synker as well?
     - cp /usr/local/bin/synker synker.yaml /var/lib/registry/
     # Grab the registry image
     - crane pull registry:2 registry.tar
     - mv registry.tar /var/lib/registry/
-    - echo -e "\e[0Ksection_end:`date +%s`:synker\r\e[0K"
+    - echo -e "\e[0Ksection_start:`date +%s`:package_synker[collapsed=true]\r\e[0K\e[33;1mPackage Images\e[37m"
     - tar -C /var/lib/registry -czvf $IMAGE_PKG .
-    - echo -e "\e[0Ksection_start:`date +%s`:package_synker[collapsed=true]\r\e[0K\e[33;1mPackage Synker Artifact\e[37m"
-    - tar -czvf $IMAGE_PKG /var/lib/registry
     - echo -e "\e[0Ksection_end:`date +%s`:package_synker\r\e[0K"
+    - echo -e "\e[0Ksection_start:`date +%s`:unpack_images[collapsed=true]\r\e[0K\e[33;1mUnpack Images\e[37m"
+    - tar -czvf $IMAGE_PKG /var/lib/registry
+    - echo -e "\e[0Ksection_end:`date +%s`:unpack_images\r\e[0K"
     # Package dependent repos
     - echo -e "\e[0Ksection_start:`date +%s`:package_repos[collapsed=true]\r\e[0K\e[33;1mPackage Repos\e[37m"
     - ./scripts/package/gits.sh
