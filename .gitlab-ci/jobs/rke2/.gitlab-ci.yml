@@ -21,6 +21,6 @@
     - .rke2 tf
     - .terraform destroy workspace
   script:
-    - echo -e "\e[0Ksection_start:`date +%s`:rke2_down[collapsed=true]\r\e[0K\e[33;1mRKE2 Down"\e[37m
+    - echo -e "\e[0Ksection_start:`date +%s`:rke2_down[collapsed=true]\r\e[0K\e[33;1mRKE2 Down\e[37m"
     - terraform destroy -input=false -auto-approve
     - echo -e "\e[0Ksection_end:`date +%s`:rke2_down\r\e[0K"

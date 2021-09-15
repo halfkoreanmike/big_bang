@@ -36,7 +36,7 @@
     - kubectl get all -A
     - echo -e "\e[0Ksection_end:`date +%s`:k3d_up\r\e[0K"    
   after_script:
-    - echo -e "\e[0Ksection_start:`date +%s`:k3d_down[collapsed=true]\r\e[0KK3d Cluster Delete\e[37m"  
+    - echo -e "\e[0Ksection_start:`date +%s`:k3d_down[collapsed=true]\r\e[0K\e[33;1mK3d Cluster Delete\e[37m"  
     - kubectl get all -A
     - kubectl get gitrepository,helmrelease,kustomizations -A
     - k3d cluster delete ${CI_JOB_ID}
