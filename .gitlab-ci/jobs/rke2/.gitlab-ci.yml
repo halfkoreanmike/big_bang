@@ -6,7 +6,7 @@
 .rke2 up:
   extends: .rke2 tf
   script:
-    - echo -e "\e[0Ksection_start:`date +%s`:rke2_up[collapsed=true]\r\e[0KRKE2 Up"
+    - echo -e "\e[0Ksection_start:`date +%s`:rke2_up[collapsed=true]\r\e[0K\e[33;1mRKE2 Up\e[37m"
     # Fetch dependencies
     - apk add bash aws-cli
     - terraform apply -input=false -auto-approve
@@ -21,6 +21,6 @@
     - .rke2 tf
     - .terraform destroy workspace
   script:
-    - echo -e "\e[0Ksection_start:`date +%s`:rke2_down[collapsed=true]\r\e[0KRKE2 Down"
+    - echo -e "\e[0Ksection_start:`date +%s`:rke2_down[collapsed=true]\r\e[0K\e[33;1mRKE2 Down"\e[37m
     - terraform destroy -input=false -auto-approve
     - echo -e "\e[0Ksection_end:`date +%s`:rke2_down\r\e[0K"

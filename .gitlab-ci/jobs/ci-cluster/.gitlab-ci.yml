@@ -27,7 +27,7 @@
     DOCKER_CERT_PATH: "$DOCKER_TLS_CERTDIR/client"
     DOCKER_DRIVER: overlay2
   before_script:
-    - echo -e "\e[0Ksection_start:`date +%s`:k3d_up[collapsed=true]\r\e[0K\e[33;1mK3d Cluster Create"  
+    - echo -e "\e[0Ksection_start:`date +%s`:k3d_up[collapsed=true]\r\e[0K\e[33;1mK3d Cluster Create\e[37m"  
     # Give docker-in-docker time to come alive
     - i=0; while [ "$i" -lt 12 ]; do docker info &>/dev/null && break; sleep 5; i=$(( i + 1 )) ; done
     - docker network create ${CI_JOB_ID} --driver=bridge -o "com.docker.network.driver.mtu"="1450"
@@ -36,7 +36,7 @@
     - kubectl get all -A
     - echo -e "\e[0Ksection_end:`date +%s`:k3d_up\r\e[0K"    
   after_script:
-    - echo -e "\e[0Ksection_start:`date +%s`:k3d_down[collapsed=true]\r\e[0KK3d Cluster Delete"  
+    - echo -e "\e[0Ksection_start:`date +%s`:k3d_down[collapsed=true]\r\e[0KK3d Cluster Delete\e[37m"  
     - kubectl get all -A
     - kubectl get gitrepository,helmrelease,kustomizations -A
     - k3d cluster delete ${CI_JOB_ID}
