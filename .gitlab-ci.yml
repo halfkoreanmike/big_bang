@@ -150,7 +150,7 @@ upgrade:
     CLUSTER_NAME: "upgrade-${CI_COMMIT_SHORT_SHA}"
   script:
     - echo "Install Big Bang from ${CI_DEFAULT_BRANCH}"
-    - echo -e "\e[0Ksection_start:`date +%s`:git_master[collapsed=true]\r\e[0K\e[33;1mGit Master\e[37m"  
+    - echo -e "\e[0Ksection_start:`date +%s`:git_master[collapsed=true]\r\e[0K\e[33;1mGit Fetch Master\e[37m"  
     - git fetch && git checkout ${CI_DEFAULT_BRANCH}
     - echo -e "\e[0Ksection_end:`date +%s`:git_master\r\e[0K"
     - *deploy_bigbang
@@ -394,10 +394,8 @@ package:
       done
     - synker pull -b=1
     - echo -e "\e[0Ksection_end:`date +%s`:synker_pull\r\e[0K"
-    - echo -e "\e[0Ksection_start:`date +%s`:synker_image_list[collapsed=true]\r\e[0K\e[33;1mCreate Image List\e[37m"
     # Create image list from synker, overwrite since ./synker.yaml contains everything at this point
     - yq e '.source.images | .[] | ... comments=""' "./synker.yaml" > images.txt
-    - echo -e "\e[0Ksection_end:`date +%s`:synker_image_list\r\e[0K"
     # Tar up synker as well?
     - cp /usr/local/bin/synker synker.yaml /var/lib/registry/
     # Grab the registry image
