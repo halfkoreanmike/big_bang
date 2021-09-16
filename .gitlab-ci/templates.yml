@@ -19,7 +19,7 @@ include:
     TF_IN_AUTOMATION: "1"
     TF_VAR_ci_pipeline_url: $CI_PIPELINE_URL
   before_script:
-    - echo -e "\e[0Ksection_start:`date +%s`:terraform_init[collapsed=true]\r\e[0KTerraform Init"
+    - echo -e "\e[0Ksection_start:`date +%s`:terraform_init[collapsed=true]\r\e[0K\e[33;1mTerraform Init\e[37m"
     - echo "$TF_VAR_env"
     - cd ${CI_PROJECT_DIR}/${TF_ROOT}
     - terraform version
@@ -30,7 +30,7 @@ include:
 
 .terraform destroy workspace:
   after_script:
-    - echo -e "\e[0Ksection_start:`date +%s`:terraform_destroy_workspace[collapsed=true]\r\e[0KTerraform Destroy Workspace"
+    - echo -e "\e[0Ksection_start:`date +%s`:terraform_destroy_workspace[collapsed=true]\r\e[0K\e[33;1mTerraform Destroy Workspace\e[37m"
     - cd ${CI_PROJECT_DIR}/${TF_ROOT}
     - terraform workspace select default && terraform workspace delete "${TF_VAR_env}"
     - echo -e "\e[0Ksection_end:`date +%s`:terraform_destroy_workspace\r\e[0K"
