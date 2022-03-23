@@ -3,6 +3,6 @@ include:
     ref: master
     file: '/pipelines/bigbang.yaml'
 
-variables:
+# variables:
   # PIPELINE_REPO_BRANCH: rke2-test-values
   # DEBUG_ENABLED: "true"
