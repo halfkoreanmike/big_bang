@@ -4,5 +4,5 @@ include:
     file: '/pipelines/bigbang.yaml'
 
 variables:
-  PIPELINE_REPO_BRANCH: rke2-test-values
+  PIPELINE_REPO_BRANCH: master
   DEBUG_ENABLED: "true"
