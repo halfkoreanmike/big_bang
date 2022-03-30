@@ -1,6 +1,6 @@
 include:
   - project: 'platform-one/big-bang/pipeline-templates/pipeline-templates'
-    ref: rke2-test-values
+    ref: master
     file: '/pipelines/bigbang.yaml'
 
 variables:
