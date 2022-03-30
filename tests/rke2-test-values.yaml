@@ -127,16 +127,16 @@ gatekeeper:
     replicas: 1
     controllerManager:
       resources:
+        limits: {}
         requests:
           cpu: 175m
           memory: 512Mi
-        limits: {}
     audit:
       resources:
+        limits: {}
         requests:
           cpu: 1.2
           memory: 768Mi
-        limits: {}
 
     violations:
       allowedCapabilities:
