@@ -51,7 +51,7 @@ flux:
 
 networkPolicies:
   enabled: true
-  controlPlaneCidr: 172.16.0.0/12
+  controlPlaneCidr: 10.0.0.0/8
 
 istio:
   enabled: true
@@ -125,12 +125,18 @@ gatekeeper:
   enabled: true
   values:
     replicas: 1
-    resources:
-      requests:
-        cpu: 175m
-        memory: 512Mi
-      limits: {}
-
+    controllerManager:
+      resources:
+        limits: {}
+        requests:
+          cpu: 175m
+          memory: 512Mi
+    audit:
+      resources:
+        limits: {}
+        requests:
+          cpu: 1.2
+          memory: 768Mi
     violations:
       allowedCapabilities:
         parameters:
