@@ -388,6 +388,9 @@ addons:
     values:
       tenants:
         pools:
+        - servers: 2
+          volumesPerServer: 4
+          size: 256Mi
           resources:
             requests:
               cpu: 250m
@@ -395,6 +398,11 @@ addons:
             limits:
               cpu: 250m
               memory: 2Gi
+          securityContext:
+            runAsUser: 1001
+            runAsGroup: 1001
+            fsGroup: 1001
+            runAsNonRoot: true
 
   mattermost:
     values:
@@ -409,6 +417,8 @@ addons:
       minio:
         tenants:
           pools:
+          - servers: 1
+            volumesPerServer: 4
             size: 256Mi
             resources:
               requests:
@@ -417,6 +427,10 @@ addons:
               limits:
                 cpu: 250m
                 memory: 2Gi
+            securityContext:
+              runAsUser: 1001
+              runAsGroup: 1001
+              fsGroup: 1001
             
   nexus:
     # Nexus requires manual configuration in Keycloak client and cannot be tested with login.dso.mil
