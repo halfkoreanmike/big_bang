@@ -122,6 +122,7 @@ clusterAuditor:
           cypress_url: 'https://grafana.bigbang.dev/d/YBgRZG6Mz/opa-violations?orgId=1'
 
 gatekeeper:
+  enabled: true
   values:
     replicas: 1
     controllerManager:
