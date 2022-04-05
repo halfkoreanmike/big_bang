@@ -188,9 +188,7 @@ addons:
             requests:
               cpu: 400m
               memory: 600Mi
-            limits:
-              cpu: 400m
-              memory: 600Mi
+            limits: {}
         shared-secrets:
           resources:
             requests:
@@ -395,9 +393,7 @@ addons:
             requests:
               cpu: 250m
               memory: 2Gi
-            limits:
-              cpu: 250m
-              memory: 2Gi
+            limits: {}
           securityContext:
             runAsUser: 1001
             runAsGroup: 1001
@@ -424,9 +420,7 @@ addons:
               requests:
                 cpu: 250m
                 memory: 2Gi
-              limits:
-                cpu: 250m
-                memory: 2Gi
+              limits: {}
             securityContext:
               runAsUser: 1001
               runAsGroup: 1001
@@ -449,6 +443,7 @@ addons:
           requests:
             cpu: 4
             memory: 8000Mi
+          limits: {}
   
   keycloak:
     values:
