@@ -166,6 +166,8 @@ addons:
             size: 256Mi
 
   gitlab:
+    flux:
+      timeout: 30m
     values:
       gitlab-runner:
         resources:
