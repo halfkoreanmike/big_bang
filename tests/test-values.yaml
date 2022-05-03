@@ -1278,6 +1278,12 @@ addons:
 
   vault:
     enabled: false
+    autoInit:
+      enabled: true
+    ingress:
+      gateway: "passthrough"
+      key: "" # Gets added via chart/ingress-certs.yaml
+      cert: "" # Gets added via chart/ingress-certs.yaml
     sso:
       enabled: false
       client_id: dev_00eb8904-5b88-4c68-ad67-cec0d2e07aa6_vault
@@ -1288,6 +1294,31 @@ addons:
           size: 256Mi
         auditStorage:
           size: 256Mi
+        standalone:
+          enabled: true
+          config: |
+            ui = true
+
+            listener "tcp" {
+              tls_disable = 0
+              address = "[::]:8200"
+              cluster_address = "[::]:8201"
+              tls_cert_file = "/vault/tls/tls.crt"
+              tls_key_file  = "/vault/tls/tls.key"
+            }
+
+            telemetry {
+              prometheus_retention_time = "24h"
+              disable_hostname = true
+              unauthenticated_metrics_access = true
+            }
+
+            {{- if .Values.server.dataStorage.enabled }}
+            storage "raft" {
+              path = "/vault/data"
+            }
+            {{- end }}
+
       injector:
         affinity: |
           podAntiAffinity:
