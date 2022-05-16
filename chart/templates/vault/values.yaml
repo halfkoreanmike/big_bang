@@ -3,10 +3,7 @@
 {{- end }}
 
 {{- define "bigbang.defaults.vault" -}}
-# hostname is deprecated and replaced with domain. But if hostname exists then use it.
-{{- $domainName := default .Values.domain .Values.hostname }}
-hostname: {{ $domainName }}
-domain: {{ $domainName }}
+domain: {{ .Values.domain }}
 
 openshift: {{ .Values.openshift }}
 
@@ -66,6 +63,9 @@ networkPolicies:
 istio:
   enabled: {{ .Values.istio.enabled }}
   vault:
+    {{- if eq .Values.addons.vault.ingress.gateway "passthrough" }}
+    passthrough: true
+    {{- end }}
     gateways:
       - istio-system/{{ default "public" .Values.addons.vault.ingress.gateway }}
     {{- if and .Values.addons.vault.ingress.cert .Values.addons.vault.ingress.key }}
