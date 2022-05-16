@@ -1278,8 +1278,6 @@ addons:
 
   vault:
     enabled: false
-    autoInit:
-      enabled: true
     ingress:
       gateway: "passthrough"
       key: "" # Gets added via chart/ingress-certs.yaml
@@ -1288,36 +1286,62 @@ addons:
       enabled: false
       client_id: dev_00eb8904-5b88-4c68-ad67-cec0d2e07aa6_vault
     values:
+      autoInit:
+        enabled: true
+      global:
+        tlsDisable: false
       server:
+        extraEnvironmentVars:
+          VAULT_API_ADDR: https://vault.bigbang.dev  #istio GW
+          VAULT_ADDR:  https://127.0.0.1:8200
+          VAULT_SKIP_VERIFY: "true"
+          VAULT_LOG_FORMAT: "json"
         dataStorage:
           enabled: true
           size: 256Mi
         auditStorage:
           size: 256Mi
-        standalone:
+        ha:
           enabled: true
-          config: |
-            ui = true
+          replicas: 1
 
-            listener "tcp" {
-              tls_disable = 0
-              address = "[::]:8200"
-              cluster_address = "[::]:8201"
-              tls_cert_file = "/vault/tls/tls.crt"
-              tls_key_file  = "/vault/tls/tls.key"
-            }
+          raft:
+            enabled: true
+            config: |
+              ui = true
 
-            telemetry {
-              prometheus_retention_time = "24h"
-              disable_hostname = true
-              unauthenticated_metrics_access = true
-            }
+              listener "tcp" {
+                tls_disable = 0
+                address = "[::]:8200"
+                cluster_address = "[::]:8201"
+                tls_cert_file = "/vault/tls/tls.crt"
+                tls_key_file  = "/vault/tls/tls.key"
+              }
 
-            {{- if .Values.server.dataStorage.enabled }}
-            storage "raft" {
-              path = "/vault/data"
-            }
-            {{- end }}
+              storage "raft" {
+                path = "/vault/data"
+
+                retry_join {
+                  leader_api_addr = "https://vault-vault-0.vault-vault-internal:8200"
+                  leader_client_cert_file = "/vault/tls/tls.crt"
+                  leader_client_key_file = "/vault/tls/tls.key"
+                  leader_tls_servername = "vault.bigbang.dev"
+                }
+              }
+
+              seal "awskms" {
+                region     = "us-gov-west-1"
+                kms_key_id = "17c01cdf-2bf9-4f58-9a54-c1c4e4b145be"
+                endpoint   = "https://kms.us-gov-west-1.amazonaws.com"
+              }
+
+              telemetry {
+                prometheus_retention_time = "24h"
+                disable_hostname = true
+                unauthenticated_metrics_access = true
+              }
+
+              service_registration "kubernetes" {}
 
       injector:
         affinity: |
@@ -1331,6 +1355,7 @@ addons:
                       app.kubernetes.io/instance: "{{ .Release.Name }}"
                       component: webhook
                   topologyKey: kubernetes.io/hostname
+
       bbtests:
         enabled: true
         cypress:
