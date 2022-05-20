@@ -1290,6 +1290,11 @@ addons:
         enabled: true
       global:
         tlsDisable: false
+      injector:
+        extraEnvironmentVars:
+          VAULT_API_ADDR: https://vault.bigbang.dev
+        certs:
+          secretName: vault-tls
       server:
         extraEnvironmentVars:
           VAULT_API_ADDR: https://vault.bigbang.dev  #istio GW
