@@ -1295,6 +1295,17 @@ addons:
           VAULT_API_ADDR: https://vault.bigbang.dev
         certs:
           secretName: vault-tls
+        affinity: |
+          podAntiAffinity:
+            preferredDuringSchedulingIgnoredDuringExecution:
+              - weight: 100
+                podAffinityTerm:
+                  labelSelector:
+                    matchLabels:
+                      app.kubernetes.io/name: {{ template "vault.name" . }}-agent-injector
+                      app.kubernetes.io/instance: "{{ .Release.Name }}"
+                      component: webhook
+                  topologyKey: kubernetes.io/hostname
       server:
         extraEnvironmentVars:
           VAULT_API_ADDR: https://vault.bigbang.dev  #istio GW
@@ -1347,19 +1358,6 @@ addons:
               }
 
               service_registration "kubernetes" {}
-
-      injector:
-        affinity: |
-          podAntiAffinity:
-            preferredDuringSchedulingIgnoredDuringExecution:
-              - weight: 100
-                podAffinityTerm:
-                  labelSelector:
-                    matchLabels:
-                      app.kubernetes.io/name: {{ template "vault.name" . }}-agent-injector
-                      app.kubernetes.io/instance: "{{ .Release.Name }}"
-                      component: webhook
-                  topologyKey: kubernetes.io/hostname
 
       bbtests:
         enabled: true
