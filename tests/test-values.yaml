@@ -1291,9 +1291,6 @@ addons:
       enabled: false
       client_id: dev_00eb8904-5b88-4c68-ad67-cec0d2e07aa6_vault
     values:
-      # temporarily disable np for testing
-      networkPolicies:
-        enabled: false
       autoInit:
         enabled: true
       global:
