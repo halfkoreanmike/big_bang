@@ -63,7 +63,6 @@ addons:
         extraEnvironmentVars:
           # the istio gateway domain
           VAULT_API_ADDR: https://vault.bigbang.dev
-          VAULT_ADDR:  https://127.0.0.1:8200
           VAULT_SKIP_VERIFY: "true"
           VAULT_LOG_FORMAT: "json"
           VAULT_LICENSE: "your-license-key-goes-here"
