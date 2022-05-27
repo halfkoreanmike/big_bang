@@ -3,7 +3,9 @@
 {{- end }}
 
 {{- define "bigbang.defaults.vault" -}}
-domain: {{ .Values.domain }}
+# hostname is deprecated and replaced with domain. But if hostname exists then use it.
+{{- $domainName := default .Values.domain .Values.hostname }}
+domain: {{ $domainName }}
 
 openshift: {{ .Values.openshift }}
 
