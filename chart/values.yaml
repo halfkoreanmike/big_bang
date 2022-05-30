@@ -1357,7 +1357,8 @@ addons:
       cert: ""
 
     # -- Values to passthrough to the vault chart: https://repo1.dso.mil/platform-one/big-bang/apps/sandbox/vault.git
-    values: {}
+    values:
+      foo: bar
 
     # -- Post Renderers.  See docs/postrenders.md
     postRenderers: []
