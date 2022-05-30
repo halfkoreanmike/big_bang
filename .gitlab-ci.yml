@@ -1,5 +1,7 @@
 include:
   - project: 'platform-one/big-bang/pipeline-templates/pipeline-templates'
-    ref: master
+    ref: vault-coredns
     file: '/pipelines/bigbang.yaml'
-
+variables:
+  PIPELINE_REPO_BRANCH: vault-coredns
+  DEBUG_ENABLED: "true"
