@@ -789,7 +789,8 @@ addons:
     git:
       repo: https://repo1.dso.mil/platform-one/big-bang/apps/developer-tools/gitlab.git
       path: "./chart"
-      tag: "5.10.1-bb.0"
+      # tag: "5.10.1-bb.1"
+      branch: "fix-postgres-mounts"
 
     # -- Flux reconciliation overrides specifically for the Gitlab Package
     flux: {}
@@ -1357,8 +1358,7 @@ addons:
       cert: ""
 
     # -- Values to passthrough to the vault chart: https://repo1.dso.mil/platform-one/big-bang/apps/sandbox/vault.git
-    values:
-      foo: bar
+    values: {}
 
     # -- Post Renderers.  See docs/postrenders.md
     postRenderers: []
