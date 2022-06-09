@@ -1,0 +1,11 @@
+{{- if .Values.addons.metricsServer.enabled }}
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    app.kubernetes.io/name: metrics-server
+    app.kubernetes.io/component: ""
+    {{- include "commonLabels" . | nindent 4}}
+    istio-injection: {{ ternary "enabled" "disabled" (and .Values.istio.enabled (eq (dig "istio" "injection" "enabled" .Values.addons.metricsServer) "enabled")) }}
+  name: metrics
+{{- end }}
