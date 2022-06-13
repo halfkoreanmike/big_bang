@@ -1367,7 +1367,7 @@ addons:
   #
   metricsServer:
     # -- Toggle deployment of metrics server.
-    enabled: false
+    enabled: true
     git:
       repo: https://repo1.dso.mil/platform-one/big-bang/apps/sandbox/metrics-server.git
       path: "./chart"
