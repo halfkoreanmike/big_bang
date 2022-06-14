@@ -6,6 +6,6 @@ metadata:
     app.kubernetes.io/name: metrics-server
     app.kubernetes.io/component: ""
     {{- include "commonLabels" . | nindent 4}}
-    istio-injection: {{ ternary "enabled" "disabled" (and .Values.istio.enabled (eq (dig "istio" "injection" "enabled" .Values.addons.metricsServer) "enabled")) }}
+    istio-injection: {{ dig "istio" "injection" "enabled" .Values.addons.metricsServer }}
   name: metrics
 {{- end }}

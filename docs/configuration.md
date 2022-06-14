@@ -1,5 +1,5 @@
 # Big Bang Configuration
- 
+
 [[_TOC_]]
 
 ## Overview
