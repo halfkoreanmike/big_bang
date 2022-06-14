@@ -1,5 +1,6 @@
 include:
   - project: 'platform-one/big-bang/pipeline-templates/pipeline-templates'
-    ref: master
+    ref: master-to-main
     file: '/pipelines/bigbang.yaml'
-
+variables:
+  PIPELINE_REPO_BRANCH: master-to-main
