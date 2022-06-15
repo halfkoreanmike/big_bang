@@ -1376,10 +1376,6 @@ addons:
     # -- Flux reconciliation overrides specifically for the metrics server Package
     flux: {}
 
-    # Redirect the package ingress to a specific Istio Gateway (listed in `istio.gateways`).  The default is "public".
-    ingress:
-      gateway: ""
-
     # -- Values to passthrough to the metrics server chart: https://repo1.dso.mil/platform-one/big-bang/apps/sandbox/metrics-server.git
     values: {}
 
