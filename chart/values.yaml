@@ -353,7 +353,9 @@ gatekeeper:
   git:
     repo: https://repo1.dso.mil/platform-one/big-bang/apps/core/policy.git
     path: "./chart"
-    tag: "3.8.1-bb.0"
+    tag: null
+    #tag: "3.8.1-bb.0"
+    branch: "153-disable-psps-on-gatekeeper"
 
   # -- Flux reconciliation overrides specifically for the OPA Gatekeeper Package
   flux:
