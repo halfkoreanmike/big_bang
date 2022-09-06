@@ -1,6 +1,6 @@
 include:
   - project: 'platform-one/big-bang/pipeline-templates/pipeline-templates'
-    ref: '920-istio-version-check'
+    ref: 'istio-version'
     file: '/pipelines/bigbang.yaml'
 variables:
-  PIPELINE_REPO_BRANCH: '920-istio-version-check' 
+  PIPELINE_REPO_BRANCH: 'istio-version'
