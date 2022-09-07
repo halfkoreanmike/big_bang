@@ -397,13 +397,25 @@ addons:
           resources:
             requests:
               cpu: 250m
-              memory: 512Mi
+              memory: 1Gi
             limits: null
           securityContext:
             runAsUser: 1001
             runAsGroup: 1001
             fsGroup: 1001
             runAsNonRoot: true
+      bbtests:
+        # There have been intermittent failures of the tests in the past.   The issue is tracked in the below issue.
+        # https://repo1.dso.mil/platform-one/big-bang/apps/application-utilities/minio/-/issues/7
+        # This issue can be reopened if problems reappear.
+        enabled: true
+        cypress:
+          envs:
+            cypress_url: 'https://minio.bigbang.dev/login'
+        scripts:
+          envs:
+            MINIO_PORT: ''
+            MINIO_HOST: 'https://minio-api.bigbang.dev'
 
   mattermost:
     values:
