@@ -405,6 +405,7 @@ addons:
             fsGroup: 1001
             runAsNonRoot: true
 
+
   mattermost:
     values:
       postgresql:
