@@ -128,7 +128,7 @@ istio:
   git:
     repo: https://repo1.dso.mil/platform-one/big-bang/apps/core/istio-controlplane.git
     path: "./chart"
-    tag: "1.15.0-bb.1"
+    tag: "1.15.3-bb.0"
 
   # -- Tetrate Istio Distribution - Tetrate provides FIPs verified Istio and Envoy software and support,
   # validated through the FIPs Boring Crypto module. Find out more from Tetrate - https://www.tetrate.io/tetrate-istio-subscription
@@ -244,7 +244,7 @@ istiooperator:
   git:
     repo: https://repo1.dso.mil/platform-one/big-bang/apps/core/istio-operator.git
     path: "./chart"
-    tag: "1.15.0-bb.1"
+    tag: "1.15.3-bb.0"
 
   # -- Flux reconciliation overrides specifically for the Istio Operator Package
   flux: {}
@@ -261,7 +261,7 @@ jaeger:
   git:
     repo: https://repo1.dso.mil/platform-one/big-bang/apps/core/jaeger.git
     path: "./chart"
-    tag: "2.36.0-bb.1"
+    tag: "2.37.0-bb.0"
 
   # -- Flux reconciliation overrides specifically for the Jaeger Package
   flux:
@@ -378,7 +378,7 @@ kyverno:
   git:
     repo: https://repo1.dso.mil/platform-one/big-bang/apps/sandbox/kyverno.git
     path: "./chart"
-    tag: "2.6.0-bb.0"
+    tag: "2.6.0-bb.2"
 
   # -- Flux reconciliation overrides specifically for the Kyverno Package
   flux: {}
@@ -396,7 +396,7 @@ kyvernopolicies:
   git:
     repo: https://repo1.dso.mil/platform-one/big-bang/apps/sandbox/kyverno-policies.git
     path: ./chart
-    tag: "1.0.1-bb.6"
+    tag: "1.0.1-bb.7"
 
   # -- Flux reconciliation overrides specifically for the Kyverno Package
   flux: {}
@@ -435,7 +435,7 @@ logging:
   git:
     repo: https://repo1.dso.mil/platform-one/big-bang/apps/core/elasticsearch-kibana.git
     path: "./chart"
-    tag: "0.12.1-bb.0"
+    tag: "0.12.1-bb.1"
 
   # -- Flux reconciliation overrides specifically for the Logging (EFK) Package
   flux:
@@ -489,7 +489,7 @@ fluentbit:
   git:
     repo: https://repo1.dso.mil/platform-one/big-bang/apps/core/fluentbit.git
     path: "./chart"
-    tag: "0.20.9-bb.0"
+    tag: "0.20.10-bb.0"
 
   # -- Flux reconciliation overrides specifically for the Fluent-Bit Package
   flux: {}
@@ -526,7 +526,7 @@ loki:
   git:
     repo: https://repo1.dso.mil/platform-one/big-bang/apps/sandbox/loki.git
     path: "./chart"
-    tag: "3.2.1-bb.1"
+    tag: "3.2.1-bb.3"
 
   # -- Flux reconciliation overrides specifically for the Loki Package
   flux: {}
@@ -631,7 +631,7 @@ monitoring:
   git:
     repo: https://repo1.dso.mil/platform-one/big-bang/apps/core/monitoring.git
     path: "./chart"
-    tag: "41.5.0-bb.1"
+    tag: "41.7.3-bb.0"
 
   # -- Flux reconciliation overrides specifically for the Monitoring Package
   flux:
@@ -745,7 +745,7 @@ addons:
     git:
       repo: https://repo1.dso.mil/platform-one/big-bang/apps/core/argocd.git
       path: "./chart"
-      tag: "5.5.7-bb.2"
+      tag: "5.5.7-bb.5"
 
     # -- Flux reconciliation overrides specifically for the ArgoCD Package
     flux: {}
@@ -837,7 +837,7 @@ addons:
     git:
       repo: https://repo1.dso.mil/platform-one/big-bang/apps/application-utilities/minio.git
       path: "./chart"
-      tag: "4.5.3-bb.1"
+      tag: "4.5.4-bb.0"
 
     # -- Flux reconciliation overrides specifically for the Minio Package
     flux: {}
@@ -870,7 +870,7 @@ addons:
     git:
       repo: https://repo1.dso.mil/platform-one/big-bang/apps/developer-tools/gitlab.git
       path: "./chart"
-      tag: "6.4.1-bb.2"
+      tag: "6.5.2-bb.0"
 
     # -- Flux reconciliation overrides specifically for the Gitlab Package
     flux: {}
@@ -1059,7 +1059,7 @@ addons:
     git:
       repo: https://repo1.dso.mil/platform-one/big-bang/apps/developer-tools/sonarqube.git
       path: "./chart"
-      tag: "1.0.29-bb.5"
+      tag: "1.0.31-bb.1"
 
     # -- Flux reconciliation overrides specifically for the Sonarqube Package
     flux: {}
@@ -1145,7 +1145,7 @@ addons:
     git:
       repo: https://repo1.dso.mil/platform-one/big-bang/apps/security-tools/anchore-enterprise.git
       path: "./chart"
-      tag: "1.19.7-bb.2"
+      tag: "1.19.7-bb.3"
 
     # -- Flux reconciliation overrides specifically for the Anchore Package
     flux:
@@ -1347,7 +1347,7 @@ addons:
     git:
       repo: https://repo1.dso.mil/platform-one/big-bang/apps/cluster-utilities/velero.git
       path: "./chart"
-      tag: "2.31.8-bb.2"
+      tag: "2.31.8-bb.3"
 
     # -- Flux reconciliation overrides specifically for the Velero Package
     flux: {}
@@ -1424,7 +1424,7 @@ addons:
     git:
       repo: https://repo1.dso.mil/platform-one/big-bang/apps/sandbox/vault.git
       path: "./chart"
-      tag: "0.22.0-bb.3"
+      tag: "0.22.0-bb.4"
 
     # -- Flux reconciliation overrides specifically for the Vault Package
     flux: {}
@@ -1454,7 +1454,7 @@ addons:
     git:
       repo: https://repo1.dso.mil/platform-one/big-bang/apps/sandbox/metrics-server.git
       path: "./chart"
-      tag: "3.8.0-bb.4"
+      tag: "3.8.0-bb.5"
 
     # -- Flux reconciliation overrides specifically for the metrics server Package
     flux: {}
