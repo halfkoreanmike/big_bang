@@ -6,4 +6,3 @@ variables:
   PIPELINE_REPO_BRANCH: 69-airgap-iac
   DEBUG_ENABLED: "true"
 
-empty commit
