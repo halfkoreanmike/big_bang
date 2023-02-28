@@ -1,5 +1,3 @@
-foo: bar
-
 # -- Domain used for BigBang created exposed services, can be overridden by individual packages.
 domain: bigbang.dev
 
@@ -602,7 +600,9 @@ neuvector:
   flux: {}
 
   # -- Values to passthrough to the Neuvector chart: https://repo1.dso.mil/platform-one/big-bang/apps/sandbox/neuvector.git
-  values: {}
+  values:
+    networkPolicies:
+      enabled: false
 
   # -- Post Renderers.  See docs/postrenders.md
   postRenderers: []
