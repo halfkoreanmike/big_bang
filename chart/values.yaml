@@ -620,11 +620,11 @@ loki:
   git:
     repo: https://repo1.dso.mil/big-bang/product/packages/loki.git
     path: "./chart"
-    tag: "4.8.0-bb.0"
+    tag: "4.8.0-bb.1"
   # -- Remove git section above if deploying with OCI HelmRepository instead of GitRepository
   oci:
     name: "loki"
-    tag: "4.8.0-bb.0"
+    tag: "4.8.0-bb.1"
     repo: "registry1"
 
   # -- Flux reconciliation overrides specifically for the Loki Package
