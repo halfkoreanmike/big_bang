@@ -1038,7 +1038,8 @@ addons:
     git:
       repo: https://repo1.dso.mil/big-bang/product/packages/minio-operator.git
       path: "./chart"
-      tag: "5.0.3-bb.0"
+      #tag: "5.0.3-bb.0"
+      branch: "update-security-context-run-as-1001"
     helmRepo:
       repoName: "registry1"
       chartName: "minio-operator"
@@ -1063,7 +1064,8 @@ addons:
     git:
       repo: https://repo1.dso.mil/big-bang/product/packages/minio.git
       path: "./chart"
-      tag: "5.0.3-bb.0"
+      #tag: "5.0.3-bb.0"
+      branch: "bugfix-update-security-context-run-as-1001"
     helmRepo:
       repoName: "registry1"
       chartName: "minio-instance"
