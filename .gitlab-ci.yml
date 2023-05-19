@@ -1,0 +1,7 @@
+include:
+  - project: 'big-bang/pipeline-templates/pipeline-templates'
+    ref: 'build-zarf-package'
+    file: '/pipelines/bigbang.yaml'
+variables:
+  PIPELINE_REPO_BRANCH: 'airgap-automation-testing'
+  MULTI_NODE: "true"
