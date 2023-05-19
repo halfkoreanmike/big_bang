@@ -3,5 +3,5 @@ include:
     ref: 'build-zarf-package'
     file: '/pipelines/bigbang.yaml'
 variables:
-  PIPELINE_REPO_BRANCH: 'airgap-automation-testing'
+  PIPELINE_REPO_BRANCH: 'build-zarf-package'
   MULTI_NODE: "true"
