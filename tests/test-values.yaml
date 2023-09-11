@@ -49,7 +49,7 @@ flux:
 
 networkPolicies:
   enabled: true
-#  controlPlaneCidr: 172.21.0.0/16
+  controlPlaneCidr: 172.21.0.0/32
 
 istio:
   enabled: true
