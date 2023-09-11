@@ -1331,7 +1331,7 @@ addons:
   mattermost:
     enabled: false
     sso:
-      enabled: false
+      enabled: true
       client_id: dev_00eb8904-5b88-4c68-ad67-cec0d2e07aa6_mattermost
       client_secret: "no-secret"
     elasticsearch:
@@ -1372,7 +1372,8 @@ addons:
         enabled: true
         cypress:
           envs:
-            cypress_url: https://chat.bigbang.dev
+            cypress_url: 'https://chat.bigbang.dev'
+            cypress_keycloak_test_enable: 'true'
 
   nexusRepositoryManager:
     enabled: false
