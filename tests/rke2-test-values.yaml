@@ -264,18 +264,18 @@ addons:
           memory: 128Mi
           cpu: 100m
         limits: null
-        networkPolicies:
-          enabled: true
-          additionalPolicies:
-          - name: rke2-ci-runner-jobs
-            spec:
-              podSelector: {}
-              policyTypes:
-              - Egress
-              egress:
-              - to:
-                - ipBlock:
-                    cidr: 0.0.0.0/0
+#        networkPolicies:
+#          enabled: true
+#          additionalPolicies:
+#          - name: rke2-ci-runner-jobs
+#            spec:
+#              podSelector: {}
+#              policyTypes:
+#              - Egress
+#              egress:
+#              - to:
+#                - ipBlock:
+#                    cidr: 0.0.0.0/0
 
 
   anchore:
