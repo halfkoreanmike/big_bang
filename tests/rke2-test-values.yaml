@@ -44,6 +44,18 @@ kyverno:
         cpu: 500m
         memory: 384Mi
 
+kiali:
+  values:
+    resources:
+      requests:
+        cpu: 2
+        memory: 8Gi
+      limits:
+        cpu: 2
+        memory: 8Gi
+
+
+
 elasticsearchKibana:
   values:
     elasticsearch:
