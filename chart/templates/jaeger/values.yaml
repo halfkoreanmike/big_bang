@@ -15,7 +15,9 @@ hostname: {{ $domainName }}
 domain: {{ $domainName }}
 
 istio:
-  enabled: {{ .Values.istio.enabled }}
+  enabled: true
+  hardened:
+    enabled: true
   jaeger:
     enabled: {{ .Values.istio.enabled }}
     gateways:
