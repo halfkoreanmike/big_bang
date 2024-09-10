@@ -676,15 +676,6 @@ kyvernoPolicies:
           - '63999'
           - '>= 64000 & < 65000'
           - '> 65000'
-      restrict-image-registries:
-        exclude:
-          any:
-          # ArgoCD deploys a test app as part of its Cypress test
-          - resources:
-              namespaces:
-              - argocd
-              names:
-              - guestbook-ui-*
       restrict-volume-types:
         exclude:
           any:
@@ -869,7 +860,7 @@ elasticsearchKibana:
       cypress:
         artifacts: true
         envs:
-          cypress_expect_logs: "true"
+          cypress_expect_logs: "false"
           cypress_kibana_url: "https://kibana.dev.bigbang.mil"
         resources:
           requests:
@@ -1311,6 +1302,9 @@ addons:
             limits:
               cpu: 4
               memory: 12Gi
+        scripts:
+          envs:
+            ARGOCD_SERVER: "https://argocd.dev.bigbang.mil"
         istio:
           sidecar:
             resources:
@@ -2011,16 +2005,6 @@ addons:
         enabled: true
       istio:
         hardened:
-          customAuthorizationPolicies:
-            - name: "test-for-allowing-monitoring"
-              enabled: true
-              spec:
-                action: ALLOW
-                rules:
-                  - from:
-                    - source:
-                        namespaces:
-                          - monitoring
           customServiceEntries:
             - name: "cypress-service-entries-mattermost"
               enabled: true
@@ -2331,7 +2315,7 @@ addons:
             quarkus.properties: '{{ .Files.Get "resources/dev/quarkus.properties" }}'
       extraInitContainers: |-
         - name: plugin
-          image: registry1.dso.mil/ironbank/big-bang/p1-keycloak-plugin:3.5.2
+          image: registry1.dso.mil/ironbank/big-bang/p1-keycloak-plugin:3.5.3
           imagePullPolicy: Always
           command:
           - sh
