@@ -484,6 +484,10 @@ kyverno:
   # -- Toggle deployment of Kyverno.
   enabled: true
 
+  # -- Toggle deployment of Kyverno policies
+  kyvernoPolicies:
+    enabled: true
+
   # -- Choose source type of "git" or "helmRepo"
   sourceType: "git"
 
@@ -505,22 +509,6 @@ kyverno:
 
   # -- Post Renderers.  See docs/postrenders.md
   postRenderers: []
-
-# kyvernoPolicies:
-#   # -- Toggle deployment of Kyverno policies
-#   enabled: true
-
-#   # -- Choose source type of "git" or "helmRepo"
-#   sourceType: "git"
-
-#   # -- Flux reconciliation overrides specifically for the Kyverno Package
-#   flux: {}
-
-#   # -- Values to passthrough to the kyverno policies chart: https://repo1.dso.mil/big-bang/product/packages/kyverno-policies.git
-#   values: {}
-
-#   # -- Post Renderers.  See docs/postrenders.md
-#   postRenderers: []
 
 kyvernoReporter:
   # -- Toggle deployment of Kyverno Reporter

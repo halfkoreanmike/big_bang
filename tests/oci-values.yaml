@@ -33,11 +33,6 @@ kyverno:
   helmRepo:
     cosignVerify: true
 
-kyvernoPolicies:
-  sourceType: "helmRepo"
-  helmRepo:
-    cosignVerify: true
-
 kyvernoReporter:
   sourceType: "helmRepo"
   helmRepo:
