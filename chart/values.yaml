@@ -376,7 +376,7 @@ jaeger:
 
 kiali:
   # -- Toggle deployment of Kiali.
-  enabled: false
+  enabled: true
 
   # -- Choose source type of "git" or "helmRepo"
   sourceType: "git"
@@ -976,7 +976,7 @@ grafana:
 #
 twistlock:
   # -- Toggle deployment of Twistlock.
-  enabled: false
+  enabled: true
 
   # -- Choose source type of "git" or "helmRepo"
   sourceType: "git"
@@ -984,11 +984,12 @@ twistlock:
   git:
     repo: https://repo1.dso.mil/big-bang/product/packages/twistlock.git
     path: "./chart"
-    tag: "0.16.0-bb.1"
-  helmRepo:
-    repoName: "registry1"
-    chartName: "twistlock"
-    tag: "0.16.0-bb.1"
+    branch: "add-wait-job"
+  #   tag: "0.16.0-bb.1"
+  # helmRepo:
+  #   repoName: "registry1"
+  #   chartName: "twistlock"
+  #   tag: "0.16.0-bb.1"
 
   # -- Flux reconciliation overrides specifically for the Twistlock Package
   flux: {}
@@ -1140,7 +1141,7 @@ addons:
 
   minio:
     # -- Toggle deployment of minio.
-    enabled: false
+    enabled: true
 
     # -- Choose source type of "git" or "helmRepo"
     sourceType: "git"
@@ -1616,7 +1617,7 @@ addons:
   #
   mattermostOperator:
     # -- Toggle deployment of Mattermost Operator.
-    enabled: false
+    enabled: true
 
     # -- Choose source type of "git" or "helmRepo"
     sourceType: "git"
@@ -1641,7 +1642,7 @@ addons:
 
   mattermost:
     # -- Toggle deployment of Mattermost.
-    enabled: false
+    enabled: true
 
     # -- Choose source type of "git" or "helmRepo"
     sourceType: "git"
