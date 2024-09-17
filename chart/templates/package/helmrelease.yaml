@@ -78,7 +78,7 @@ spec:
       namespace: {{ default "bigbang" $.Values.namespace }}
     {{- end }}
     {{- if $kyvernoDep }}
-    - name: kyverno-policies
+    - name: kyverno
       namespace: {{ default "bigbang" $.Values.namespace }}
     {{- end }}
     {{- if $istioDep }}
