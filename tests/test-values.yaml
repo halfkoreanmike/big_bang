@@ -1807,13 +1807,13 @@ addons:
 
   sonarqube:
     enabled: false
-    sso:
+    sso: 
       enabled: false
-      client_id: dev_00eb8904-5b88-4c68-ad67-cec0d2e07aa6_saml-sonarqube
-      login: login
-      name: name
-      email: email
+      client_id: "dev_00eb8904-5b88-4c68-ad67-cec0d2e07aa6_saml-sonarqube"
     values:
+      account:
+        adminPassword: new_admin_password
+        currentAdminPassword: admin
       istio:
         hardened:
           customAuthorizationPolicies:
@@ -1835,7 +1835,6 @@ addons:
                   - 'download.cypress.io'
                   - 'cdn.cypress.io'
                   - 'repo1.dso.mil'
-                  - 'sonarqube.dev.bigbang.mil'
                 location: MESH_EXTERNAL
                 ports:
                   - number: 443
@@ -1868,9 +1867,6 @@ addons:
           envs:
             cypress_url: "https://sonarqube.dev.bigbang.mil"
             cypress_url_setup: "https://sonarqube.dev.bigbang.mil/setup"
-      account:
-        adminPassword: new_admin_password
-        currentAdminPassword: admin
       curlContainerImage: registry1.dso.mil/ironbank/big-bang/base:2.0.0
 
   minioOperator:
