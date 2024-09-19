@@ -21,7 +21,6 @@
     "clusterAuditor",
     "gatekeeper",
     "kyverno",
-    "kyvernoPolicies",
     "kyvernoReporter",
     "elasticsearchKibana",
     "eckOperator",
@@ -35,7 +34,7 @@
     "twistlock",
     "addons"
   ],
-  "additionalProperties": false,
+  "additionalProperties": true,
   "properties": {
     "comments": {
       "type": "string"
@@ -383,23 +382,7 @@
     "kyverno": {
       "properties": {
         "enabled": true,
-        "sourceType": true,
-        "git": true,
-        "helmRepo": true,
-        "flux": true,
-        "values": true,
-        "postRenderers": true
-      },
-      "allOf": [
-        {
-          "$ref": "#/$defs/basePackage"
-        }
-      ],
-      "additionalProperties": false
-    },
-    "kyvernoPolicies": {
-      "properties": {
-        "enabled": true,
+        "kyvernoPolicies": true,
         "sourceType": true,
         "git": true,
         "helmRepo": true,

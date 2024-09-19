@@ -64,7 +64,7 @@ spec:
     - name: {{ .Release.Name }}-loki-values
       kind: Secret
       valuesKey: "overlays"
-  {{- if or .Values.monitoring.enabled .Values.gatekeeper.enabled .Values.istio.enabled .Values.kyvernoPolicies.enabled }}
+  {{- if or .Values.monitoring.enabled .Values.gatekeeper.enabled .Values.istio.enabled .Values.kyverno.enabled }}
   dependsOn:
     {{- if  .Values.monitoring.enabled }}
     - name: monitoring
@@ -76,10 +76,6 @@ spec:
     {{- end }}
     {{- if .Values.istio.enabled }}
     - name: istio
-      namespace: {{ .Release.Namespace }}
-    {{- end }}
-    {{- if .Values.kyvernoPolicies.enabled }}
-    - name: kyverno-policies
       namespace: {{ .Release.Namespace }}
     {{- end }}
     {{- with .Values.loki.objectStorage }}

@@ -54,14 +54,14 @@ spec:
     - name: {{ .Release.Name }}-velero-values
       kind: Secret
       valuesKey: "overlays"
-  {{- if or .Values.istio.enabled .Values.kyvernoPolicies.enabled .Values.monitoring.enabled }}
+  {{- if or .Values.istio.enabled .Values.kyverno.enabled .Values.monitoring.enabled }}
   dependsOn:
     {{- if .Values.istio.enabled }}  
     - name: istio
       namespace: {{ .Release.Namespace }}
     {{- end }}
-    {{- if .Values.kyvernoPolicies.enabled }}  
-    - name: kyverno-policies
+    {{- if .Values.kyverno.enabled }}  
+    - name: kyverno
       namespace: {{ .Release.Namespace }}
     {{- end }}
     {{- if .Values.monitoring.enabled }}
